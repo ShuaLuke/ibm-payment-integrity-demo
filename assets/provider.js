@@ -1436,6 +1436,30 @@
         isRing: provIds.length > 1
       };
     },
+    // Claim-level view of a network: every claim the network's providers billed,
+    // with the stay length (per-diem units) and whether the member came straight
+    // from another facility in the network. `seedId` marks the flagged claim the
+    // analysis started from; the rest are its look-alikes from other members.
+    getNetworkClaims: function (providerIds, seedId) {
+      var inNet = {}; providerIds.forEach(function (x) { inNet[x] = 1; });
+      var rows = D.claims.filter(function (c) { return inNet[c.providerId]; }).map(function (c) {
+        var stay = (c.lines || []).filter(function (l) { return /per diem/i.test(l.description || ""); })[0];
+        return {
+          id: c.id, providerId: c.providerId, memberId: c.veteranId, dos: c.dateOfService,
+          amount: c.paidAmount || c.billedAmount, billed: c.billedAmount, paid: c.paidAmount || 0,
+          status: c.claimStatus || (c.paidAmount ? "Paid" : "Pending"), days: stay ? stay.units : null,
+          seed: c.id === seedId, prev: null,
+          flagged: (D.allegations.filter(function (x) { return x.claimId === c.id; })[0] || {}).exposurePre || 0
+        };
+      });
+      var byMember = {};
+      rows.forEach(function (r) { (byMember[r.memberId] = byMember[r.memberId] || []).push(r); });
+      Object.keys(byMember).forEach(function (m) {
+        var list = byMember[m].sort(function (a, b) { return a.dos.localeCompare(b.dos); });
+        for (var i = 1; i < list.length; i++) if (list[i - 1].providerId !== list[i].providerId) list[i].prev = list[i - 1];
+      });
+      return rows;
+    },
 
     // ---- 837 EDI / CMS Pricing / Utilization Mgmt mocks ----
     // Deterministic per-claim synthetic data. Seams for real third-party feeds:

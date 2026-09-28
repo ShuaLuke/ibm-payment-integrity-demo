@@ -35,14 +35,19 @@
         if (scn === "all") { ov.innerHTML = overviewHtml(); boxes.innerHTML = ""; wireOverview(ov, paint); return; }
         if (scn === "ring" || scn === "chain") {
           var focus = scn === "chain" ? "PR300" : "PR001";
-          legend.innerHTML = window.Collusion.legendHtml(window.Collusion.analyze(focus), { showFocus: false });
+          // the chain is drawn down to the claim: the flagged $17K claim plus its look-alikes
+          var an = window.Collusion.analyze(focus);
+          var claims = scn === "chain" ? window.DP.getNetworkClaims(an.providers.map(function (p) { return p.id; }), SEED_CLAIM) : null;
+          legend.innerHTML = window.Collusion.legendHtml(an, { showFocus: false, claims: !!claims });
           boxes.innerHTML = scn === "chain" ? boxesChain() : boxesRing();
-          window.Collusion.render(cv, focus, { height: 440, showFocus: false });
+          cv.style.height = claims ? "560px" : "";
+          window.Collusion.render(cv, focus, { height: claims ? 560 : 440, showFocus: false, claims: claims });
           return;
         }
         var model = window.NETWORKS.model(scn), row = window.NETWORKS.list().filter(function (r) { return r.id === scn; })[0];
         legend.innerHTML = window.Collusion.legendHtml(model, { showFocus: false });
         boxes.innerHTML = boxesSynthetic(row, model);
+        cv.style.height = "";
         window.Collusion.render(cv, null, { height: 440, showFocus: false, model: model });
       }
       mount.querySelectorAll(".nscn").forEach(function (b) { b.onclick = function () { paint(b.getAttribute("data-scn")); }; });
@@ -64,6 +69,9 @@
       window.APP.state.networkScenario = null;
     }
   };
+
+  // the prepay claim the guided story starts from (Sonoran Recovery Center, lead 20721)
+  var SEED_CLAIM = "C00585";
 
   // ---------- All networks (portfolio overview) ----------
   function usd(n) { return window.DP.usd(n); }

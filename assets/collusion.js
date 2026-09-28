@@ -150,8 +150,14 @@
     var vets = net.veterans.filter(Boolean).filter(function (v) { return visits[v.id] && visits[v.id].length; });
     var pairs = aggregate(net).filter(function (p) { return p.referrals > 0; });
 
-    // ---- layout: three rows ----
-    var yBiz = Math.round(H * 0.15), yProv = Math.round(H * 0.47), yVet = Math.round(H * 0.83);
+    // optional claim layer: the flagged claim plus its look-alikes, between the
+    // providers that billed them and the members they were billed for
+    var claims = (opts.claims || []).filter(function (c) { return P0(c.providerId) && visits[c.memberId]; });
+    function P0(id) { return inNet[id]; }
+    var hasClaims = claims.length > 0;
+
+    // ---- layout: three rows (four with claims) ----
+    var yBiz = Math.round(H * (hasClaims ? 0.1 : 0.15)), yProv = Math.round(H * (hasClaims ? 0.34 : 0.47)), yClaim = Math.round(H * 0.62), yVet = Math.round(H * (hasClaims ? 0.88 : 0.83));
     var n = provs.length, span = Math.min(W - 40, n * 250);
     var cw = Math.min(200, span / n - 18), ch = H >= 380 ? 62 : 54;
     var P = {};
@@ -163,6 +169,13 @@
     var m = vets.length, vspan = Math.min(W - 60, Math.max(m * 96, span * 0.8));
     var V = {};
     vets.forEach(function (v, i) { V[v.id] = { v: v, x: W / 2 - vspan / 2 + vspan * (i + 0.5) / m, y: yVet }; });
+    var C = {};
+    if (hasClaims) {
+      claims.sort(function (a, b) { return P[a.providerId].x - P[b.providerId].x || a.dos.localeCompare(b.dos); });
+      var cspan = W - 40, k = claims.length;
+      var pw = Math.max(30, Math.min(56, cspan / k - 5));
+      claims.forEach(function (c, i) { C[c.id] = { c: c, x: 20 + cspan * (i + 0.5) / k, y: yClaim, w: c.seed ? Math.max(pw, 60) : pw }; });
+    }
     var chain = s.kind === "chain";
     // labels default from the built-in scenarios; a model can override them
     var L = labelsFor(s);
@@ -176,6 +189,10 @@
     cap.append("text").attr("x", 12).attr("y", yBiz - 22).text(L.top);
     cap.append("text").attr("x", 12).attr("y", yProv - ch / 2 - 8).text(L.mid + (s.states.length > 1 ? " · " + s.states.join(" · ") : ""));
     cap.append("text").attr("x", 12).attr("y", yVet - 16).text("SHARED MEMBERS · " + m);
+    if (hasClaims) {
+      var nSeed = claims.filter(function (c) { return c.seed; }).length;
+      cap.append("text").attr("x", 12).attr("y", yClaim - 30).text("CLAIMS · " + (nSeed ? nSeed + " FLAGGED + " + (claims.length - nSeed) + " SIMILAR" : claims.length) + " · SAME PATTERN, DIFFERENT MEMBERS");
+    }
 
     var gEdge = svg.append("g"), gNode = svg.append("g");
 
@@ -195,9 +212,17 @@
       gEdge.append("text").attr("x", (x1 + x2) / 2 || (l.x + r.x) / 2).attr("y", cy - 3).attr("text-anchor", "middle").attr("font-size", 9.5).attr("font-weight", 600).attr("fill", "#0f6e56").text("⇄ " + pr.referrals + " referral" + (pr.referrals > 1 ? "s" : ""));
       return e;
     }).filter(Boolean);
-    // member → provider edges
-    var vetEdges = [];
-    vets.forEach(function (v) {
+    // member → provider edges (with claims: provider → claim → member instead)
+    var vetEdges = [], claimEdges = [];
+    claims.forEach(function (c) {
+      var a = C[c.id], t = P[c.providerId], v = V[c.memberId];
+      var st = c.seed ? "#c6362f" : "#9fb3c8";
+      claimEdges.push(gEdge.append("path").attr("d", "M" + t.x + "," + (t.y + ch / 2) + " C" + t.x + "," + (t.y + ch / 2 + 30) + " " + a.x + "," + (a.y - 40) + " " + a.x + "," + (a.y - 11))
+        .attr("fill", "none").attr("stroke", st).attr("stroke-width", c.seed ? 2 : 1).attr("opacity", 0.7).datum({ claim: c.id, prov: c.providerId, vet: c.memberId }));
+      if (v) claimEdges.push(gEdge.append("path").attr("d", "M" + a.x + "," + (a.y + 11) + " C" + a.x + "," + (a.y + 40) + " " + v.x + "," + (v.y - 40) + " " + v.x + "," + (v.y - 7))
+        .attr("fill", "none").attr("stroke", c.seed ? "#c6362f" : "#9fb3c8").attr("stroke-width", c.seed ? 2 : 1).attr("opacity", 0.7).datum({ claim: c.id, prov: c.providerId, vet: c.memberId }));
+    });
+    if (!hasClaims) vets.forEach(function (v) {
       var a = V[v.id];
       visits[v.id].forEach(function (pid) {
         var t = P[pid]; if (!t) return;
@@ -235,6 +260,21 @@
       return g;
     });
 
+    // claims: amount pills; the flagged one in red with a callout
+    var kfmt = function (n) { return "$" + (n >= 1000 ? (n / 1000).toFixed(1) + "K" : n); };
+    var claimNodes = claims.map(function (c) {
+      var a = C[c.id], w = a.w;
+      var g = gNode.append("g").attr("transform", "translate(" + a.x + "," + a.y + ")").attr("cursor", "pointer").datum({ claim: c.id, prov: c.providerId, vet: c.memberId });
+      g.append("rect").attr("x", -w / 2).attr("y", -11).attr("width", w).attr("height", 22).attr("rx", 11)
+        .attr("fill", c.seed ? "#c6362f" : "var(--card, #fff)").attr("stroke", c.seed ? "#c6362f" : "#8a95a3").attr("stroke-width", c.seed ? 2 : 1);
+      g.append("text").attr("y", 3.5).attr("text-anchor", "middle").attr("font-size", w < 40 ? 8 : 9).attr("font-weight", 600).attr("font-family", "IBM Plex Mono,monospace")
+        .attr("fill", c.seed ? "#fff" : "#3d4a58").text(kfmt(c.seed ? (c.flagged || c.billed) : c.amount));
+      if (c.seed) {
+        g.append("text").attr("y", -17).attr("text-anchor", "middle").attr("font-size", 8.5).attr("font-weight", 700).attr("letter-spacing", "0.04em").attr("fill", "#c6362f").text("FLAGGED · START");
+      }
+      return g;
+    });
+
     // members
     var vetNodes = vets.map(function (v) {
       var a = V[v.id];
@@ -256,13 +296,19 @@
       vetEdges.forEach(function (e) { var d = e.datum(); var on = vetSet[d.vet] && provSet[d.prov]; e.attr("opacity", on ? 1 : 0.06).attr("stroke", on ? "#378add" : "#9fb3c8").attr("stroke-width", on ? 2 : 1.1); });
       provNodes.forEach(function (g) { g.attr("opacity", provSet[g.datum().prov] ? 1 : 0.3); });
       vetNodes.forEach(function (g) { g.attr("opacity", vetSet[g.datum().vet] ? 1 : 0.25); });
+      var cOn = function (d) { return provSet[d.prov] && vetSet[d.vet] && (!claimSet || claimSet[d.claim]); };
+      claimNodes.forEach(function (g) { g.attr("opacity", cOn(g.datum()) ? 1 : 0.2); });
+      claimEdges.forEach(function (e) { var on = cOn(e.datum()); e.attr("opacity", on ? 1 : 0.06).attr("stroke-width", on ? 2 : 1); });
       biz.attr("opacity", bizOn ? 1 : 0.45);
+      claimSet = null;
     }
+    var claimSet = null;
     function reset() {
       bizEdges.forEach(function (e) { e.attr("opacity", 0.75); });
       refEdges.forEach(function (e) { e.attr("opacity", 1); });
       vetEdges.forEach(function (e) { e.attr("opacity", 0.7).attr("stroke", "#9fb3c8").attr("stroke-width", 1.1); });
-      provNodes.concat(vetNodes).forEach(function (g) { g.attr("opacity", 1); });
+      provNodes.concat(vetNodes, claimNodes).forEach(function (g) { g.attr("opacity", 1); });
+      claimEdges.forEach(function (e) { e.attr("opacity", 0.7).attr("stroke-width", e.datum().claim && C[e.datum().claim].c.seed ? 2 : 1); });
       biz.attr("opacity", 1); tip.style("opacity", 0);
     }
     function showTip(e, html) {
@@ -281,10 +327,11 @@
       var pid = g.datum().prov, p = P[pid].p;
       var vs = {}; vets.forEach(function (v) { if (visits[v.id].indexOf(pid) >= 0) vs[v.id] = 1; });
       var pset = {}; pset[pid] = 1;
+      var nCl = claims.filter(function (c) { return c.providerId === pid; }).length;
       g.on("mouseover", function (e) {
         focusOn(pset, vs, true);
         showTip(e, "<div style='color:#ffb4a8;margin-bottom:2px'>" + (P[pid].focus ? "Provider · this case" : "Provider") + "</div><b>" + esc(p.name) + "</b><div style='color:#93a7bf'>" + esc(p.state || "") + " · NPI " + esc(p.npi || "") + " · TIN " + esc(p.tin || "") +
-          "<br>risk " + p.riskScore + " · " + Object.keys(vs).length + " shared members" + (excluded(p) ? "<br><span style='color:#ffb4a8'>On the OIG LEIE exclusion list</span>" : "") + (s.synthetic ? "" : "<br>Click to open the report card") + "</div>");
+          "<br>risk " + p.riskScore + " · " + Object.keys(vs).length + " shared members" + (hasClaims ? " · " + nCl + " claims" : "") + (excluded(p) ? "<br><span style='color:#ffb4a8'>On the OIG LEIE exclusion list</span>" : "") + (s.synthetic ? "" : "<br>Click to open the report card") + "</div>");
       }).on("mouseout", reset).on("click", function () { if (window.APP && !s.synthetic) window.APP.openProvider(pid); });
     });
     vetNodes.forEach(function (g) {
@@ -296,6 +343,22 @@
         showTip(e, "<div style='color:#8fc4f2;margin-bottom:2px'>Affected member</div><b>" + esc(v.name) + "</b><div style='color:#93a7bf'>" + [v.city, v.state].filter(Boolean).map(esc).join(", ") +
           "<br>Billed by " + route.length + ": " + route.map(function (id) { return esc(shortName(P[id].p.name)) + " (" + esc(P[id].p.state || "") + ")"; }).join(" → ") + "</div>");
       }).on("mouseout", reset);
+    });
+    claimNodes.forEach(function (g) {
+      var d = g.datum(), c = C[d.claim].c, pr = P[c.providerId].p, v = V[c.memberId] ? V[c.memberId].v : null;
+      var ps = {}; ps[c.providerId] = 1; var vs = {}; vs[c.memberId] = 1; var cs = {}; cs[c.id] = 1;
+      var fmt = window.DP && window.DP.usd ? window.DP.usd : function (n) { return "$" + n; };
+      g.on("mouseover", function (e) {
+        claimSet = cs; focusOn(ps, vs, false);
+        showTip(e, "<div style='color:" + (c.seed ? "#ffb4a8" : "#cfd8e3") + ";margin-bottom:2px'>" + (c.seed ? "Flagged claim · where the analysis started" : "Similar claim · same pattern") + "</div>" +
+          "<b>" + esc(c.id) + " · " + fmt(c.seed ? (c.flagged || c.billed) : c.amount) + "</b><div style='color:#93a7bf'>" + esc(shortName(pr.name)) + " (" + esc(pr.state || "") + ")" + (v ? " · member " + esc(v.name) : "") +
+          "<br>" + esc(c.dos) + (c.days ? " · " + c.days + "-day residential stay" : "") + " · " + (c.seed ? "held before payment" : esc(c.status.toLowerCase())) +
+          (c.prev ? "<br><span style='color:#ffb4a8'>" + readmit(c) + "</span>" : "") +
+          (!s.synthetic && window.DP.raw.allegations.some(function (x) { return x.claimId === c.id; }) ? "<br>Click to open the lead" : "") + "</div>");
+      }).on("mouseout", reset).on("click", function () {
+        var lead = !s.synthetic && window.DP.raw.allegations.filter(function (x) { return x.claimId === c.id; })[0];
+        if (lead && window.APP) window.APP.openAllegation(lead.id);
+      });
     });
   }
 
@@ -312,7 +375,11 @@
     out.push(box("#c6362f", opts.showFocus !== false ? "Linked provider · high risk" : "Provider · high risk"), dot("#378add", "#e6f1fb", "Shared member"));
     out.push(s.sharedTin ? line("#c6362f", 2.4, false, L.link) : line("#b5730e", 1.6, true, L.link));
     if (s.referralCount) out.push(line("#0f6e56", 1.8, true, "Referrals"));
-    out.push(line("#9fb3c8", 1.1, false, "Billed for member"));
+    if (opts.claims) {
+      var pill = function (bg, stroke, label) { return '<span class="lg"><span style="width:16px;height:9px;border:1.2px solid ' + stroke + ';border-radius:5px;background:' + bg + '"></span>' + label + '</span>'; };
+      out.push(pill("#c6362f", "#c6362f", "Flagged claim"), pill("#fff", "#8a95a3", "Similar claim"));
+    }
+    out.push(line("#9fb3c8", 1.1, false, opts.claims ? "Billed → claim → member" : "Billed for member"));
     return out.join("");
   }
 
@@ -329,6 +396,12 @@
       bizSub: o.bizSub || function (n) { return chain ? "Holding company" + (s.officer ? " · officer " + s.officer : "") + " · controls " + n : "One billing entity · " + n + " providers bill under it"; },
       bizTip: o.bizTip || function (n) { return chain ? "Controls " + n + " facilities in " + s.states.join(", ") + " under separate TINs" + (s.officer ? " · officer " + s.officer : "") : n + " providers bill under one TIN"; }
     };
+  }
+  // "Readmitted 7 days after discharge from X" when inside the 30-day window, else "Previously at X"
+  function readmit(c) {
+    var from = shortName((window.DP.getProvider(c.prev.providerId) || {}).name || c.prev.providerId);
+    var gap = c.prev.days ? Math.round((new Date(c.dos) - new Date(c.prev.dos)) / 864e5) - c.prev.days : null;
+    return gap !== null && gap >= 0 && gap <= 30 ? "Readmitted " + gap + " day" + (gap === 1 ? "" : "s") + " after discharge from " + from : "Previously treated at " + from;
   }
   function trunc(t, n) { t = String(t || ""); return t.length > n ? t.slice(0, Math.max(1, n - 1)) + "…" : t; }
   function vetShort(name) { var p = String(name || "").split(" "); return p.length > 1 ? p[0].charAt(0) + ". " + p[p.length - 1] : name; }
