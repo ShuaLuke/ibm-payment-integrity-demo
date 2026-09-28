@@ -8,6 +8,21 @@
   function click(sel) { var e = q(sel); if (e) e.click(); }
   function tab(name) { click('.ctab[data-tab="' + name + '"]'); }
   function closeCopilot() { if (window.COPILOT && window.COPILOT.close) window.COPILOT.close(); }
+  // Scroll the all-networks map under the nav and show the tooltip for the link
+  // between two networks, as if the presenter were hovering it.
+  var linkTok = 0; // bumped on every step change so a late timer from a previous step does nothing
+  function showLink(a, b) {
+    var el = document.getElementById("nv-map"), nav = document.querySelector(".topnav"), tok = linkTok;
+    if (!el || !nav) return;
+    window.scrollTo(0, el.getBoundingClientRect().top + window.scrollY - nav.getBoundingClientRect().bottom - 8);
+    setTimeout(function () {
+      if (tok !== linkTok || !document.body.contains(el)) return;
+      var line = [].slice.call(el.querySelectorAll("line.hit")).filter(function (l) { var d = l.__data__; return d && d.source && ((d.source.net === a && d.target.net === b) || (d.source.net === b && d.target.net === a)); })[0];
+      if (!line) return;
+      var r = line.getBoundingClientRect();
+      line.dispatchEvent(new MouseEvent("mouseover", { bubbles: true, clientX: r.left + r.width / 2, clientY: r.top + r.height / 2 }));
+    }, 250);
+  }
   function retro() { window.APP.setRole("analyst"); if (window.APP.isPrepay()) window.APP.setMode("retrospective"); }
 
   function ensureRecords(id, channel) { if (!window.APP.recordsRequestFor(id)) window.APP.requestRecords(id, { channel: channel || "portal", items: "Progress notes and E/M documentation supporting the level billed." }); }
@@ -75,12 +90,12 @@
   ];
 
 
-  // Short tour — one flagged claim followed all the way out (7 steps, ~6–8 min):
+  // Short tour — one flagged claim followed all the way out (8 steps, ~7–9 min):
   // 1 Ingest → 2 Detect (real time) → 3 Case management → 4 Networks → 5 Impact.
   // `trail` is how far the $17,280 claim has been followed (TRAIL below), shown in
   // the ribbon in place of the step dots. Select with ?tour=short or the Full /
   // Short toggle in the ribbon.
-  var TRAIL = ["$17,280 claim", "Sonoran · $2.7M", "Meridian network · $9.8M", "20 networks · $102.7M"];
+  var TRAIL = ["$17,280 claim", "Sonoran · $2.7M", "Meridian · $9.8M", "Linked · $20.9M", "20 networks · $102.7M"];
   var SHORT_STEPS = [
     { t: "Ingesting the data", trail: 0, chip: "1 · Ingest", n: "This is live intake. Data sources shows every feed we pull and from where: claims, remittance and eligibility from the transaction streams, plus provider registries, the OIG and SAM exclusion lists, death records, licensure, corporate filings and adverse media. Incoming records scroll in as they arrive. Watch for Sonoran Recovery Center: a $17,280 claim scored 93 and held. Scroll down to see the last 24 hours moving through the pipeline, from ingest to remediation.", a: function () { retro(); closeCopilot(); window.APP.nav("edi"); } },
 
@@ -91,7 +106,8 @@
     { t: "A documented decision", trail: 2, chip: "3 · Case mgmt", n: "Here's a sister facility, Pacific Sands, which is also on the OIG exclusion list. The analyst confirms it's improper, records a coded reason with an AI-drafted justification, and the system suggests where it belongs: on the Sonoran case, because the two facilities share a business registration. Every decision feeds back to retrain the models.", a: function () { retro(); closeCopilot(); var me = window.APP.ROLES[window.APP.state.role].name; window.APP.assignCase("20538", me); window.APP.startLeadReview("20538"); window.APP.openAllegation("20538"); tab("decision"); var seg = document.querySelector('.seg[data-d="c"]'); if (seg) seg.click(); } },
 
     { t: "The network, down to the claim", trail: 2, chip: "4 · Networks", n: "Here's the whole thread on one screen. Our $17,280 claim is in red; around it are 17 similar claims billed for 7 different members: the same per-diem stays, each member discharged from one Meridian facility and admitted to the next within days. Hover any claim to see where the member came from. Four facilities in three states, one officer, a separate tax ID on each to hide the common ownership. Over 36 months this network has billed $9.8M in the pattern.", a: function () { retro(); closeCopilot(); window.APP.state.networkScenario = "chain"; window.APP.nav("network"); window.scrollTo(0, 0); setTimeout(function () { var cv = document.getElementById("n-canvas"), nav = document.querySelector(".topnav"); if (cv && nav) window.scrollTo(0, cv.getBoundingClientRect().top + window.scrollY - nav.getBoundingClientRect().bottom - 8); }, 120); } },
-    { t: "From $17K to $100M", trail: 3, chip: "5 · Impact", n: "And it isn't the only one. Follow the numbers from that one $17,280 claim: Sonoran's own history is $2.7M, the Meridian network $9.8M, the networks linked to it by a shared address and billing agent $20.9M, and the same patterns across all 20 detected networks $102.7M, on a payer paying $10B a year. Nobody finds that by reviewing 34,000 claim lines at $3K each. One flag opens the network, and analysts work 20 cases instead of 34,000 lines.", a: function () { retro(); closeCopilot(); window.APP.state.networkScenario = "all"; window.APP.nav("network"); window.scrollTo(0, 0); setTimeout(function () { var f = document.getElementById("nv-funnel"); if (f) { f.style.outline = "2px solid #0f62fe"; f.style.outlineOffset = "2px"; } }, 400); } }
+    { t: "Networks linked to networks", trail: 3, chip: "4 · Networks", n: "And Meridian isn't working alone. This map is every network detected: 20 of them, 63 providers. The red dashed lines are the same billing agent, recruiter or mailing address turning up in two different networks. The one from Meridian is showing: its Desert Bloom facility lists the same Arizona mailing address as Painted Desert DME, a shell medical-supply network at PO Box 4471. Hover that hub and a third network lights up: the same billing agent also files for Red Mesa's home-health providers in Colorado, Utah and New Mexico. Those three linked networks add up to $20.9M. And 60% of all these networks cross state lines.", a: function () { retro(); closeCopilot(); window.APP.state.networkScenario = "all"; window.APP.nav("network"); var tok = linkTok; setTimeout(function () { if (tok === linkTok) showLink("N01", "N18"); }, 700); } },
+    { t: "From $17K to $100M", trail: 4, chip: "5 · Impact", n: "Now back to the top of the page. Follow the numbers from that one $17,280 claim: Sonoran's own history is $2.7M, the Meridian network $9.8M, the networks linked to it by a shared address and billing agent $20.9M, and the same patterns across all 20 detected networks $102.7M, on a payer paying $10B a year. Nobody finds that by reviewing 34,000 claim lines at $3K each. One flag opens the network, and analysts work 20 cases instead of 34,000 lines.", a: function () { retro(); closeCopilot(); window.APP.state.networkScenario = "all"; window.APP.nav("network"); window.scrollTo(0, 0); setTimeout(function () { var f = document.getElementById("nv-funnel"); if (f) { f.style.outline = "2px solid #0f62fe"; f.style.outlineOffset = "2px"; } }, 400); } }
   ];
 
   var TOUR = (function () { try { var m = /[?&]tour=(short|full)/.exec(location.search); if (m) return m[1]; return localStorage.getItem("pivot-tour") || "full"; } catch (e) { return "full"; } })();
@@ -105,6 +121,7 @@
     go: function (n) {
       DEMO.i = Math.max(0, Math.min(STEPS.length - 1, n));
       var s = STEPS[DEMO.i];
+      linkTok++;
       try { if (s.a) s.a(); } catch (e) {}
       DEMO.render();
     },

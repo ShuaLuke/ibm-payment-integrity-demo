@@ -238,6 +238,7 @@
       lab.attr("x", function (d) { return d.x; }).attr("y", function (d) { return d.y - R(d) - 5; });
     }
     sim.on("tick", function () { if (!document.body.contains(el)) { sim.stop(); return; } ticked(); });
+    ticked(); // paint once now: hubs and links are pinned, so the map is usable even before the first animation frame
     if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) { sim.stop(); for (var i = 0; i < 300; i++) sim.tick(); ticked(); }
 
     // hover: light up one network (and any network linked to it)
