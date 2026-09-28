@@ -130,7 +130,7 @@
     var spend = P.annualClaims * P.lookbackMonths / 12;
     var stages = F.map(function (f, i) {
       var last = i === F.length - 1, mult = i ? Math.round(f.amount / F[i - 1].amount) : 0;
-      return (i ? '<div class="fn-arrow" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--text3);min-width:34px"><i class="ti ti-chevron-right" style="font-size:16px"></i><span class="mono" style="font-size:9.5px">×' + mult + '</span></div>' : '') +
+      return (i ? '<div class="fn-arrow" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--text3);min-width:34px"><i class="ti ti-chevron-right" style="font-size:16px"></i><span class="mono" style="font-size:11.5px;font-weight:600;color:var(--accent-d)">×' + mult + '</span></div>' : '') +
         '<div class="fn-stage" data-k="' + f.key + '" style="flex:1;min-width:128px;border-radius:8px;padding:9px 10px;cursor:pointer;' +
         (i === 0 ? 'background:var(--high-bg);border:0.5px solid #f3c9c9' : last ? 'background:#001141;color:#fff' : 'background:var(--surface);border:0.5px solid var(--border)') + '">' +
         '<div style="font-size:10px;text-transform:uppercase;letter-spacing:.04em;' + (last ? 'color:#78a9ff' : i === 0 ? 'color:var(--high-tx)' : 'color:var(--text3)') + '">' + esc(f.label) + '</div>' +

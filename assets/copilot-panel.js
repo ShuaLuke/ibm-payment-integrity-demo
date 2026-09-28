@@ -23,7 +23,7 @@
 
     var panel = document.createElement("div");
     panel.id = "cp-panel";
-    panel.style.cssText = "position:fixed;top:0;right:0;width:370px;max-width:92vw;height:100vh;z-index:220;background:var(--card);border-left:0.5px solid var(--border);box-shadow:-4px 0 24px rgba(0,0,0,0.12);transform:translateX(100%);transition:transform .22s ease;display:flex;flex-direction:column;font-family:'IBM Plex Sans',sans-serif";
+    panel.style.cssText = "position:fixed;top:var(--ribbon-h,0px);right:0;width:370px;max-width:92vw;height:calc(100vh - var(--ribbon-h,0px));z-index:220;background:var(--card);border-left:0.5px solid var(--border);box-shadow:-4px 0 24px rgba(0,0,0,0.12);transform:translateX(100%);transition:transform .22s ease;display:flex;flex-direction:column;font-family:'IBM Plex Sans',sans-serif";
     panel.innerHTML =
       '<div style="background:#001141;color:#fff;padding:12px 14px;display:flex;align-items:center;justify-content:space-between"><div style="display:flex;align-items:center;gap:8px"><i class="ti ti-sparkles" style="color:#78a9ff"></i><span style="font-weight:500">Investigative Assistant</span></div><button id="cp-x" style="background:none;border:none;color:#c1c7cd;cursor:pointer;font-size:16px"><i class="ti ti-x"></i></button></div>' +
       '<div id="cp-ctx" style="padding:7px 14px;font-size:11px;color:var(--text2);border-bottom:0.5px solid var(--border2);background:var(--surface)"></div>' +
