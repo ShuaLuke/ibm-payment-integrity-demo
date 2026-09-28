@@ -158,9 +158,9 @@
     L.push("   " + wrap(o.justification && o.justification.trim() ? o.justification.trim() : draftRationale(a, o.outcome) || "See finding and evidence above."));
     L.push("");
     L.push("PREPARED BY");
-    L.push("   " + (o.user || "Dana Whitmore") + "  ·  " + window.APP.fmtTs(new Date()) + "  ·  drafted by the PIVOT Investigative Assistant and adopted by the reviewer.");
+    L.push("   " + (o.user || "Dana Whitmore") + "  ·  " + window.APP.fmtTs(new Date()) + "  ·  drafted by the Investigative Assistant and adopted by the reviewer.");
     L.push("");
-    L.push("Synthetic data — for demonstration only. Not a real Veteran, provider, or claim.");
+    L.push("Synthetic data — for demonstration only. Not a real member, provider, or claim.");
     return L.join("\n");
   }
   // soft-wrap a paragraph at ~92 chars so the memo reads like a document
@@ -196,8 +196,8 @@
     var network;
     if (net && net.isRing) {
       network = net.kind === "chain"
-        ? "Not a one-off. This provider is one of " + net.providerCount + " facilities under " + (net.registration || "a single holding company") + " (officer " + (net.officer || "—") + ") cycling " + net.sharedPct + "% of the same veterans across " + net.states.join("/") + " under separate TINs — a coordinated residential-stay scheme."
-        : "Not a one-off. " + net.providerCount + " flagged providers act as one billing entity" + (net.sharedTin ? " (shared TIN " + (net.tin || "") + ")" : "") + ", sharing " + net.sharedPct + "% of veterans" + (net.referralCount ? " and " + net.referralCount + " referrals" : "") + " — coordinated behavior beyond a single claim.";
+        ? "Not a one-off. This provider is one of " + net.providerCount + " facilities under " + (net.registration || "a single holding company") + " (officer " + (net.officer || "—") + ") cycling " + net.sharedPct + "% of the same members across " + net.states.join("/") + " under separate TINs — a coordinated residential-stay scheme."
+        : "Not a one-off. " + net.providerCount + " flagged providers act as one billing entity" + (net.sharedTin ? " (shared TIN " + (net.tin || "") + ")" : "") + ", sharing " + net.sharedPct + "% of members" + (net.referralCount ? " and " + net.referralCount + " referrals" : "") + " — coordinated behavior beyond a single claim.";
     } else {
       network = "No collusion network — this provider bills in isolation, so the case rests on the claim's own evidence.";
     }
@@ -289,8 +289,8 @@
     var net = window.Collusion ? window.Collusion.analyze(p.id) : null;
     if (net && net.isRing) {
       inv.push({ sev: "high", text: net.kind === "chain"
-        ? p.name + " is one of " + net.providerCount + " facilities under " + (net.registration || "a shared holding company") + " cycling " + net.sharedPct + "% of the same veterans across " + (net.states || []).join("/") + " under separate TINs."
-        : net.providerCount + " NPIs act as one billing entity" + (net.sharedTin ? " (shared TIN " + (net.tin || p.tin) + ")" : "") + ", sharing " + net.sharedPct + "% of veterans — coordinated behavior." });
+        ? p.name + " is one of " + net.providerCount + " facilities under " + (net.registration || "a shared holding company") + " cycling " + net.sharedPct + "% of the same members across " + (net.states || []).join("/") + " under separate TINs."
+        : net.providerCount + " NPIs act as one billing entity" + (net.sharedTin ? " (shared TIN " + (net.tin || p.tin) + ")" : "") + ", sharing " + net.sharedPct + "% of members — coordinated behavior." });
     } else { inv.push({ sev: "low", text: p.name + " bills in isolation — no collusion network detected; the case rests on the claim's own evidence." }); }
     var ri = window.DP.getRiskIntel ? window.DP.getRiskIntel(p.id) : null;
     if (ri) {
@@ -323,7 +323,7 @@
     if (a.model) pol.push({ sev: "medium", text: "Model in play: " + a.model.name + " (" + a.model.type + ") — flags the pattern for human review." });
     if (a.mode === "prepay") pol.push({ sev: "medium", text: "Pre-payment posture — 42 CFR 405 payment-suspension authority applies where a credible allegation exists; nothing has been disbursed." });
     else pol.push({ sev: "medium", text: "Post-payment posture — overpayment is recoverable; determination + demand with appeal rights is the applicable path." });
-    if (!polSrc.length) polSrc.push("VA Community Care policy");
+    if (!polSrc.length) polSrc.push("Payer medical policy");
     polSrc.push("Medicare Claims Processing Manual");
     out.push({ role: "Policy", icon: "gavel", focus: "rules · thresholds · authorities", findings: pol, sources: polSrc });
     return out;
@@ -336,7 +336,7 @@
       { title: "National Correct Coding Initiative Policy Manual", cite: "CMS NCCI", summary: "Procedure-to-procedure edits, modifier indicators, MUE limits." },
       { title: "List of Excluded Individuals/Entities", cite: "OIG LEIE", summary: "Providers excluded from federal health-care programs; claims paid during exclusion are recoverable." },
       { title: "Payment suspension — credible allegation of fraud", cite: "42 CFR 405.371", summary: "Authority to suspend payments pending investigation." },
-      { title: "VA Community Care Network provider agreement", cite: "VA CCN", summary: "Contracted rates (CMAC), records-access and audit provisions." }
+      { title: "Health plan network provider agreement", cite: "Payer contract", summary: "Contracted rates, records-access and audit provisions." }
     ];
   }
 
@@ -358,7 +358,7 @@
     var ref = "Lead #" + a.id + (cl ? " · Claim " + cl.claimNumber + " (DOS " + cl.dateOfService + ")" : "");
     var finding = (a.xai && a.xai.summary) || (p.name + " was flagged for " + a.fwaType.toLowerCase() + ".");
     var L = [];
-    L.push("VA PIVOT · Payment Integrity — Office of Community Care");
+    L.push("Health Plan · Payment Integrity Unit");
     L.push("Payment Integrity Validation & Oversight");
     L.push("Date: " + window.APP.fmtTs(new Date()));
     L.push("");
@@ -400,10 +400,10 @@
     L.push("Sincerely,");
     var signer = (window.APP.ROLES[window.APP.state.role] || {}).name || "Dana Whitmore";
     L.push(signer + ", Payment Integrity Analyst");
-    L.push("VA PIVOT — Payment Integrity Validation & Oversight");
+    L.push("IBM Payment Integrity");
     L.push("");
-    L.push("Drafted by the PIVOT agentic assist and subject to reviewer adoption.");
-    L.push("Synthetic data — for demonstration only. Not a real Veteran, provider, or claim.");
+    L.push("Drafted by the agentic assist and subject to reviewer adoption.");
+    L.push("Synthetic data — for demonstration only. Not a real member, provider, or claim.");
     return { type: type, label: meta.label, ref: ref, body: L.join("\n") };
   }
 

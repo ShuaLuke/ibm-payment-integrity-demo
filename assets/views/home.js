@@ -67,7 +67,7 @@
       ["Recommended: Deny", denies], ["Recommended: Hold", holds]
     ]) +
       '<div class="card" style="margin-bottom:10px;display:flex;align-items:center;gap:12px;border:0.5px solid #9fe1d8"><i class="ti ti-shield-check" style="color:var(--accent-d);font-size:24px"></i>' +
-      '<div style="flex:1"><div style="font-weight:500;font-size:13px">Pre-payment triage queue</div><div style="font-size:11.5px;color:var(--text2)">' + stats.pending + ' claims scored before payment — ' + window.DP.usd(stats.atRisk) + ' at risk. Deny or hold the improper ones before the money leaves the VA.</div></div>' +
+      '<div style="flex:1"><div style="font-weight:500;font-size:13px">Pre-payment triage queue</div><div style="font-size:11.5px;color:var(--text2)">' + stats.pending + ' claims scored before payment — ' + window.DP.usd(stats.atRisk) + ' at risk. Deny or hold the improper ones before the money leaves the payer.</div></div>' +
       '<button class="btn primary" id="h-triage"><i class="ti ti-player-play"></i> Start triage</button></div>' +
       prepayList("Highest-risk pending claims", top.slice(0, 6));
   }

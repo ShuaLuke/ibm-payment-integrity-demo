@@ -22,7 +22,7 @@
         '<div style="font-size:11.5px;color:var(--text2);margin-top:6px">Service categories, reference codes, providers, networks and fee schedules feed directly into deterministic processing paths, so the appropriate benefit, pricing and coverage logic is applied consistently.</div></div>' +
         card("category", "Service categories", "how services map to pricers", tbl(["Category", "Code range", "Pricer", "Status"], sc)) +
         card("book", "Reference code sets", "editions & update cycles", tbl(["Code set", "Edition", "Update cycle"], rc)) +
-        card("affiliate", "Networks", "Community Care Network participation", tbl(["Network", "Type", "Providers", "Status"], nw)) +
+        card("affiliate", "Networks", "Network participation", tbl(["Network", "Type", "Providers", "Status"], nw)) +
         card("currency-dollar", "Fee schedules", "contracted rates & CMS schedules", tbl(["Fee schedule", "Version", "Effective"], fs)) +
         '<div style="font-size:10.5px;color:var(--text3)"><i class="ti ti-info-circle"></i> Representative configuration for the demo — read-only.</div>' +
         '</div>';

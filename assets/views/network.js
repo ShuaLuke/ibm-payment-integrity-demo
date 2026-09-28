@@ -53,8 +53,8 @@
           if (current === "all" || /^N/.test(current)) return exportAll("pdf");
           var d = netData(current), s = window.Collusion.analyze(d.focus);
           var summary = s.kind === "chain"
-            ? window.APP.esc(s.registration || "") + " — " + s.providerCount + " facilities across " + s.states.join("/") + ", shared officer " + window.APP.esc(s.officer || "") + ", " + s.sharedPct + "% shared veterans, separate TINs (hidden common ownership)."
-            : s.providerCount + " providers operating as one billing entity — shared TIN " + (s.tin || "") + ", " + s.referralCount + " referrals, " + s.sharedPct + "% shared veterans.";
+            ? window.APP.esc(s.registration || "") + " — " + s.providerCount + " facilities across " + s.states.join("/") + ", shared officer " + window.APP.esc(s.officer || "") + ", " + s.sharedPct + "% shared members, separate TINs (hidden common ownership)."
+            : s.providerCount + " providers operating as one billing entity — shared TIN " + (s.tin || "") + ", " + s.referralCount + " referrals, " + s.sharedPct + "% shared members.";
           window.EXPORT.pdf("Collusion network — " + (current === "chain" ? "residential chain" : "shared-TIN ring"),
             "<div class='card'>" + window.EXPORT.htmlEsc(summary) + "</div><h2>Providers</h2>" + window.EXPORT.tableHtml(d.pHead, d.pRows) +
             "<h2>Shared-identifier edges</h2>" + window.EXPORT.tableHtml(["Type", "Source", "Target", "Detail"], d.eRows.map(function (e) { return [e[0], e[2], e[4], e[5]]; })));
@@ -93,12 +93,12 @@
       tile("Networks detected", S.networks, "linked by ownership, TIN, agent, recruiter or address") +
       tile("Cross state lines", S.cross + ' <span style="font-size:14px;color:var(--text2);font-weight:500">· ' + S.crossPct + '%</span>', "providers in 2+ states") +
       tile("Within one state", S.inState + ' <span style="font-size:14px;color:var(--text2);font-weight:500">· ' + (100 - S.crossPct) + '%</span>', "all providers in one state") +
-      tile("Providers involved", S.facilities, S.veterans + " veterans affected") +
+      tile("Providers involved", S.facilities, S.veterans + " members affected") +
       tile("Flagged exposure", usd(S.exposure), "flagged paid + pending claims") +
       '</div>' +
       '<div class="card" style="padding:0;overflow:hidden">' +
       '<div style="padding:9px 12px;border-bottom:0.5px solid var(--border2);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">' +
-      '<div style="font-weight:500;font-size:12.5px"><i class="ti ti-chart-dots-3" style="color:var(--accent-d)"></i> Everything connected <span class="muted" style="font-weight:400;font-size:10.5px">· ' + S.networks + ' networks · ' + S.facilities + ' providers · ' + S.veterans + ' veterans · ' + window.NETWORKS.BRIDGES.length + ' cross-network links</span></div>' +
+      '<div style="font-weight:500;font-size:12.5px"><i class="ti ti-chart-dots-3" style="color:var(--accent-d)"></i> Everything connected <span class="muted" style="font-weight:400;font-size:10.5px">· ' + S.networks + ' networks · ' + S.facilities + ' providers · ' + S.veterans + ' members · ' + window.NETWORKS.BRIDGES.length + ' cross-network links</span></div>' +
       '<div style="font-size:10.5px;color:var(--text3)"><i class="ti ti-pointer"></i> Hover a hub or a red link · click a hub to open its network</div></div>' +
       '<div id="nv-map" style="position:relative;height:540px;background:var(--surface)"></div>' +
       '<div class="legend" style="margin:0;padding:8px 12px;border-top:0.5px solid var(--border2)">' + mapLegend() + '</div></div>' +
@@ -110,7 +110,7 @@
       '<div style="padding:9px 12px;border-bottom:0.5px solid var(--border2);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px"><div style="font-weight:500;font-size:12.5px"><i class="ti ti-affiliate" style="color:var(--accent-d)"></i> Networks <span class="muted" style="font-weight:400;font-size:10.5px">· click a row to open its graph</span></div>' +
       '<div style="display:flex;gap:2px;flex-wrap:wrap;background:var(--surface);border:0.5px solid var(--border);border-radius:8px;padding:2px">' + chip("geo", "", "All") + chip("geo", "cross", "Cross-state") + chip("geo", "in", "One state") + '</div>' +
       '<select class="input" id="nv-scheme" style="width:auto;font-size:12px;padding:4px 8px"><option value="">All scheme types</option>' + window.NETWORKS.SCHEME_ORDER.map(function (k) { return '<option value="' + k + '"' + (ovFilter.scheme === k ? " selected" : "") + '>' + window.NETWORKS.SCHEMES[k].label + '</option>'; }).join("") + '</select></div>' +
-      '<div style="overflow-x:auto"><table style="width:100%"><thead><tr><th>Network</th><th>Scheme</th><th>States</th><th class="right">Providers</th><th class="right">Veterans</th><th class="right">Exposure</th><th>Status</th><th class="right">Risk</th></tr></thead><tbody id="nv-body">' + rowsHtml() + '</tbody></table></div>' +
+      '<div style="overflow-x:auto"><table style="width:100%"><thead><tr><th>Network</th><th>Scheme</th><th>States</th><th class="right">Providers</th><th class="right">Members</th><th class="right">Exposure</th><th>Status</th><th class="right">Risk</th></tr></thead><tbody id="nv-body">' + rowsHtml() + '</tbody></table></div>' +
       '<div style="padding:8px 12px;font-size:10.5px;color:var(--text3);border-top:0.5px solid var(--border2)">Exposure = flagged paid + pending claims at the network\'s providers.</div></div>' +
       '</div>';
   }
@@ -119,7 +119,7 @@
   function mapLegend() {
     var dot = function (c, bg, label, r) { return '<span class="lg"><span style="display:inline-block;width:' + r + 'px;height:' + r + 'px;border-radius:50%;background:' + bg + ';border:2px solid ' + c + '"></span>' + label + '</span>'; };
     return window.NETWORKS.SCHEME_ORDER.map(function (k) { return dot(HUB_COLOR[k], "#10243b", window.NETWORKS.SCHEMES[k].bizKind, 11); }).join("") +
-      dot("#c6362f", "#fbe3e3", "Provider", 9) + dot("#378add", "#cfe3f7", "Affected veteran", 7) +
+      dot("#c6362f", "#fbe3e3", "Provider", 9) + dot("#378add", "#cfe3f7", "Affected member", 7) +
       '<span class="lg"><span style="width:18px;height:0;border-top:2px dashed #d9480f"></span>Cross-network link</span>' +
       '<span class="lg" style="color:var(--text3)">Hub size = exposure</span>';
   }
@@ -148,7 +148,7 @@
       h.fx = h.x = padX + (h.x - xs[0]) / ((xs[1] - xs[0]) || 1) * (W - padX * 2);
       h.fy = h.y = padTop + (h.y - ys[0]) / ((ys[1] - ys[0]) || 1) * (H - padTop - padBot);
     });
-    // Pass 2 starts each network's providers and veterans on their own hub
+    // Pass 2 starts each network's providers and members on their own hub
     var hubOf = {}; hubs.forEach(function (h) { hubOf[h.net] = h; });
     G.nodes.forEach(function (n) { if (n.kind !== "hub") { var h = hubOf[n.net]; n.x = h.x + (Math.random() - 0.5) * 30; n.y = h.y + (Math.random() - 0.5) * 30; } });
 
@@ -201,7 +201,7 @@
         focusNets(nets);
         var row = window.NETWORKS.list().filter(function (r) { return r.id === d.net; })[0];
         showTip(e, "<div style='color:#7fe0d6;margin-bottom:2px'>" + esc(window.NETWORKS.SCHEMES[d.scheme].label) + "</div><b>" + esc(d.name) + "</b><div style='color:#93a7bf'>" +
-          row.facilities + " providers · " + row.veterans + " veterans · " + row.states.join(", ") + "<br>" + window.DP.usd(row.exposure) + " exposure" +
+          row.facilities + " providers · " + row.veterans + " members · " + row.states.join(", ") + "<br>" + window.DP.usd(row.exposure) + " exposure" +
           (br.length ? "<br><span style='color:#ffb89a'>Linked to " + br.length + " other network" + (br.length > 1 ? "s" : "") + "</span>" : "") + "<br>Click to open its network</div>");
       })
       .on("mouseout", reset)
@@ -210,7 +210,7 @@
       .on("mouseover", function (e, d) {
         var nets = {}; nets[d.net] = 1; focusNets(nets);
         showTip(e, d.kind === "provider" ? "<div style='color:#ffb4a8;margin-bottom:2px'>Provider</div><b>" + esc(d.name) + "</b><div style='color:#93a7bf'>" + esc(d.state || "") + " · risk " + d.risk + (d.excluded ? "<br><span style='color:#ffb4a8'>On the OIG exclusion list</span>" : "") + "</div>"
-          : "<div style='color:#8fc4f2;margin-bottom:2px'>Affected veteran</div><b>" + esc(d.name) + "</b><div style='color:#93a7bf'>Billed by more than one provider in this network</div>");
+          : "<div style='color:#8fc4f2;margin-bottom:2px'>Affected member</div><b>" + esc(d.name) + "</b><div style='color:#93a7bf'>Billed by more than one provider in this network</div>");
       })
       .on("mouseout", reset);
     hit.on("mouseover", function (e, d) {
@@ -260,19 +260,19 @@
     var shared = {};
     m.net.vetLinks.forEach(function (e) { shared[e.source] = (shared[e.source] || 0) + 1; });
     var multi = Object.keys(shared).filter(function (k) { return shared[k] > 1; }).length;
-    var chips = ['<span class="tag">' + esc(sc.label) + '</span>', '<span class="tag">' + r.facilities + ' providers</span>', '<span class="tag">' + (r.crossState ? "Cross-state · " + r.states.join(" → ") : "Within " + r.states[0]) + '</span>', '<span class="tag">' + multi + ' veterans billed by 2+ providers</span>'];
+    var chips = ['<span class="tag">' + esc(sc.label) + '</span>', '<span class="tag">' + r.facilities + ' providers</span>', '<span class="tag">' + (r.crossState ? "Cross-state · " + r.states.join(" → ") : "Within " + r.states[0]) + '</span>', '<span class="tag">' + multi + ' members billed by 2+ providers</span>'];
     if (r.excluded) chips.push('<span class="tag" style="background:var(--high-bg);color:var(--high-tx)">' + r.excluded + ' OIG-excluded</span>');
     return '<div style="flex:1;background:var(--surface);border:0.5px solid var(--border);border-radius:8px;padding:10px 12px"><div style="font-weight:600;font-size:12.5px;color:var(--ink);margin-bottom:6px"><i class="ti ti-affiliate"></i> ' + esc(r.name) + '</div>' +
       '<div style="display:flex;gap:5px;flex-wrap:wrap">' + chips.join("") + '</div>' +
       '<div style="font-size:11.5px;color:var(--text2);margin-top:8px;line-height:1.5">' + usd(r.paid) + ' flagged paid + ' + usd(r.pending) + ' pending = <b>' + usd(r.exposure) + '</b> exposure · status <b>' + esc(r.status) + '</b> · risk ' + r.risk + '.</div></div>';
   }
   function exportAll(kind) {
-    var head = ["Network", "Scheme", "Type", "States", "Cross-state", "Providers", "Veterans affected", "Flagged paid", "Pending", "Exposure", "Status", "Risk"];
+    var head = ["Network", "Scheme", "Type", "States", "Cross-state", "Providers", "Members affected", "Flagged paid", "Pending", "Exposure", "Status", "Risk"];
     var rows = window.NETWORKS.list().map(function (r) { return [r.name, window.NETWORKS.SCHEMES[r.scheme].label, r.type, r.states.join("/"), r.crossState ? "Yes" : "No", r.facilities, r.veterans, r.paid, r.pending, r.exposure, r.status, r.risk]; });
     if (kind === "csv") return window.EXPORT.csv("pivot-networks", head, rows);
     if (kind === "xls") return window.EXPORT.xls("pivot-networks", "Networks", head, rows);
     var S = window.NETWORKS.stats();
-    window.EXPORT.pdf("Detected provider networks", "<div class='sub'>" + S.networks + " networks · " + S.cross + " cross-state (" + S.crossPct + "%) · " + S.facilities + " providers · " + S.veterans + " veterans affected · " + usd(S.exposure) + " flagged exposure</div>" + window.EXPORT.tableHtml(head, rows));
+    window.EXPORT.pdf("Detected provider networks", "<div class='sub'>" + S.networks + " networks · " + S.cross + " cross-state (" + S.crossPct + "%) · " + S.facilities + " providers · " + S.veterans + " members affected · " + usd(S.exposure) + " flagged exposure</div>" + window.EXPORT.tableHtml(head, rows));
   }
 
   // export data for the current scenario's collusion subgraph
@@ -283,14 +283,14 @@
     var pHead = ["ID", "Name", "NPI", "TIN", "State", "Risk", "Role"];
     var pRows = provs.map(function (p) { return [p.id, p.name, p.npi, p.tin, p.state, p.riskScore, p.role]; });
     var eHead = ["Type", "Source", "Source name", "Target", "Target name", "Detail"];
-    var eRows = net.links.map(function (e) { var pr = e.props || {}; var det = pr.tin || pr.officer || pr.registration || (pr.sharedVeterans ? pr.sharedVeterans + " shared veterans" : "") || (pr.veteranId ? "veteran " + pr.veteranId : "") || ""; return [e.type, e.source, nameOf[e.source] || e.source, e.target, nameOf[e.target] || e.target, det]; });
+    var eRows = net.links.map(function (e) { var pr = e.props || {}; var det = pr.tin || pr.officer || pr.registration || (pr.sharedVeterans ? pr.sharedVeterans + " shared members" : "") || (pr.veteranId ? "member " + pr.veteranId : "") || ""; return [e.type, e.source, nameOf[e.source] || e.source, e.target, nameOf[e.target] || e.target, det]; });
     return { focus: focus, pHead: pHead, pRows: pRows, eHead: eHead, eRows: eRows };
   }
 
   function boxesRing() {
     var s = window.Collusion.analyze("PR001");
     return '<div style="flex:1">' + window.Collusion.narrativeHtml(s) + '</div>' +
-      '<div style="flex:1;background:var(--low-bg);border:0.5px solid #bfe0c9;border-radius:8px;padding:10px 12px"><div style="display:flex;align-items:center;gap:6px;font-weight:500;font-size:12.5px;color:var(--low-tx)"><i class="ti ti-circle-check"></i>Benign by contrast</div><div style="font-size:11.5px;color:#2f5a44;margin-top:3px;line-height:1.5">Coastal Kidney Care also bills one veteran heavily (<span style="font-weight:500">36 dialysis claims</span>), but it shares no TIN, owner, referrals or patients with another provider, so it has no network to draw. High volume alone isn\'t a ring.</div></div>';
+      '<div style="flex:1;background:var(--low-bg);border:0.5px solid #bfe0c9;border-radius:8px;padding:10px 12px"><div style="display:flex;align-items:center;gap:6px;font-weight:500;font-size:12.5px;color:var(--low-tx)"><i class="ti ti-circle-check"></i>Benign by contrast</div><div style="font-size:11.5px;color:#2f5a44;margin-top:3px;line-height:1.5">Coastal Kidney Care also bills one member heavily (<span style="font-weight:500">36 dialysis claims</span>), but it shares no TIN, owner, referrals or patients with another provider, so it has no network to draw. High volume alone isn\'t a ring.</div></div>';
   }
   function boxesChain() {
     var s = window.Collusion.analyze("PR300");

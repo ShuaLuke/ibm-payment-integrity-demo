@@ -170,7 +170,7 @@
         '<div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap">' +
         envs.map(function (e, i) { var live = i === 0; return (i ? '<i class="ti ti-chevron-right" style="color:var(--text3);font-size:12px"></i>' : '') + '<span class="tag" style="background:' + (live ? "var(--med-bg)" : "#fff") + ';color:' + (live ? "var(--med-tx)" : "var(--text3)") + ';border:0.5px solid var(--border)">' + (live ? '<i class="ti ti-loader"></i> ' : '') + e + '</span>'; }).join("") +
         '</div>' +
-        '<div style="font-size:10.5px;color:var(--text2);margin-top:7px">Deploying to Dev on merge · QA / UAT / VA Change Advisory Board sign-offs required to reach production. Track it on the <b>Releases</b> tab.</div>' +
+        '<div style="font-size:10.5px;color:var(--text2);margin-top:7px">Deploying to Dev on merge · QA / UAT / Change Advisory Board sign-offs required to reach production. Track it on the <b>Releases</b> tab.</div>' +
         '<div style="margin-top:8px"><button class="disc-act" data-act="reopen" data-id="' + c.id + '" style="border:0.5px solid var(--border);background:#fff;border-radius:7px;padding:6px 11px;font-size:11.5px;cursor:pointer"><i class="ti ti-arrow-back-up"></i> Recall from pipeline</button>' +
         '<button class="disc-act" data-act="releases" style="margin-left:6px;border:0.5px solid var(--accent);background:var(--accent);color:#fff;border-radius:7px;padding:6px 11px;font-size:11.5px;cursor:pointer"><i class="ti ti-arrow-right"></i> Open Releases</button></div>' +
         '</div>';

@@ -71,7 +71,7 @@
 
       mount.innerHTML =
         '<div class="page">' +
-        '<div class="page-head"><div><div class="page-title">Releases</div><div class="page-sub">CI/CD pipeline and rule-promotion history — every change flows through controlled environments with automated gates and VA approval before production.</div></div>' +
+        '<div class="page-head"><div><div class="page-title">Releases</div><div class="page-sub">CI/CD pipeline and rule-promotion history — every change flows through controlled environments with automated gates and payer approval before production.</div></div>' +
         '<span class="tag"><i class="ti ti-git-branch"></i> dev → test → pre-prod → production</span></div>' +
 
         '<div style="display:flex;gap:6px;margin-bottom:10px">' + envCards + '</div>' +
@@ -84,7 +84,7 @@
 
         cmsReleasesHtml() + aspEffectiveHtml() +
 
-        '<div style="font-size:11px;color:var(--text2)"><i class="ti ti-info-circle"></i> Simulated pipeline for the demo. Rules and the app are version-controlled with rollback; production activation requires VA Change Advisory Board approval. Read-only view.</div>' +
+        '<div style="font-size:11px;color:var(--text2)"><i class="ti ti-info-circle"></i> Simulated pipeline for the demo. Rules and the app are version-controlled with rollback; production activation requires Change Advisory Board approval. Read-only view.</div>' +
         '</div>';
 
       // expand build logs

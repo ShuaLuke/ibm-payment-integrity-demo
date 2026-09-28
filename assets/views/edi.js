@@ -26,9 +26,9 @@
   // ~1/30 of the trailing-30-day volumes above. The timer stops itself when the
   // view is left.
   var SOURCES = [
-    { k: "clm", grp: "Transactions", name: "Community care claims", from: "CCN third-party administrators", feed: "837P / I / D", cad: "streaming", n: 2135, unit: "claims" },
-    { k: "rem", grp: "Transactions", name: "Remittance", from: "VA Financial Services Center", feed: "835", cad: "streaming", n: 1911, unit: "remits" },
-    { k: "elg", grp: "Transactions", name: "Eligibility & enrollment", from: "VA enrollment system", feed: "834 · 270/271", cad: "streaming", n: 2136, unit: "records" },
+    { k: "clm", grp: "Transactions", name: "Medical claims", from: "Clearinghouses & TPAs", feed: "837P / I / D", cad: "streaming", n: 2135, unit: "claims" },
+    { k: "rem", grp: "Transactions", name: "Remittance", from: "Payer finance system", feed: "835", cad: "streaming", n: 1911, unit: "remits" },
+    { k: "elg", grp: "Transactions", name: "Eligibility & enrollment", from: "Enrollment system", feed: "834 · 270/271", cad: "streaming", n: 2136, unit: "records" },
     { k: "npi", grp: "Reference & external", name: "Provider registry", from: "CMS NPPES", feed: "NPI", cad: "daily delta", n: 318, unit: "updates" },
     { k: "pec", grp: "Reference & external", name: "Medicare enrollment", from: "CMS PECOS", feed: "enrollment", cad: "daily delta", n: 96, unit: "changes" },
     { k: "leie", grp: "Reference & external", name: "Exclusions", from: "HHS-OIG LEIE", feed: "exclusion list", cad: "per claim", n: 2101, unit: "screened", hits: 3 },
@@ -184,7 +184,7 @@
     function otherEvent() {
       var r = Math.random(), pr = pick(provs), v = pick(vets);
       if (r < 0.35) { var x = srcOf("rem"); x.n++; x.last = Date.now(); return { src: "835", cls: "", txt: "Remittance · " + shortName(pr.name), out: "posted · " + money(80 + Math.random() * 3000) + " paid" }; }
-      if (r < 0.7) { var e = srcOf("elg"); e.n++; e.last = Date.now(); return { src: pick(["271", "834"]), cls: "", txt: "Member " + (v ? v.name : "record") + " · eligibility", out: "active · Community Care eligible" }; }
+      if (r < 0.7) { var e = srcOf("elg"); e.n++; e.last = Date.now(); return { src: pick(["271", "834"]), cls: "", txt: "Member " + (v ? v.name : "record") + " · eligibility", out: "active · eligible" }; }
       if (r < 0.85) { var np = srcOf("npi"); np.n++; np.last = Date.now(); return { src: "NPPES", cls: "", txt: shortName(pr.name) + " · NPI record", out: pick(["address updated", "taxonomy updated", "no change"]) }; }
       if (r < 0.93) { var pc = srcOf("pec"); pc.n++; pc.last = Date.now(); return { src: "PECOS", cls: "", txt: shortName(pr.name) + " · enrollment", out: "enrollment verified" }; }
       var nw = srcOf("news"); nw.n++; nw.last = Date.now(); return { src: "NEWS", cls: "", txt: "Article scanned · " + shortName(pr.name), out: "no adverse match" };

@@ -2,7 +2,7 @@
    › All networks. Two come from the core dataset (the Meridian residential chain and
    the Alamo/Rio Grande shared-TIN ring) and are computed live, so their figures match
    every other screen. The other 18 are synthetic seed networks, fictional like all
-   demo data (TINs use the 00- prefix, NPIs are not issued). Veterans are generated
+   demo data (TINs use the 00- prefix, NPIs are not issued). Members are generated
    deterministically. Exposure = flagged paid + pending claims at the network's
    providers. Attaches to window.NETWORKS. */
 (function () {
@@ -15,7 +15,7 @@
   };
   var SCHEME_ORDER = ["chain", "ring", "agent", "recruit", "shell"];
 
-  // f: [name, state, excluded?]   vets: affected veterans   paid/pending: flagged $
+  // f: [name, state, excluded?]   vets: affected members   paid/pending: flagged $
   var SEED = [
     { id: "N03", scheme: "chain", owner: "Palmetto Shoals Care Partners LLC", officer: "Diane R. Kessler", type: "Residential rehab", status: "Under review", risk: 91, vets: 9, paid: 412800, pending: 38400,
       f: [["Palmetto Shoals Recovery", "FL"], ["Sandhill Crossing Treatment", "GA"], ["Magnolia Bend Residential", "AL"], ["Cypress Hollow Recovery", "FL"], ["Red Clay Wellness House", "GA"]] },
@@ -58,13 +58,13 @@
   // Cross-network links (synthetic): the same billing agent, recruiter, officer or
   // mailing address turning up in two detected networks. Drawn on the full map.
   var BRIDGES = [
-    { a: "N14", b: "N03", type: "Paid referrals", detail: "Lighthouse Path Outreach also steers veterans to Palmetto Shoals facilities in FL and GA." },
-    { a: "N15", b: "N03", type: "Shared veterans", detail: "Three veterans recruited by Foxglove Outreach were later billed by Palmetto Shoals facilities." },
+    { a: "N14", b: "N03", type: "Paid referrals", detail: "Lighthouse Path Outreach also steers members to Palmetto Shoals facilities in FL and GA." },
+    { a: "N15", b: "N03", type: "Shared members", detail: "Three members recruited by Foxglove Outreach were later billed by Palmetto Shoals facilities." },
     { a: "N10", b: "N09", type: "Same billing agent", detail: "Allegheny Ridge Claims Services also submits claims for Delaware Valley Pain Center." },
     { a: "N12", b: "N08", type: "Same billing agent", detail: "Bayline Medical Billing also submits claims for Lakeshore Diagnostic Lab." },
     { a: "N04", b: "N05", type: "Same registered agent", detail: "Cedar Ridge Health Holdings and Bluestem Therapy Group use the same registered agent and filing address." },
     { a: "N01", b: "N18", type: "Same mailing address", detail: "Desert Bloom Behavioral (Meridian) and Painted Desert DME list the same Arizona mailing address." },
-    { a: "N19", b: "N07", type: "Shared veterans", detail: "Four veterans billed by the PO Box 9120 labs were also billed by the TIN 00-7314402 clinics." },
+    { a: "N19", b: "N07", type: "Shared members", detail: "Four members billed by the PO Box 9120 labs were also billed by the TIN 00-7314402 clinics." },
     { a: "N11", b: "N18", type: "Same billing agent", detail: "Red Mesa Revenue Partners also submits claims for Mojave Medical Supply." }
   ];
 
@@ -97,7 +97,7 @@
       chain: function (c) { return "Holding company" + (n.officer ? " · officer " + n.officer : "") + " · controls " + c; },
       ring: function (c) { return "One billing entity · " + c + " providers bill under it"; },
       agent: function (c) { return "Bills on behalf of " + c + " providers under separate TINs"; },
-      recruit: function (c) { return "Steers veterans to " + c + " providers for paid referrals"; },
+      recruit: function (c) { return "Steers members to " + c + " providers for paid referrals"; },
       shell: function (c) { return c + " providers registered to one mailing address"; }
     };
     return {
@@ -154,7 +154,7 @@
     },
     BRIDGES: BRIDGES,
     // Every network on one graph: hubs (owner / billing entity / agent / recruiter /
-    // address), their providers, the affected veterans, and cross-network links.
+    // address), their providers, the affected members, and cross-network links.
     fullGraph: function () {
       var nodes = [], links = [], seen = {};
       var add = function (n) { if (!seen[n.id]) { seen[n.id] = 1; nodes.push(n); } };

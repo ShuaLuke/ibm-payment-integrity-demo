@@ -389,7 +389,7 @@
       fields.push({ f: "claimNumber", label: "Claim #", rec: cl.claimNumber || "", type: "text" });
     }
     fields.push({ f: "providerName", label: "Provider", rec: p.name || "", type: "text" });
-    if (ve) fields.push({ f: "veteranName", label: "Veteran", rec: ve.name || "", type: "text" });
+    if (ve) fields.push({ f: "veteranName", label: "Member", rec: ve.name || "", type: "text" });
 
     var w = window.APP.getWorking(id);
     var editCount = Object.keys(w).length;
@@ -585,7 +585,7 @@
     return '<div class="card"><div style="font-weight:500;font-size:13px;margin-bottom:9px"><i class="ti ti-receipt" style="color:var(--accent-d)"></i> Remittance &amp; reconciliation <span class="muted" style="font-weight:400;font-size:11px">· 835 electronic remittance advice</span></div>' +
       '<div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center;justify-content:center;padding:8px 4px;background:var(--surface);border-radius:8px">' +
       flow("Submitted", t.submitted) + arrow + flow("− Contractual (CO-45)", t.contractual) + arrow + flow("= Allowed", t.allowed) + arrow + flow("− Patient", t.patientResp) + arrow + flow(pharm ? "= Plan paid" : "= Payer paid", t.paid, true) + '</div>' +
-      '<div style="font-size:11px;color:var(--text2);margin-top:9px;line-height:1.6"><i class="ti ti-info-circle"></i> ' + window.APP.esc(d.reconciliation) + ' Veteran cost-share is <b>$0</b> under VA Community Care.</div>' +
+      '<div style="font-size:11px;color:var(--text2);margin-top:9px;line-height:1.6"><i class="ti ti-info-circle"></i> ' + window.APP.esc(d.reconciliation) + ' Member cost-share is <b>$0</b> under this plan.</div>' +
       (d.remittance.recoverable > 0 ? '<div style="background:var(--high-bg);border:0.5px solid #f3c9c9;border-radius:7px;padding:9px 11px;font-size:11.5px;color:var(--high-tx);margin-top:9px"><i class="ti ti-flag"></i> <b>' + m(d.remittance.recoverable) + '</b> exposure on flagged lines — post-payment recovery basis is carried in the line remarks below.</div>' : '') +
       remarksHtml(d) + codeLegendHtml(d) + '</div>';
   }
@@ -1368,7 +1368,7 @@
     if (full) full.addEventListener("click", function () { window.APP.auditLog("NETWORK_VIEWED", "Claim #" + id + " · " + p.name); window.APP.state.networkScenario = s && s.kind === "chain" ? "chain" : "ring"; window.APP.nav("network"); });
   }
   function collusionLegend(s) {
-    var out = [lgDot("#10243b", "Business entity"), lgDot("#0f6e56", "Provider in this case"), lgDot(s.kind === "chain" ? "#c6362f" : "#c77d11", "Linked provider"), lgDot("#378add", "Cross-billed veteran")];
+    var out = [lgDot("#10243b", "Business entity"), lgDot("#0f6e56", "Provider in this case"), lgDot(s.kind === "chain" ? "#c6362f" : "#c77d11", "Linked provider"), lgDot("#378add", "Cross-billed member")];
     if (s.sharedTin) out.push(lgLine("#c6362f", 3, "Shared TIN"));
     if (s.sharedRegistration) out.push(lgLine("#b5730e", 2, "Same registration"));
     if (s.sharedOfficer) out.push(lgLine("#7a3aa0", 2, "Same officer"));
@@ -1823,14 +1823,14 @@
       pdf: function () {
         var ve = a.veteran, s = window.Collusion ? window.Collusion.analyze(p.id) : null;
         var body = window.EXPORT.kvHtml([
-          ["Claim", cl ? cl.claimNumber : "—"], ["Provider", p.name], ["NPI", p.npi], ["Veteran", ve ? ve.name : "—"],
+          ["Claim", cl ? cl.claimNumber : "—"], ["Provider", p.name], ["NPI", p.npi], ["Member", ve ? ve.name : "—"],
           ["Risk", a.riskScore + "/100"], ["Confidence", a.confidence + "%"], [prepay ? "At risk" : "Exposure", window.DP.usd((prepay ? a.exposurePre : a.exposurePost) || 0)],
           ["FWA type", a.fwaType], ["Status", a.status], ["Source", a.source === "Pattern Recognition" ? "ML/AI" : a.source === "Both" ? "ML/AI + Rules" : "Rules"]
         ]) +
           (a.xai ? "<h2>Why flagged (Explainable AI)</h2><div class='card'>" + window.EXPORT.htmlEsc(a.xai.summary) + "</div>" : "") +
           (cl ? "<h2>Claim line items</h2>" + window.EXPORT.tableHtml(clHead, clRows) : "") +
           ((a.rules && a.rules.length) ? "<h2>Rules fired</h2>" + window.EXPORT.tableHtml(["Code", "Rule", "Source"], a.rules.map(function (r) { return [r.code, r.name, r.source]; })) : "") +
-          (s && s.isRing ? "<h2>Collusion network</h2><div class='card'>" + window.EXPORT.htmlEsc((s.kind === "chain" ? "Residential chain — " : "Provider ring — ") + s.providerCount + " providers, " + s.sharedPct + "% shared veterans" + (s.sharedTin ? ", shared TIN " + s.tin : s.sharedRegistration ? ", shared registration " + (s.registration || "") : "") + ".") + "</div>" : "");
+          (s && s.isRing ? "<h2>Collusion network</h2><div class='card'>" + window.EXPORT.htmlEsc((s.kind === "chain" ? "Residential chain — " : "Provider ring — ") + s.providerCount + " providers, " + s.sharedPct + "% shared members" + (s.sharedTin ? ", shared TIN " + s.tin : s.sharedRegistration ? ", shared registration " + (s.registration || "") : "") + ".") + "</div>" : "");
         window.EXPORT.pdf(kind + " #" + id + " — " + a.fwaType, body);
       }
     });
@@ -1912,9 +1912,9 @@
         "Unbundling": ["Operative note", "A single diagnostic EGD is documented — one scope, one session, one anatomic site. Nothing in the note describes the separate, distinct procedural service that reporting the component code with <span class='mono'>modifier&nbsp;59</span> asserts. The two lines reflect one procedure.", "bad"],
         "Modifier misuse": ["Clinical note", "The documentation does not establish the distinct service, laterality or circumstance the appended modifier claims. No separate note, time or site supports it — removing the modifier changes the line's payable status.", "bad"],
         "Residential length-of-stay abuse": ["Admission H&P + discharge summary", "A 28-day residential stay is documented, then discharge and re-admission at an out-of-state affiliated facility days later — a chain of back-to-back sub-30-day stays. Continuous medical necessity across the transfers is <b>not</b> documented; the pattern reads as resetting the per-diem clock, not clinical need.", "bad"],
-        "Deceased patient": ["Enrollment / eligibility record", "The VA enrollment record and SSA Death Master File both list the beneficiary's date of death <b>before</b> the billed date(s) of service. No encounter could have occurred — services billed after death cannot be substantiated.", "bad"],
-        "Authorization mismatch": ["Referral / authorization review", "The encounter documents a service outside the scope of the Community Care referral on file. The authorized procedure and the rendered/billed procedure do not match, and no amended authorization is documented.", "bad"],
-        "Duplicate claim": ["Encounter note + remittance history", "The same service, same date of service, same veteran was already adjudicated and paid on a prior claim. Only one encounter is documented — this submission duplicates a paid claim.", "bad"],
+        "Deceased patient": ["Enrollment / eligibility record", "The enrollment record and SSA Death Master File both list the beneficiary's date of death <b>before</b> the billed date(s) of service. No encounter could have occurred — services billed after death cannot be substantiated.", "bad"],
+        "Authorization mismatch": ["Referral / authorization review", "The encounter documents a service outside the scope of the referral on file. The authorized procedure and the rendered/billed procedure do not match, and no amended authorization is documented.", "bad"],
+        "Duplicate claim": ["Encounter note + remittance history", "The same service, same date of service, same member was already adjudicated and paid on a prior claim. Only one encounter is documented — this submission duplicates a paid claim.", "bad"],
         "Frequency / over-utilization": ["Clinical note", "The service is billed at a frequency above the clinically expected range for the documented diagnosis, without notes justifying the added units or visits. Pull the full treatment plan before recovering — some regimens legitimately run high.", "warn"],
         "Phantom billing": ["Records request — nothing on file", "No encounter note, appointment record or provider documentation exists for the billed date(s) of service, and the facility's attendance/visit logs do not corroborate that the service was rendered. The claim is unsupported.", "bad"],
         "Billing outside specialty": ["Credentialing / scope review", "The rendering provider's taxonomy and credentialing do not include the specialty required for the billed procedure, and no supervision or appropriate-scope arrangement is documented.", "warn"],
@@ -1928,14 +1928,14 @@
     if (key === "ra" && cl) return docBox("Remittance advice (835)", "Payment of " + window.DP.usd(cl.paidAmount) + " on " + cl.dateOfService + ". Status: paid in full, no prior adjustments. This is a post-payment review — funds have already been disbursed.");
     if (key === "auth") {
       var AU = {
-        "Authorization mismatch": ["Community Care referral on file authorizes a <b>different</b> procedure than the one billed — the rendered service falls outside the authorized scope, and no amended authorization is documented.", "bad"],
+        "Authorization mismatch": ["Referral on file authorizes a <b>different</b> procedure than the one billed — the rendered service falls outside the authorized scope, and no amended authorization is documented.", "bad"],
         "Residential length-of-stay abuse": ["Referral authorized a single episode of residential treatment. The billing instead spans multiple affiliated facilities under separate authorizations — exceeding the approved scope for a continuous stay.", "warn"],
         "Deceased patient": ["The referral on file predates the beneficiary's recorded date of death; no service could be authorized or rendered after that date.", "bad"],
         "Billing outside specialty": ["No authorization on file establishes the rendering provider's scope for the billed specialty procedure.", "warn"]
       };
       var au = AU[a.fwaType];
       if (au) return docBox("Authorization / referral", au[0], au[1]);
-      return docBox("Authorization / referral", "Community Care referral on file for the billed service, valid through 2025. Authorized scope is being validated against the billed procedure(s).");
+      return docBox("Authorization / referral", "Referral on file for the billed service, valid through 2025. Authorized scope is being validated against the billed procedure(s).");
     }
     return docBox("Document", "No preview available.");
   }

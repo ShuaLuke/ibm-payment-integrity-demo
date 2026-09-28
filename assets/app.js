@@ -1,4 +1,4 @@
-/* PIVOT app shell — router, state, audit trail, decision/case-flow. window.APP */
+/* App shell — router, state, audit trail, decision/case-flow. window.APP */
 (function () {
   var mount;
   var APP = {
@@ -125,7 +125,7 @@
     // ---- structured decision reasons ----
     // Every decision carries a coded reason (the dropdown) AND a free-text
     // justification. The reason is what reports and appeals key off; the
-    // justification is the analyst's narrative. Codes mirror VA denial-reason
+    // justification is the analyst's narrative. Codes mirror payer denial-reason
     // families rather than free text so outcomes stay countable.
     REASONS: {
       confirm: [
@@ -138,7 +138,7 @@
         { c: "DUP-01", t: "Duplicate of a previously adjudicated claim" },
         { c: "FRQ-01", t: "Frequency exceeds clinically supported limits" },
         { c: "AUT-01", t: "No authorization on file for the billed service" },
-        { c: "PRC-01", t: "Billed above the CMS/VA fee-schedule allowance" }
+        { c: "PRC-01", t: "Billed above the CMS/payer fee-schedule allowance" }
       ],
       dismiss: [
         { c: "FP-01", t: "Documentation supports the service as billed" },
@@ -154,7 +154,7 @@
         { c: "ESC-03", t: "Suspected phantom billing / services not rendered" },
         { c: "ESC-04", t: "Potential kickback or self-referral arrangement" },
         { c: "ESC-05", t: "Beneficiary identity concern" },
-        { c: "ESC-06", t: "Recommend referral to VA-OIG" }
+        { c: "ESC-06", t: "Recommend referral to OIG" }
       ],
       pay: [
         { c: "PAY-01", t: "Claim is clean — documentation and coding support payment" },
@@ -175,7 +175,7 @@
         { c: "COD-03", t: "Procedure/modifier pairing invalid per NCCI edits" },
         { c: "DUP-01", t: "Duplicate of a previously adjudicated claim" },
         { c: "AUT-01", t: "No authorization on file for the billed service" },
-        { c: "PRC-01", t: "Billed above the CMS/VA fee-schedule allowance" }
+        { c: "PRC-01", t: "Billed above the CMS/payer fee-schedule allowance" }
       ]
     },
     reasonsFor: function (outcome) { return APP.REASONS[outcome] || []; },
@@ -410,7 +410,7 @@
     CLOSE_REASONS: [
       { c: "CL-01", t: "Recovery completed — funds recouped" },
       { c: "CL-02", t: "Confirmed improper payment — referred for recoupment" },
-      { c: "CL-03", t: "Referred to VA-OIG / law enforcement" },
+      { c: "CL-03", t: "Referred to OIG / law enforcement" },
       { c: "CL-04", t: "Provider education issued — no recovery pursued" },
       { c: "CL-05", t: "Unsubstantiated — no improper payment found" },
       { c: "CL-06", t: "Below the recovery threshold — not cost-effective to pursue" },
@@ -419,7 +419,7 @@
     ],
     closeReasonText: function (code) { var r = APP.CLOSE_REASONS.find(function (x) { return x.c === code; }); return r ? r.t : null; },
     REFERRAL_TARGETS: [
-      { c: "oig", l: "VA Office of Inspector General" },
+      { c: "oig", l: "Office of Inspector General" },
       { c: "doj", l: "Department of Justice / law enforcement" },
       { c: "recoupment", l: "Recoupment / debt management" },
       { c: "program-integrity", l: "Program Integrity review board" }
@@ -445,7 +445,7 @@
       if (APP.state.closedCases) delete APP.state.closedCases[pid];
       APP.auditLog("CASE_REOPENED", "Case " + pid + " reopened by " + (APP.ROLES[APP.state.role] || {}).name);
     },
-    // Referral out of PIVOT — the terminal path beyond recovery. Supervisor-only.
+    // Referral out of the system — the terminal path beyond recovery. Supervisor-only.
     referralFor: function (pid) { return (APP.state.referrals || {})[pid] || null; },
     referCase: function (pid, target, note) {
       if (!APP.canReferCase()) { APP.auditLog("CASE_REFER_DENIED", "Case " + pid + " · referral attempted without supervisor authority"); return null; }
@@ -498,7 +498,7 @@
         rows.push({
           ts: new Date(a.createdDate + "T08:00:00"), kind: "origin", action: "LEAD_CREATED",
           text: "Lead #" + id + " created · " + (window.DP.sourceOf(a) || a.source) + (a.fwaType ? " · " + a.fwaType : ""),
-          user: a.createdBy || (a.manual ? "Analyst" : "PIVOT detection")
+          user: a.createdBy || (a.manual ? "Analyst" : "Automated detection")
         });
       }
       return rows.sort(function (x, y) { return y.ts - x.ts; });
@@ -708,10 +708,10 @@
     // A few manual-origin leads so the "not everything is data-driven" story shows out of the box.
     seedManualLeads: function () {
       [
-        { id: "M0007", providerId: "PR205", fwaType: "Phantom billing", src: "Hotline / tip", risk: 74, exp: 8400, by: "OIG Hotline intake", note: "Whistleblower tip: a home-health aide reports visits billed for a veteran who was hospitalized on the service dates. Manual lead — pending records pull." },
-        { id: "M0008", providerId: "PR003", fwaType: "Upcoding", src: "Email", risk: 63, exp: 5200, by: "VISN clinical reviewer", note: "Emailed in by a VISN clinical reviewer who noticed consistent level-5 E/M on routine follow-ups. Adjudicator entered it manually — not model-flagged." },
-        { id: "M0009", providerId: "PR002", fwaType: "Kickback / self-referral", src: "OIG", risk: 81, exp: 12600, by: "VA-OIG", note: "OIG case referral tied to the shared-TIN ring; potential inducement arrangement. Data mining did not surface this — an investigative referral." },
-        { id: "M0010", providerId: "PR206", fwaType: "Duplicate billing", src: "Phone / call", risk: 58, exp: 3900, by: "Provider-relations call line", note: "Phoned in by a beneficiary who was balance-billed for a service the VA already paid. Adjudicator took the call and entered the lead manually." }
+        { id: "M0007", providerId: "PR205", fwaType: "Phantom billing", src: "Hotline / tip", risk: 74, exp: 8400, by: "OIG Hotline intake", note: "Whistleblower tip: a home-health aide reports visits billed for a member who was hospitalized on the service dates. Manual lead — pending records pull." },
+        { id: "M0008", providerId: "PR003", fwaType: "Upcoding", src: "Email", risk: 63, exp: 5200, by: "Regional clinical reviewer", note: "Emailed in by a regional clinical reviewer who noticed consistent level-5 E/M on routine follow-ups. Adjudicator entered it manually — not model-flagged." },
+        { id: "M0009", providerId: "PR002", fwaType: "Kickback / self-referral", src: "OIG", risk: 81, exp: 12600, by: "OIG", note: "OIG case referral tied to the shared-TIN ring; potential inducement arrangement. Data mining did not surface this — an investigative referral." },
+        { id: "M0010", providerId: "PR206", fwaType: "Duplicate billing", src: "Phone / call", risk: 58, exp: 3900, by: "Provider-relations call line", note: "Phoned in by a beneficiary who was balance-billed for a service the plan already paid. Adjudicator took the call and entered the lead manually." }
       ].forEach(function (s) {
         if (!window.DP.getProvider(s.providerId)) return;
         if (window.DP.raw.allegations.some(function (x) { return x.id === s.id; })) return;
@@ -862,7 +862,7 @@
         mk(320, "Karen Boyd", "Supervisor", "Agree it's systemic. Before we recover, confirm the linked-diagnosis complexity is genuinely low — attach the med-record excerpt to the case.")
       ];
       APP.state.comments["20544"] = [
-        mk(210, "Devon Carter", "Analyst", "Same 7 veterans cycle AZ→CA→NV in <30-day stays. This is the holding-company chain, not a one-off — flag the business too.")
+        mk(210, "Devon Carter", "Analyst", "Same 7 members cycle AZ→CA→NV in <30-day stays. This is the holding-company chain, not a one-off — flag the business too.")
       ];
     }
   };

@@ -57,12 +57,12 @@
     },
 
     // ---- subject of investigation (Round 6 Phase B) ----
-    // Who/what is under review on a lead: the Provider, the Beneficiary (veteran), or
+    // Who/what is under review on a lead: the Provider, the Beneficiary (member), or
     // the Pharmacy. Derived from an explicit subjectType on the lead, defaulting to
     // Provider (every data-driven lead today is provider-subject).
     SUBJECT_TYPES: {
       Provider: { label: "Provider", icon: "building-hospital", tone: "asg", desc: "The billing or rendering provider is the subject of the review." },
-      Beneficiary: { label: "Beneficiary", icon: "user-heart", tone: "esc", desc: "The veteran / beneficiary is the subject — identity, eligibility or utilization pattern." },
+      Beneficiary: { label: "Beneficiary", icon: "user-heart", tone: "esc", desc: "The member / beneficiary is the subject — identity, eligibility or utilization pattern." },
       Pharmacy: { label: "Pharmacy", icon: "prescription", tone: "rev", desc: "The dispensing pharmacy is the subject — NCPDP / NDC prescription claims." }
     },
     subjectTypeOf: function (a) { return (a && a.subjectType && this.SUBJECT_TYPES[a.subjectType]) ? a.subjectType : "Provider"; },
@@ -72,8 +72,8 @@
       if (!a) return null;
       var provider = providers[a.providerId] || null;
       var claim = a.claimId ? claims[a.claimId] : null;
-      // beneficiary-subject leads carry the veteran directly (no single claim); fall
-      // back to the claim's veteran for provider/pharmacy leads.
+      // beneficiary-subject leads carry the member directly (no single claim); fall
+      // back to the claim's member for provider/pharmacy leads.
       var veteran = (claim ? veterans[claim.veteranId] : null) || (a.subjectVeteranId ? veterans[a.subjectVeteranId] : null) || null;
       return Object.assign({}, a, {
         provider: provider, claim: claim, veteran: veteran, subjectType: this.subjectTypeOf(a),
@@ -120,7 +120,7 @@
     // appended so each dimension value has real coverage (exclusion, anti-kickback,
     // phantom billing, DME, beneficiary have no firing rule in the seed data).
     RULE_DIMENSIONS: [
-      { key: "regulatorySource", label: "Regulatory source", values: ["CMS NCCI edits", "CMS payment rules", "VA CCN policy", "False Claims Act", "Anti-Kickback Statute", "OIG advisories"] },
+      { key: "regulatorySource", label: "Regulatory source", values: ["CMS NCCI edits", "CMS payment rules", "Payer policy", "False Claims Act", "Anti-Kickback Statute", "OIG advisories"] },
       { key: "entityType", label: "Entity type", values: ["Provider", "DME supplier", "Pharmacy", "Beneficiary"] },
       { key: "fraudType", label: "Fraud type", values: ["Upcoding", "Unbundling", "Phantom billing", "Medically unnecessary", "Duplicate billing", "Exclusion violations", "Kickback / self-referral", "Authorization / coverage", "Overpayment / pricing", "Workflow"] },
       { key: "detectionLevel", label: "Detection level", values: ["Claim-level", "Provider-pattern", "Network-level"] },
@@ -132,22 +132,22 @@
       rule_mue: { regulatorySource: "CMS NCCI edits", entityType: "Provider", fraudType: "Medically unnecessary", detectionLevel: "Claim-level", severity: "Medium" },
       rule_mod59: { regulatorySource: "CMS NCCI edits", entityType: "Provider", fraudType: "Unbundling", detectionLevel: "Provider-pattern", severity: "High" },
       rule_mppr: { regulatorySource: "CMS payment rules", entityType: "Provider", fraudType: "Overpayment / pricing", detectionLevel: "Claim-level", severity: "Low" },
-      rule_fee: { regulatorySource: "VA CCN policy", entityType: "Provider", fraudType: "Overpayment / pricing", detectionLevel: "Claim-level", severity: "Medium" },
-      rule_dup: { regulatorySource: "VA CCN policy", entityType: "Provider", fraudType: "Duplicate billing", detectionLevel: "Claim-level", severity: "High" },
-      rule_auth: { regulatorySource: "VA CCN policy", entityType: "Provider", fraudType: "Authorization / coverage", detectionLevel: "Claim-level", severity: "Medium" },
-      rule_payreport: { regulatorySource: "VA CCN policy", entityType: "Provider", fraudType: "Workflow", detectionLevel: "Claim-level", severity: "Low" },
-      rule_rx_nondispense: { regulatorySource: "VA CCN policy", entityType: "Pharmacy", fraudType: "Phantom billing", detectionLevel: "Provider-pattern", severity: "High" },
-      rule_ben_identity: { regulatorySource: "VA CCN policy", entityType: "Beneficiary", fraudType: "Duplicate billing", detectionLevel: "Network-level", severity: "High" }
+      rule_fee: { regulatorySource: "Payer policy", entityType: "Provider", fraudType: "Overpayment / pricing", detectionLevel: "Claim-level", severity: "Medium" },
+      rule_dup: { regulatorySource: "Payer policy", entityType: "Provider", fraudType: "Duplicate billing", detectionLevel: "Claim-level", severity: "High" },
+      rule_auth: { regulatorySource: "Payer policy", entityType: "Provider", fraudType: "Authorization / coverage", detectionLevel: "Claim-level", severity: "Medium" },
+      rule_payreport: { regulatorySource: "Payer policy", entityType: "Provider", fraudType: "Workflow", detectionLevel: "Claim-level", severity: "Low" },
+      rule_rx_nondispense: { regulatorySource: "Payer policy", entityType: "Pharmacy", fraudType: "Phantom billing", detectionLevel: "Provider-pattern", severity: "High" },
+      rule_ben_identity: { regulatorySource: "Payer policy", entityType: "Beneficiary", fraudType: "Duplicate billing", detectionLevel: "Network-level", severity: "High" }
     },
     // catalog-only rules that broaden coverage across every dimension
     RULE_CATALOG_EXTRA: [
       { id: "rule_em_level", code: "EM-LEVEL", name: "E/M level validation", source: "CMS payment rules", category: "Coding", description: "Evaluation & management level billed exceeds the documented history/exam/decision-making and the provider's peer-group distribution.", version: "2.1", effectiveDate: "2025-01-01", environment: "Production", regulatorySource: "CMS payment rules", entityType: "Provider", fraudType: "Upcoding", detectionLevel: "Provider-pattern", severity: "High" },
       { id: "rule_phantom", code: "SVC-RENDERED", name: "Services-not-rendered screen", source: "False Claims Act", category: "Integrity", description: "Billed service has no corroborating encounter, attendance or delivery record for the date of service.", version: "1.3", effectiveDate: "2024-11-01", environment: "Production", regulatorySource: "False Claims Act", entityType: "Provider", fraudType: "Phantom billing", detectionLevel: "Claim-level", severity: "Critical" },
-      { id: "rule_mednec", code: "MED-NEC", name: "Medical-necessity / level-of-care", source: "VA CCN policy", category: "Coverage", description: "Level of care or length of stay exceeds evidence-based clinical criteria for the documented condition.", version: "1.6", effectiveDate: "2024-12-01", environment: "Production", regulatorySource: "VA CCN policy", entityType: "Provider", fraudType: "Medically unnecessary", detectionLevel: "Provider-pattern", severity: "High" },
+      { id: "rule_mednec", code: "MED-NEC", name: "Medical-necessity / level-of-care", source: "Payer policy", category: "Coverage", description: "Level of care or length of stay exceeds evidence-based clinical criteria for the documented condition.", version: "1.6", effectiveDate: "2024-12-01", environment: "Production", regulatorySource: "Payer policy", entityType: "Provider", fraudType: "Medically unnecessary", detectionLevel: "Provider-pattern", severity: "High" },
       { id: "rule_excl", code: "EXCL-LEIE", name: "OIG LEIE exclusion screening", source: "OIG advisories", category: "Integrity", description: "Rendering or billing provider (or ordering physician) appears on the OIG List of Excluded Individuals/Entities — claims paid during exclusion are recoverable in full.", version: "2.0", effectiveDate: "2025-01-01", environment: "Production", regulatorySource: "OIG advisories", entityType: "Provider", fraudType: "Exclusion violations", detectionLevel: "Provider-pattern", severity: "Critical" },
       { id: "rule_aks", code: "AKS-STARK", name: "Anti-kickback / self-referral", source: "Anti-Kickback Statute", category: "Integrity", description: "Referral or financial-arrangement pattern between linked entities indicates a prohibited inducement or self-referral.", version: "1.1", effectiveDate: "2024-10-15", environment: "Production", regulatorySource: "Anti-Kickback Statute", entityType: "Provider", fraudType: "Kickback / self-referral", detectionLevel: "Network-level", severity: "Critical" },
-      { id: "rule_dme", code: "DME-NEC", name: "DME medical necessity & delivery", source: "VA CCN policy", category: "Coverage", description: "Durable medical equipment billed without a supporting order, proof of delivery, or documented medical necessity.", version: "1.2", effectiveDate: "2024-09-15", environment: "Production", regulatorySource: "VA CCN policy", entityType: "DME supplier", fraudType: "Medically unnecessary", detectionLevel: "Claim-level", severity: "Medium" },
-      { id: "rule_benelig", code: "BEN-ELIG", name: "Beneficiary eligibility & identity", source: "VA CCN policy", category: "Coverage", description: "Service billed for a date the beneficiary was ineligible, deceased, or where identity could not be verified.", version: "1.0", effectiveDate: "2025-02-01", environment: "Production", regulatorySource: "VA CCN policy", entityType: "Beneficiary", fraudType: "Phantom billing", detectionLevel: "Claim-level", severity: "High" },
+      { id: "rule_dme", code: "DME-NEC", name: "DME medical necessity & delivery", source: "Payer policy", category: "Coverage", description: "Durable medical equipment billed without a supporting order, proof of delivery, or documented medical necessity.", version: "1.2", effectiveDate: "2024-09-15", environment: "Production", regulatorySource: "Payer policy", entityType: "DME supplier", fraudType: "Medically unnecessary", detectionLevel: "Claim-level", severity: "Medium" },
+      { id: "rule_benelig", code: "BEN-ELIG", name: "Beneficiary eligibility & identity", source: "Payer policy", category: "Coverage", description: "Service billed for a date the beneficiary was ineligible, deceased, or where identity could not be verified.", version: "1.0", effectiveDate: "2025-02-01", environment: "Production", regulatorySource: "Payer policy", entityType: "Beneficiary", fraudType: "Phantom billing", detectionLevel: "Claim-level", severity: "High" },
       { id: "rule_hh_noa", code: "HH-NOA", name: "Home Health Notice of Admission", source: "CMS payment rules", category: "Coding", description: "Home health period billed without a timely-filed Notice of Admission — the NOA must post within 5 calendar days of the start of care or the period incurs a per-day payment reduction.", version: "1.1", effectiveDate: "2025-01-01", environment: "Production", regulatorySource: "CMS payment rules", entityType: "Provider", fraudType: "Workflow", detectionLevel: "Claim-level", severity: "Medium", configLevel: "Contract — Home Health program (from the template default)" },
       { id: "rule_dup_prof", code: "DUP-PROF", name: "Possible duplicate professional claim edit", source: "CMS payment rules", category: "Duplicate", description: "A professional (837P) line matches a previously adjudicated line on rendering provider, beneficiary, date of service and procedure/modifier — a suspected duplicate held for review before a second payment.", version: "1.4", effectiveDate: "2024-12-01", environment: "Production", regulatorySource: "CMS payment rules", entityType: "Provider", fraudType: "Duplicate billing", detectionLevel: "Claim-level", severity: "Medium", configLevel: "Template — all programs" },
       { id: "rule_ncd", code: "NCD-MEDNEC", name: "NCD medical-necessity edit", source: "CMS payment rules", category: "Coverage", description: "Service billed against a CMS National Coverage Determination without a covered indication — the diagnoses do not meet the NCD's medical-necessity criteria for the procedure.", version: "1.2", effectiveDate: "2024-10-01", environment: "Production", regulatorySource: "CMS payment rules", entityType: "Provider", fraudType: "Medically unnecessary", detectionLevel: "Claim-level", severity: "Medium", configLevel: "Template — national; LCD overrides per MAC jurisdiction" }
@@ -292,7 +292,7 @@
           { field: "Member ID (subscriber)", source: "837 · 2010BA · NM1*IL / NCPDP 302-C2", example: "MBR-…" },
           { field: "Billing provider NPI", source: "837 · 2010AA · NM1*85", example: "multiple" },
           { field: "Date / place of service", source: "837 · 2400 · DTP / CLM05", example: "overlapping · TX·AZ·NM" },
-          { field: "Enrollment / eligibility record", source: "External reference · VA enrollment", example: "single beneficiary" }
+          { field: "Enrollment / eligibility record", source: "External reference · enrollment", example: "single beneficiary" }
         ],
         output: { signal: "flag + score", emits: "BENEFICIARY_IDENTITY_MISUSE", disposition: "Investigate identity misuse / card sharing across the involved providers", downstream: "Lead (Beneficiary subject) · network review" }
       },
@@ -515,7 +515,7 @@
           fraudType: "Identity / eligibility", severity: "Critical", confidence: 79, status: "under-review",
           reviewer: "Dana Whitmore", discoveredAt: "2026-07-26",
           sourcePattern: { modelId: "model_los", model: "Beneficiary identity graph", type: "Anomaly Detection",
-            finding: "A single member ID appears on claims from ≥ 6 distinct providers within a 21-day window across ≥ 3 states — a velocity/geography pattern inconsistent with one veteran's care." },
+            finding: "A single member ID appears on claims from ≥ 6 distinct providers within a 21-day window across ≥ 3 states — a velocity/geography pattern inconsistent with one member's care." },
           logic: {
             summary: "When one member ID is billed by an improbable number of distinct providers across multiple states in a short window, route the beneficiary's claims to identity/eligibility review before further payment.",
             criteria: [
@@ -603,7 +603,7 @@
     },
 
     // ---- AI model registry (Element 3.1.i/ii) ------------------------------
-    // The models behind PIVOT's analytics, as a governed catalog: type, version,
+    // The models behind the analytics, as a governed catalog: type, version,
     // status, the healthcare task each performs, how it was trained, its feature
     // DRIVER TABLE (each input + the calculation methodology behind it), the data
     // period it learned from, and its performance. Superset of getModels() — the
@@ -764,7 +764,7 @@
     },
 
     // ---- Code libraries (Element 1.1.iv / 1.2) -----------------------------
-    // The reference code sets PIVOT reads a claim against — each with its code
+    // The reference code sets the system reads a claim against — each with its code
     // system, edition, update cycle, effective date, an approximate published
     // size, and sample entries. Entries reuse the maps already in the DP (ICD10,
     // ICD10PCS, CARC/RARC, modifiers) so nothing is duplicated or regenerated.
@@ -850,10 +850,10 @@
       return {
         selectionFactors: [
           "Date of service (selects the effective fee schedule / pricer version)",
-          "Provider & facility attributes (type, specialty, CCN participation)",
+          "Provider & facility attributes (type, specialty, network participation)",
           "Geographic locality / CBSA wage index",
           "Site of service (facility vs non-facility)",
-          "Applicable fee schedule or contracted rate (CMAC)"
+          "Applicable fee schedule or contracted rate"
         ],
         methodologies: [
           M("IPPS — MS-DRG", "837I inpatient", "MS-DRG relative weight × wage-adjusted base + capital + DSH + IME", "active", "Acute inpatient prospective payment."),
@@ -935,12 +935,12 @@
           { set: "NCCI edits", edition: "v31.1", cycle: "Quarterly" }
         ],
         networks: [
-          { name: "VA Community Care Network — Region 1", type: "In-network", providers: "42,180", status: "Active" },
-          { name: "VA Community Care Network — Region 2", type: "In-network", providers: "38,905", status: "Active" },
+          { name: "Health Plan Network — Region 1", type: "In-network", providers: "42,180", status: "Active" },
+          { name: "Health Plan Network — Region 2", type: "In-network", providers: "38,905", status: "Active" },
           { name: "Direct-care referral network", type: "In-network", providers: "5,120", status: "Active" }
         ],
         feeSchedules: [
-          { name: "CMAC (VA CCN allowance)", version: "2025 · v3.1", effective: "2025-01-15" },
+          { name: "Payer contracted allowance", version: "2025 · v3.1", effective: "2025-01-15" },
           { name: "MPFS locality 05", version: "CY2025", effective: "2025-01-01" },
           { name: "OPPS APC weights", version: "CY2025", effective: "2025-01-01" },
           { name: "ASP drug pricing", version: "2026 Q3", effective: "2026-07-01" }
@@ -956,11 +956,11 @@
       });
       var seed = 0; for (var i = 0; i < vid.length; i++) seed = (seed * 31 + vid.charCodeAt(i)) >>> 0;
       var rnd = function () { seed = (seed * 1103515245 + 12345) >>> 0; return seed / 4294967296; };
-      var teams = ["PACT Team Gold — Audie L. Murphy VAMC", "PACT Team Blue — Kerrville VA Clinic", "PACT Team Green — Austin VA Clinic"];
+      var teams = ["Care Team Gold — Northside Medical Center", "Care Team Blue — Hill Country Clinic", "Care Team Green — Austin Primary Care"];
       return {
         profile: { name: ve.name, memberId: ve.memberId, dob: ve.dob, sex: ve.sex, city: ve.city, state: ve.state, enrollment: "Enrolled · Priority Group 3" },
         pact: { team: teams[Math.floor(rnd() * teams.length)], pcp: ["Dr. A. Morgan", "Dr. L. Chen", "Dr. R. Patel"][Math.floor(rnd() * 3)], rn: "RN Case Manager on file" },
-        lineOfBusiness: "VA Community Care (VACCN)",
+        lineOfBusiness: "Health Plan (HPN)",
         claims: mClaims,
         priorAuths: [
           { id: "A" + (10000 + Math.floor(rnd() * 89999)), service: "Outpatient specialty referral", status: "Approved", valid: "2025-01-01 – 2025-12-31" },
@@ -1007,7 +1007,7 @@
           env("dev", "Development", "v2.7.0-rc3", "R2025.07", "2026-07-22 08:14", "Auto-deploy on merge", "healthy"),
           env("test", "Test / QA", "v2.7.0-rc2", "R2025.07", "2026-07-21 16:02", "QA sign-off", "healthy"),
           env("preprod", "Pre-prod / UAT", "v2.6.4", "R2025.06", "2026-07-18 11:30", "UAT sign-off", "healthy"),
-          env("prod", "Production", "v2.6.3", "R2025.06", "2026-07-15 09:05", "VA Change Advisory Board", "healthy")
+          env("prod", "Production", "v2.6.3", "R2025.06", "2026-07-15 09:05", "Change Advisory Board", "healthy")
         ],
         builds: [
           {
@@ -1067,13 +1067,13 @@
             { env: "dev", version: "v2.1", at: "2026-06-20 10:02", approver: "Auto (merge)", status: "promoted" },
             { env: "test", version: "v2.1", at: "2026-06-24 14:11", approver: "Priya Nair (QA)", status: "promoted" },
             { env: "preprod", version: "v2.1", at: "2026-06-28 09:40", approver: "Dana Whitmore (UAT)", status: "promoted" },
-            { env: "prod", version: "v2.1", at: "2026-07-01 09:05", approver: "VA CAB — Karen Boyd", status: "live" }
+            { env: "prod", version: "v2.1", at: "2026-07-01 09:05", approver: "CAB — Karen Boyd", status: "live" }
           ] },
           { code: "NCCI-PTP", name: "NCCI PTP edit set", version: "v31.1", steps: [
             { env: "dev", version: "v31.1", at: "2026-06-30 08:00", approver: "Auto (quarterly load)", status: "promoted" },
             { env: "test", version: "v31.1", at: "2026-07-02 13:20", approver: "Priya Nair (QA)", status: "promoted" },
             { env: "preprod", version: "v31.1", at: "2026-07-05 10:15", approver: "Dana Whitmore (UAT)", status: "promoted" },
-            { env: "prod", version: "v31.1", at: "2026-07-08 09:00", approver: "VA CAB — Karen Boyd", status: "live" }
+            { env: "prod", version: "v31.1", at: "2026-07-08 09:00", approver: "CAB — Karen Boyd", status: "live" }
           ] },
           { code: "RX-NONDISP", name: "Prescription non-dispensing / DAW screen", version: "v1.0", steps: [
             { env: "dev", version: "v1.0", at: "2026-07-19 11:00", approver: "Auto (merge)", status: "promoted" },
@@ -1085,13 +1085,13 @@
             { env: "dev", version: "v1.6", at: "2026-06-15 09:30", approver: "Auto (merge)", status: "promoted" },
             { env: "test", version: "v1.6", at: "2026-06-18 14:00", approver: "Priya Nair (QA)", status: "promoted" },
             { env: "preprod", version: "v1.6", at: "2026-06-22 10:00", approver: "Dana Whitmore (UAT)", status: "promoted" },
-            { env: "prod", version: "v1.6", at: "2026-06-25 09:05", approver: "VA CAB — Karen Boyd", status: "live" }
+            { env: "prod", version: "v1.6", at: "2026-06-25 09:05", approver: "CAB — Karen Boyd", status: "live" }
           ] },
           { code: "EXCL-LEIE", name: "OIG LEIE exclusion screening", version: "v2.0", steps: [
             { env: "dev", version: "v2.0", at: "2026-06-27 08:10", approver: "Auto (monthly LEIE load)", status: "promoted" },
             { env: "test", version: "v2.0", at: "2026-06-29 13:00", approver: "Priya Nair (QA)", status: "promoted" },
             { env: "preprod", version: "v2.0", at: "2026-07-01 10:30", approver: "Dana Whitmore (UAT)", status: "promoted" },
-            { env: "prod", version: "v2.0", at: "2026-07-03 09:00", approver: "VA CAB — Karen Boyd", status: "live" }
+            { env: "prod", version: "v2.0", at: "2026-07-03 09:00", approver: "CAB — Karen Boyd", status: "live" }
           ] }
         ]
       };
@@ -1412,7 +1412,7 @@
 
     // ---- collusion network: providers connected to `id` by shared identifiers ----
     // Traverses SHARES_TIN / SHARES_OFFICER / SHARES_REGISTRATION / REFERRED_TO /
-    // SHARES_PATIENT_WITH (provider↔provider) plus TREATED_BY (veteran→provider).
+    // SHARES_PATIENT_WITH (provider↔provider) plus TREATED_BY (member→provider).
     getCollusionNetwork: function (id) {
       var provEdge = { SHARES_TIN: 1, SHARES_OFFICER: 1, SHARES_REGISTRATION: 1, REFERRED_TO: 1, SHARES_PATIENT_WITH: 1 };
       var E = D.graph.edges, adj = {};
@@ -1454,13 +1454,13 @@
       var refName = Object.keys(rp)[Math.floor(rnd() * 4)];
       return {
         transaction: { setId: "837", implementationGuide: inst ? "005010X223A2 (Institutional)" : "005010X222A1 (Professional)", purpose: "CH — Chargeable", controlNumber: "0" + (1001 + Math.floor(rnd() * 8999)) },
-        submitter: { name: "VA Community Care Network", id: "VACCN01" },
-        receiver: { name: "VHA Payment Integrity", id: "VHAPI" },
+        submitter: { name: "Health Plan Network", id: "HPN01" },
+        receiver: { name: "Payment Integrity Unit", id: "PIU" },
         billingProvider: { loop: "2010AA · NM1*85", npi: p.npi, name: p.name, taxIdType: "EI", taxId: p.tin, taxonomy: p.taxonomyCode || "—", address: (p.city || "") + ", " + (p.state || "") },
         renderingProvider: { loop: "2310B · NM1*82", npi: npi(), name: p.name },
         referringProvider: { loop: "2310A · NM1*DN", npi: npi(), name: refName },
         subscriber: { loop: "2010BA · NM1*IL", memberId: ve.memberId || "—", name: ve.name || "—", dob: ve.dob || "—", gender: ve.sex || "—", relationship: "18 — Self", responsibility: "P — Primary" },
-        payer: { loop: "2010BB · NM1*PR", name: "VA CCN", id: "VACCN", claimControlNumber: "VACCN" + (1000000 + Math.floor(rnd() * 8999999)) },
+        payer: { loop: "2010BB · NM1*PR", name: "HPN", id: "HPN", claimControlNumber: "HPN" + (1000000 + Math.floor(rnd() * 8999999)) },
         claim: {
           loop: "2300 · CLM", patientControlNumber: cl.claimNumber, totalClaimCharge: cl.billedAmount,
           placeOfService: pos + " — " + posLabel, facilityQualifier: inst ? "A — Institutional" : "B — Professional",
@@ -1578,11 +1578,11 @@
           ]
         },
         {
-          name: "VA fee schedule / CMAC allowance", authority: "VA CCN", current: { version: "v3.1", effective: "2025-01-15", value: "CMAC table 2025" },
-          note: "VA Community Care allowance table used where it governs over MPFS.",
+          name: "Payer fee schedule / contracted allowance", authority: "Payer contract", current: { version: "v3.1", effective: "2025-01-15", value: "Fee table 2025" },
+          note: "Payer contracted allowance table used where it governs over MPFS.",
           history: [
-            { version: "v3.0", effective: "2024-07-01", value: "CMAC table 2024 H2", change: "Mid-year CMAC refresh" },
-            { version: "v2.4", effective: "2024-01-01", value: "CMAC table 2024 H1", change: "Annual CMAC update" }
+            { version: "v3.0", effective: "2024-07-01", value: "Fee table 2024 H2", change: "Mid-year fee-table refresh" },
+            { version: "v2.4", effective: "2024-01-01", value: "Fee table 2024 H1", change: "Annual fee-table update" }
           ]
         }
       ];
@@ -1602,7 +1602,7 @@
       return {
         fax: "+1 (" + area + ") 555-01" + last2,
         email: "records@" + slug + ".example.com",
-        portal: "VA Provider Portal · " + (p.npi || pid),
+        portal: "Provider Portal · " + (p.npi || pid),
         attention: "Health Information Management / Release of Information"
       };
     },
@@ -2041,7 +2041,7 @@
     // The remittance reconciles to the claim's existing paidAmount by construction:
     //   submitted (gross charge)  = allowed + CO-45 contractual write-off
     //   allowed (fee schedule)    = payer-paid + patient responsibility
-    //   patient responsibility    = $0  (VA Community Care — veteran has no cost-share)
+    //   patient responsibility    = $0  (plan design — no member cost-share)
     //   Σ payer-paid              = claim.paidAmount   (byte-stable)
     // ---------------------------------------------------------------------------
 
@@ -2187,7 +2187,7 @@
         // gross submitted charge: deterministic markup over the fee-schedule allowed
         var submitted = Math.max(l.billed, Math.round(allowed * (1.6 + rnd() * 1.2)));
         var co45 = Math.round((submitted - allowed) * 100) / 100; // contractual write-off (CARC CO-45)
-        var patientResp = 0;                                     // VA CCN — no veteran cost-share
+        var patientResp = 0;                                     // no member cost-share under this plan
         var carc = [];
         if (co45 > 0) { carc.push({ group: "CO", code: "45", amount: co45 }); carcUsed["45"] = true; }
         var remark = flagged ? self._integrityRemark(l.violatesRuleIds) : null;
@@ -2218,20 +2218,20 @@
           attending: inst ? { name: attending, npi: attendingNpi } : null,
           rendering: inst ? null : { name: p.name, npi: renderingNpi },
           billingProvider: { name: p.name, npi: p.npi, tin: p.tin, taxonomy: p.taxonomyCode || "—" },
-          payer: "VA Community Care Network (VACCN)", subscriber: { name: ve.name || "—", memberId: ve.memberId || "—", dob: ve.dob || "—", sex: ve.sex || "—" },
+          payer: "Health Plan Network (HPN)", subscriber: { name: ve.name || "—", memberId: ve.memberId || "—", dob: ve.dob || "—", sex: ve.sex || "—" },
           claimStatus: cl.claimStatus, paymentType: cl.paymentType, mode: cl.mode || "retrospective"
         },
         diagnoses: diagnoses, procedures: procedures, serviceLines: lines,
         benefitContract: {
-          benefitPlan: "VA Community Care — Medical benefit",
+          benefitPlan: "Health Plan — Medical benefit",
           coverage: "Covered service · adjudicated in-network",
-          costShare: "Veteran cost-share $0 · no deductible / copay / coinsurance",
-          network: "In-network · VA Community Care Network",
-          rateBasis: "Contracted rate — CMAC / CMS " + (inst ? "OPPS" : "MPFS") + " fee schedule · " + (p.state || "TX") + " locality 05",
+          costShare: "Member cost-share $0 · no deductible / copay / coinsurance",
+          network: "In-network · Health Plan Network",
+          rateBasis: "Contracted rate — Payer fee schedule / CMS " + (inst ? "OPPS" : "MPFS") + " fee schedule · " + (p.state || "TX") + " locality 05",
           authorization: cl.authorizationId ? ("Prior authorization " + cl.authorizationId + " on file") : "No prior authorization required for this service"
         },
         remittance: { totals: totals, patientResponsibility: 0, recoverable: recoverable, carc: carcLegend, rarc: rarcLegend },
-        reconciliation: "Submitted charge − CO-45 contractual write-off = fee-schedule allowed; allowed − $0 veteran cost-share = payer-paid. Payer-paid ties to the paid amount on file (" + usd(cl.paidAmount) + ")."
+        reconciliation: "Submitted charge − CO-45 contractual write-off = fee-schedule allowed; allowed − $0 member cost-share = payer-paid. Payer-paid ties to the paid amount on file (" + usd(cl.paidAmount) + ")."
       };
     },
 
@@ -2250,7 +2250,7 @@
         use: "claim",
         patient: { reference: "Patient/" + h.subscriber.memberId, display: h.subscriber.name },
         billablePeriod: inst ? { start: h.admitDate, end: h.dischargeDate } : { start: h.dateOfService, end: h.dateOfService },
-        insurer: { display: "VA Community Care Network" },
+        insurer: { display: "Health Plan Network" },
         provider: { display: h.billingProvider.name, identifier: { system: "http://hl7.org/fhir/sid/us-npi", value: h.billingProvider.npi } },
         outcome: "complete",
         diagnosis: d.diagnoses.map(function (dx) {
@@ -2294,7 +2294,7 @@
     // ------------------------------------------------------------------
     // Pharmacy (NCPDP / NDC) claim record — the same reviewer-grade shape as
     // getClaimDetail but for a retail-pharmacy prescription claim. NDC lives here.
-    // Reconciles to the claim's paid amount the same way (veteran cost-share $0).
+    // Reconciles to the claim's paid amount the same way (member cost-share $0).
     // ------------------------------------------------------------------
     getPharmacyDetail: function (claimId) {
       var cl = claims[claimId]; if (!cl) return null;
@@ -2336,23 +2336,23 @@
           placeOfService: "01 — Pharmacy", billType: null, dateOfService: cl.dateOfService, statementDates: cl.dateOfService,
           rxNumber: (lines[0] && lines[0].rxNumber) || null,
           pharmacyName: p.name, pharmacyNpi: p.npi, ncpdpId: p.ncpdp || "—", pharmacyDea: cl.pharmacyDea || null,
-          binPcn: cl.binPcn || "610239 / VACCNRX",
+          binPcn: cl.binPcn || "610239 / HPNRX",
           prescriber: { name: cl.prescriber || "Dr. M. Alvarez", npi: prescriberNpi },
           billingProvider: { name: p.name, npi: p.npi, tin: p.tin, taxonomy: p.taxonomyCode || "3336C0003X" },
-          payer: "VA Community Care Network — Pharmacy (VACCN Rx)", subscriber: { name: ve.name || "—", memberId: ve.memberId || "—", dob: ve.dob || "—", sex: ve.sex || "—" },
+          payer: "Health Plan Network — Pharmacy (HPN Rx)", subscriber: { name: ve.name || "—", memberId: ve.memberId || "—", dob: ve.dob || "—", sex: ve.sex || "—" },
           claimStatus: cl.claimStatus, paymentType: cl.paymentType, mode: cl.mode || "retrospective"
         },
         diagnoses: diagnoses, procedures: [], serviceLines: lines,
         benefitContract: {
-          benefitPlan: "VA Community Care — Pharmacy benefit",
+          benefitPlan: "Health Plan — Pharmacy benefit",
           coverage: "Covered drug · on formulary · adjudicated in-network",
-          costShare: "Veteran cost-share $0 · no copay",
-          network: "In-network · VA CCN pharmacy network",
+          costShare: "Member cost-share $0 · no copay",
+          network: "In-network · plan pharmacy network",
           rateBasis: "Contracted rate — NADAC / pharmacy fee schedule + dispensing fee",
           authorization: cl.authorizationId ? ("Prior authorization " + cl.authorizationId + " on file") : "No prior authorization required for this drug"
         },
         remittance: { totals: totals, patientResponsibility: 0, recoverable: recoverable, carc: carcLegend, rarc: rarcLegend },
-        reconciliation: "Submitted (ingredient cost + dispensing fee) − CO-45 contractual = plan allowed; allowed − $0 veteran cost-share = plan-paid. Plan-paid ties to the paid amount on file (" + usd(cl.paidAmount) + ")."
+        reconciliation: "Submitted (ingredient cost + dispensing fee) − CO-45 contractual = plan allowed; allowed − $0 member cost-share = plan-paid. Plan-paid ties to the paid amount on file (" + usd(cl.paidAmount) + ")."
       };
     },
 
@@ -2361,7 +2361,7 @@
       var cl = claims[claimId]; if (!cl || cl.type !== "NCPDP") return null;
       var d = this.getPharmacyDetail(claimId); var h = d.header;
       return {
-        transaction: { standard: "NCPDP Telecommunication D.0", type: "B1 — Billing", bin: (h.binPcn.split(" / ")[0] || "610239"), pcn: (h.binPcn.split(" / ")[1] || "VACCNRX"), softwareVendor: "VACCN-RXSWITCH" },
+        transaction: { standard: "NCPDP Telecommunication D.0", type: "B1 — Billing", bin: (h.binPcn.split(" / ")[0] || "610239"), pcn: (h.binPcn.split(" / ")[1] || "HPNRX"), softwareVendor: "HPN-RXSWITCH" },
         pharmacy: { qualifier: "01 — NPI", npi: h.pharmacyNpi, ncpdp: h.ncpdpId, name: h.pharmacyName, serviceProvider: "01 — Community/Retail" },
         patient: { memberId: h.subscriber.memberId, name: h.subscriber.name, dob: h.subscriber.dob, gender: h.subscriber.sex, relationship: "1 — Cardholder" },
         prescriber: { qualifier: "01 — NPI", npi: h.prescriber.npi, name: h.prescriber.name },
@@ -2404,7 +2404,7 @@
       var rxClaim = {
         id: "CPH01", claimNumber: "RX7742019-00-63", type: "NCPDP", providerId: "PRX01", veteranId: "V0001",
         dateOfService: "2025-05-14", diagnosisCodes: ["E11.9"], claimStatus: "Paid", paymentType: "POST", mode: "retrospective",
-        binPcn: "610239 / VACCNRX", prescriber: "Dr. Helen Ruiz",
+        binPcn: "610239 / HPNRX", prescriber: "Dr. Helen Ruiz",
         billedAmount: 4704, allowedAmount: 4704, paidAmount: 4704,
         authorizationId: null, paymentId: "PRX0001",
         lines: [
@@ -2416,8 +2416,8 @@
 
       // -- rules the new leads reference (so Evidence resolves real rule objects) --
       [
-        { id: "rule_rx_nondispense", code: "RX-NONDISP", name: "Prescription non-dispensing / DAW screen", source: "VA CCN policy", category: "Integrity", description: "Prescription billed with no matching dispensing (pickup) record, or brand billed under DAW-1 without documented medical necessity where a generic equivalent exists.", version: "1.0", effectiveDate: "2025-03-01", environment: "Production" },
-        { id: "rule_ben_identity", code: "BEN-IDENT", name: "Beneficiary identity / card-sharing screen", source: "VA CCN policy", category: "Integrity", description: "One member ID billed across multiple unrelated providers with overlapping dates of service or duplicate high-cost services — indicates beneficiary identity misuse or card sharing.", version: "1.0", effectiveDate: "2025-02-01", environment: "Production" }
+        { id: "rule_rx_nondispense", code: "RX-NONDISP", name: "Prescription non-dispensing / DAW screen", source: "Payer policy", category: "Integrity", description: "Prescription billed with no matching dispensing (pickup) record, or brand billed under DAW-1 without documented medical necessity where a generic equivalent exists.", version: "1.0", effectiveDate: "2025-03-01", environment: "Production" },
+        { id: "rule_ben_identity", code: "BEN-IDENT", name: "Beneficiary identity / card-sharing screen", source: "Payer policy", category: "Integrity", description: "One member ID billed across multiple unrelated providers with overlapping dates of service or duplicate high-cost services — indicates beneficiary identity misuse or card sharing.", version: "1.0", effectiveDate: "2025-02-01", environment: "Production" }
       ].forEach(function (r) { if (!rules[r.id]) { D.rules.push(r); rules[r.id] = r; } });
 
       // -- the two leads --

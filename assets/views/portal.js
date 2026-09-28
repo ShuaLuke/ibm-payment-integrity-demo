@@ -38,7 +38,7 @@
         // provider-portal banner (distinct chrome — you are the provider now)
         '<div style="display:flex;align-items:center;gap:12px;color:#fff;padding:6px 0 20px">' +
         '<div style="width:38px;height:38px;border-radius:9px;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center"><i class="ti ti-building-hospital" style="font-size:20px;color:#7fd7cc"></i></div>' +
-        '<div><div style="font-weight:600;font-size:15px;letter-spacing:-0.01em">VA Community Care — Provider Portal</div>' +
+        '<div><div style="font-weight:600;font-size:15px;letter-spacing:-0.01em">Provider Portal</div>' +
         '<div style="font-size:11.5px;color:#93a7bf">Records request response · secure document submission</div></div>' +
         '<span style="flex:1"></span>' +
         '<span class="pill" style="background:rgba(255,255,255,0.14);color:#cfe0f0"><i class="ti ti-flask"></i> Simulated portal</span></div>' +
@@ -48,12 +48,12 @@
         '<div class="avatar" style="width:34px;height:34px;flex:none;background:#0f6e56">' + (String(p.name || "P").split(" ").map(function (w) { return w[0]; }).join("").slice(0, 2).toUpperCase()) + '</div>' +
         '<div style="flex:1;min-width:0"><div style="font-weight:600;font-size:13.5px">' + window.APP.esc(p.name || "Provider") + '</div>' +
         '<div class="mono" style="font-size:11px;color:var(--text2)">NPI ' + (p.npi || "—") + ' · ' + window.APP.esc(p.city || "") + (p.state ? ", " + p.state : "") + '</div></div>' +
-        '<span class="btn" id="pt-exit" style="font-size:11.5px"><i class="ti ti-arrow-left"></i> Return to PIVOT</span></div>' +
+        '<span class="btn" id="pt-exit" style="font-size:11.5px"><i class="ti ti-arrow-left"></i> Return to Payment Integrity</span></div>' +
 
         // the request the provider is responding to
         '<div class="card" style="margin-bottom:12px">' +
         '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:9px">' +
-        '<div style="font-weight:600;font-size:13.5px"><i class="ti ti-file-text" style="color:var(--accent-d)"></i> Records request from VA Payment Integrity</div>' +
+        '<div style="font-weight:600;font-size:13.5px"><i class="ti ti-file-text" style="color:var(--accent-d)"></i> Records request from Payment Integrity</div>' +
         '<span class="tag" style="background:' + (received ? "var(--low-bg)" : "var(--med-bg)") + ';color:' + (received ? "var(--low-tx)" : "var(--med-tx)") + '">' + (received ? "Received" : overdue ? "Overdue" : "Response requested") + '</span></div>' +
         '<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;font-size:11.5px">' +
         kv("Request ID", r.confirmation) + kv("Received via", window.APP.recordsChannel(r.channel).l) +

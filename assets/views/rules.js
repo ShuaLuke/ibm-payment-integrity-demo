@@ -105,7 +105,7 @@
 
       mount.innerHTML =
         '<div class="page">' +
-        '<div class="page-head"><div><div class="page-title">Rules library</div><div class="page-sub">VA-approved compliance rules, pricing logic and ML / AI models — classified by regulatory source, entity type, fraud type, detection level and severity.</div></div>' +
+        '<div class="page-head"><div><div class="page-title">Rules library</div><div class="page-sub">Payer-approved compliance rules, pricing logic and ML / AI models — classified by regulatory source, entity type, fraud type, detection level and severity.</div></div>' +
         '<span class="tag"><i class="ti ti-git-branch"></i> dev → test → pre-prod → production</span></div>' +
 
         '<div class="card" style="margin-bottom:10px"><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">' +
@@ -123,7 +123,7 @@
             '<div style="flex:1"><div style="font-size:12.5px;font-weight:500">' + window.APP.esc(m.name) + ' <span class="tag">' + window.APP.esc(m.type) + '</span></div>' +
             '<div style="font-size:11.5px;color:var(--text2)">' + window.APP.esc(m.description) + '</div></div></div>';
         }).join("") + '</div>' +
-        '<div style="font-size:11px;color:var(--text2);margin-top:8px">All rules are version-controlled with rollback, and promoted through controlled environments with VA approval before production activation. Read-only view.</div>' +
+        '<div style="font-size:11px;color:var(--text2);margin-top:8px">All rules are version-controlled with rollback, and promoted through controlled environments with payer approval before production activation. Read-only view.</div>' +
         '</div>';
 
       mount.querySelectorAll(".r-grp").forEach(function (b) {

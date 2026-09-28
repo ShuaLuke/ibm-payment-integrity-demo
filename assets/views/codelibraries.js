@@ -1,4 +1,4 @@
-/* Code libraries — the reference code sets PIVOT reads a claim against (CPT/HCPCS,
+/* Code libraries — the reference code sets the system reads a claim against (CPT/HCPCS,
    ICD-10-CM/PCS, revenue codes, type-of-bill, modifiers, CARC/RARC, taxonomy).
    Each library shows its code system, edition, update cycle and effective date;
    drill in for a searchable code table. Read-only (DP.getCodeLibraries /

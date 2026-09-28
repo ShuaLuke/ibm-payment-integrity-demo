@@ -19,7 +19,7 @@
       if (e.type === "SHARES_REGISTRATION") s.registration = (e.props && e.props.registration) || true;
       if (e.type === "REFERRED_TO") s.referrals += 1;
       // shared patients come two ways: one edge carrying a count (chain), or one edge
-      // per shared veteran (ring) — take whichever yields the larger tally.
+      // per shared member (ring) — take whichever yields the larger tally.
       if (e.type === "SHARES_PATIENT_WITH") {
         if (e.props && e.props.sharedVeterans) s.spMax = Math.max(s.spMax, e.props.sharedVeterans);
         else s.spCount += 1;
@@ -48,7 +48,7 @@
     var focus = provs.find(function (p) { return p.id === providerId; }) || provs[0] || null;
     var types = {}; (net.links || []).forEach(function (e) { types[e.type] = (types[e.type] || 0) + 1; });
 
-    // veterans treated by >= 2 network providers (the "shuffled" patients)
+    // members treated by >= 2 network providers (the "shuffled" patients)
     var byVet = {};
     (net.vetLinks || []).forEach(function (e) { (byVet[e.source] = byVet[e.source] || {})[e.target] = 1; });
     var vetCount = net.veterans.filter(Boolean).length;
@@ -97,19 +97,19 @@
       if (s.sharedTin) chips.push(chip("id-badge-2", "shared TIN " + (s.tin || ""), true));
       if (s.referralCount) chips.push(chip("arrow-guide", s.referralCount + " cross-referrals", false));
     }
-    chips.push(chip("users", s.sharedPct + "% of veterans shared", s.sharedPct >= 60));
+    chips.push(chip("users", s.sharedPct + "% of members shared", s.sharedPct >= 60));
     if (s.states.length > 1) chips.push(chip("map-pin", s.states.join(" → "), s.kind === "chain"));
 
     var lead;
     if (s.kind === "chain") {
       lead = '<span style="font-weight:600">' + window.APP.esc(s.registration || "A single holding company") + '</span> operates <b>' + s.providerCount + '</b> facilities across ' +
         (s.states.join(" · ")) + ' under one officer (' + window.APP.esc(s.officer || "—") + '), yet each bills under a <b>separate TIN</b> to hide the common ownership. ' +
-        'The same <b>' + s.sharedVetCount + ' veterans (' + s.sharedPct + '%)</b> are cycled between the facilities for back-to-back short stays — a pattern no independent provider produces.';
+        'The same <b>' + s.sharedVetCount + ' members (' + s.sharedPct + '%)</b> are cycled between the facilities for back-to-back short stays — a pattern no independent provider produces.';
     } else {
       lead = '<span style="font-weight:600">' + s.providerCount + ' flagged providers</span> operate as one billing entity: they ' +
         (s.sharedTin ? 'share <b>TIN ' + window.APP.esc(s.tin || "") + '</b>' : 'are commonly controlled') +
         (s.referralCount ? ', pass <b>' + s.referralCount + ' referrals</b> between them,' : ',') +
-        ' and bill the <b>same ' + s.sharedVetCount + ' veterans (' + s.sharedPct + '%)</b> — coordinated anomalies, not independent activity.';
+        ' and bill the <b>same ' + s.sharedVetCount + ' members (' + s.sharedPct + '%)</b> — coordinated anomalies, not independent activity.';
     }
 
     return '<div style="background:var(--high-bg);border:0.5px solid #f3c9c9;border-radius:8px;padding:11px 12px">' +
@@ -118,14 +118,14 @@
       '<div style="font-size:11.5px;color:#5a2b27;line-height:1.55;margin-bottom:8px">' + lead + '</div>' +
       '<div style="display:flex;flex-wrap:wrap;gap:6px">' + chips.join("") + '</div>' +
       '<div style="font-size:11px;color:var(--high-tx);margin-top:8px;font-weight:500"><i class="ti ti-arrow-right"></i> ' +
-      (s.sharedTin ? "shared TIN" : "shared ownership") + " + " + s.sharedPct + "% shared veterans + " +
+      (s.sharedTin ? "shared TIN" : "shared ownership") + " + " + s.sharedPct + "% shared members + " +
       (s.kind === "chain" ? "same officer &amp; registration" : s.referralCount + " referrals") +
       ' &rarr; treat as a single coordinated scheme, not isolated claims.</div></div>';
   }
 
   // Layered graph for an in-context panel, read top to bottom as the story:
   // the business entity behind it (holding company or shared-TIN billing entity)
-  // → the providers it controls (cards with state + TIN) → the veterans cycled
+  // → the providers it controls (cards with state + TIN) → the members cycled
   // between them. Hovering any node highlights its thread and dims the rest.
   // `el` is a positioned container.
   function render(el, providerId, opts) {
@@ -157,7 +157,7 @@
     var P = {};
     var showFocus = opts.showFocus !== false; // off where there's no "case" (Insights › Network)
     provs.forEach(function (p, i) { P[p.id] = { p: p, x: W / 2 - span / 2 + span * (i + 0.5) / n, y: yProv, focus: showFocus && p.id === providerId }; });
-    // veterans ordered by the average x of the facilities they visited (fewer crossings)
+    // members ordered by the average x of the facilities they visited (fewer crossings)
     vets.forEach(function (v) { var xs = visits[v.id].map(function (id) { return P[id] ? P[id].x : W / 2; }); v._ax = xs.reduce(function (a, b) { return a + b; }, 0) / xs.length; });
     vets.sort(function (a, b) { return a._ax - b._ax; });
     var m = vets.length, vspan = Math.min(W - 60, Math.max(m * 96, span * 0.8));
@@ -175,7 +175,7 @@
     var cap = svg.append("g").attr("font-size", 8.5).attr("font-family", "IBM Plex Mono,monospace").attr("letter-spacing", "0.06em").attr("fill", "#8a95a3");
     cap.append("text").attr("x", 12).attr("y", yBiz - 22).text(L.top);
     cap.append("text").attr("x", 12).attr("y", yProv - ch / 2 - 8).text(L.mid + (s.states.length > 1 ? " · " + s.states.join(" · ") : ""));
-    cap.append("text").attr("x", 12).attr("y", yVet - 16).text("SHARED VETERANS · " + m);
+    cap.append("text").attr("x", 12).attr("y", yVet - 16).text("SHARED MEMBERS · " + m);
 
     var gEdge = svg.append("g"), gNode = svg.append("g");
 
@@ -195,7 +195,7 @@
       gEdge.append("text").attr("x", (x1 + x2) / 2 || (l.x + r.x) / 2).attr("y", cy - 3).attr("text-anchor", "middle").attr("font-size", 9.5).attr("font-weight", 600).attr("fill", "#0f6e56").text("⇄ " + pr.referrals + " referral" + (pr.referrals > 1 ? "s" : ""));
       return e;
     }).filter(Boolean);
-    // veteran → provider edges
+    // member → provider edges
     var vetEdges = [];
     vets.forEach(function (v) {
       var a = V[v.id];
@@ -235,7 +235,7 @@
       return g;
     });
 
-    // veterans
+    // members
     var vetNodes = vets.map(function (v) {
       var a = V[v.id];
       var g = gNode.append("g").attr("transform", "translate(" + a.x + "," + a.y + ")").attr("cursor", "help").datum({ vet: v.id });
@@ -284,7 +284,7 @@
       g.on("mouseover", function (e) {
         focusOn(pset, vs, true);
         showTip(e, "<div style='color:#ffb4a8;margin-bottom:2px'>" + (P[pid].focus ? "Provider · this case" : "Provider") + "</div><b>" + esc(p.name) + "</b><div style='color:#93a7bf'>" + esc(p.state || "") + " · NPI " + esc(p.npi || "") + " · TIN " + esc(p.tin || "") +
-          "<br>risk " + p.riskScore + " · " + Object.keys(vs).length + " shared veterans" + (excluded(p) ? "<br><span style='color:#ffb4a8'>On the OIG LEIE exclusion list</span>" : "") + (s.synthetic ? "" : "<br>Click to open the report card") + "</div>");
+          "<br>risk " + p.riskScore + " · " + Object.keys(vs).length + " shared members" + (excluded(p) ? "<br><span style='color:#ffb4a8'>On the OIG LEIE exclusion list</span>" : "") + (s.synthetic ? "" : "<br>Click to open the report card") + "</div>");
       }).on("mouseout", reset).on("click", function () { if (window.APP && !s.synthetic) window.APP.openProvider(pid); });
     });
     vetNodes.forEach(function (g) {
@@ -293,7 +293,7 @@
       var vs = {}; vs[vid] = 1;
       g.on("mouseover", function (e) {
         focusOn(all(route.map(function (id) { return { id: id }; })), vs, false);
-        showTip(e, "<div style='color:#8fc4f2;margin-bottom:2px'>Affected veteran</div><b>" + esc(v.name) + "</b><div style='color:#93a7bf'>" + [v.city, v.state].filter(Boolean).map(esc).join(", ") +
+        showTip(e, "<div style='color:#8fc4f2;margin-bottom:2px'>Affected member</div><b>" + esc(v.name) + "</b><div style='color:#93a7bf'>" + [v.city, v.state].filter(Boolean).map(esc).join(", ") +
           "<br>Billed by " + route.length + ": " + route.map(function (id) { return esc(shortName(P[id].p.name)) + " (" + esc(P[id].p.state || "") + ")"; }).join(" → ") + "</div>");
       }).on("mouseout", reset);
     });
@@ -309,10 +309,10 @@
     var L = labelsFor(s);
     var out = [dot("#10243b", "#10243b", L.bizKind)];
     if (opts.showFocus !== false) out.push(box("#0f6e56", "Provider in this case"));
-    out.push(box("#c6362f", opts.showFocus !== false ? "Linked provider · high risk" : "Provider · high risk"), dot("#378add", "#e6f1fb", "Shared veteran"));
+    out.push(box("#c6362f", opts.showFocus !== false ? "Linked provider · high risk" : "Provider · high risk"), dot("#378add", "#e6f1fb", "Shared member"));
     out.push(s.sharedTin ? line("#c6362f", 2.4, false, L.link) : line("#b5730e", 1.6, true, L.link));
     if (s.referralCount) out.push(line("#0f6e56", 1.8, true, "Referrals"));
-    out.push(line("#9fb3c8", 1.1, false, "Billed for veteran"));
+    out.push(line("#9fb3c8", 1.1, false, "Billed for member"));
     return out.join("");
   }
 

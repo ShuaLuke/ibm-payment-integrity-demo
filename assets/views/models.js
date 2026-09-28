@@ -1,4 +1,4 @@
-/* Model registry — the AI/ML models behind PIVOT's analytics (Element 3.1). A
+/* Model registry — the AI/ML models behind the analytics (Element 3.1). A
    governed catalog: type, version, status, the healthcare task, how it was
    trained, its feature DRIVER TABLE (each input + calculation methodology), the
    data period, and performance. Read-only, deterministic (DP.getModelRegistry). */
@@ -71,7 +71,7 @@
         '<div style="display:flex;flex-direction:column;gap:10px">' +
         '<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px"><div style="font-weight:600;font-size:14px"><i class="ti ti-robot" style="color:var(--accent-d)"></i> Model registry <span class="muted" style="font-weight:400;font-size:11.5px">· the AI / ML models behind the analytics</span></div>' +
         '<div style="display:flex;gap:8px;align-items:center"><span class="tag" style="background:var(--surface)"><i class="ti ti-shield-check"></i> Governed &amp; versioned</span><button id="mdl-feat" class="btn" style="font-size:12px"><i class="ti ti-adjustments-plus"></i> New feature</button><button id="mdl-new" class="btn primary" style="font-size:12px"><i class="ti ti-plus"></i> New model</button></div></div>' +
-        '<div style="font-size:11.5px;color:var(--text2);margin-top:6px">The library is pre-populated with <b>' + LIBRARY_COUNT + ' ML models</b> ready to be retrained on the VA\'s data, organized by model or service type (' + models.length + ' shown here in detail). Every model is catalogued with its type, version, status, healthcare task, training method, feature driver table, data period and measured performance — explainable and auditable.</div>' +
+        '<div style="font-size:11.5px;color:var(--text2);margin-top:6px">The library is pre-populated with <b>' + LIBRARY_COUNT + ' ML models</b> ready to be retrained on your data, organized by model or service type (' + models.length + ' shown here in detail). Every model is catalogued with its type, version, status, healthcare task, training method, feature driver table, data period and measured performance — explainable and auditable.</div>' +
         '<div style="margin-top:9px;display:flex;gap:8px;flex-wrap:wrap">' + chip("robot", LIBRARY_COUNT + " in the library") + chips + '</div></div>' +
         '<div style="display:grid;grid-template-columns:300px 1fr;gap:10px;align-items:start">' +
         '<div class="card" style="padding:0;overflow:hidden">' + listHtml + '</div>' +
