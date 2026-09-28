@@ -26,7 +26,7 @@
           var v = (matrix[s] && matrix[s][f]) || 0;
           var alpha = v ? (0.12 + (v / max) * 0.78).toFixed(2) : 0;
           var txt = v ? (v >= 1000 ? "$" + Math.round(v / 1000) + "k" : "$" + v) : "";
-          return '<td style="text-align:center;padding:0"><div title="' + window.APP.esc(s) + " · " + window.APP.esc(f) + " · " + window.DP.usd(v) + '" style="margin:2px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:5px;font-size:10.5px;font-weight:500;background:rgba(23,179,166,' + alpha + ');color:' + (alpha > 0.5 ? "#04342c" : "var(--text2)") + '">' + txt + '</div></td>';
+          return '<td style="text-align:center;padding:0"><div title="' + window.APP.esc(s) + " · " + window.APP.esc(f) + " · " + window.DP.usd(v) + '" style="margin:2px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:5px;font-size:10.5px;font-weight:500;background:rgba(15,98,254,' + alpha + ');color:' + (alpha > 0.5 ? "#ffffff" : "var(--text2)") + '">' + txt + '</div></td>';
         }).join("");
         return '<tr><td style="font-size:11.5px;font-weight:500;white-space:nowrap">' + window.APP.esc(s) + '</td>' + cells + '</tr>';
       }).join("");
@@ -34,7 +34,7 @@
       mount.innerHTML =
         '<div class="page">' +
         '<div class="page-head"><div><div class="page-title">Utilization heatmap</div><div class="page-sub">Flagged exposure by provider specialty, anomaly type and region</div></div>' +
-        '<span class="lg"><span style="width:60px;height:10px;border-radius:3px;background:linear-gradient(90deg,rgba(23,179,166,0.12),rgba(23,179,166,0.9))"></span>&nbsp;low → high exposure</span></div>' +
+        '<span class="lg"><span style="width:60px;height:10px;border-radius:3px;background:linear-gradient(90deg,rgba(15,98,254,0.12),rgba(15,98,254,0.9))"></span>&nbsp;low → high exposure</span></div>' +
         '<div class="card" style="overflow-x:auto"><table style="min-width:720px"><thead><tr>' + head + '</tr></thead><tbody>' + body + '</tbody></table></div>' +
         '<div class="card" style="margin-top:10px"><div style="font-weight:500;font-size:13px;margin-bottom:10px">Flagged exposure by region</div>' +
         Object.keys(cities).sort(function (a, b) { return cities[b] - cities[a]; }).slice(0, 8).map(function (c) {

@@ -7,7 +7,7 @@
 
   function fileRow(f, i) {
     return '<div class="pt-file" data-i="' + i + '" style="display:flex;align-items:center;gap:9px;padding:8px 10px;border:0.5px solid var(--border);border-radius:7px;margin-top:6px;background:#fff">' +
-      '<i class="ti ti-file-description" style="color:#0f6e56;font-size:18px"></i>' +
+      '<i class="ti ti-file-description" style="color:#0043ce;font-size:18px"></i>' +
       '<div style="flex:1;min-width:0"><div style="font-size:12.5px;font-weight:500">' + window.APP.esc(f.name) + '</div>' +
       '<div class="muted" style="font-size:10.5px">' + (f.size ? Math.max(1, Math.round(f.size / 1024)) + " KB" : "") + ' · ready to submit</div></div>' +
       '<span class="pt-rm" data-i="' + i + '" style="color:var(--text3);cursor:pointer;font-size:14px" title="Remove"><i class="ti ti-x"></i></span></div>';
@@ -39,13 +39,13 @@
         '<div style="display:flex;align-items:center;gap:12px;color:#fff;padding:6px 0 20px">' +
         '<div style="width:38px;height:38px;border-radius:9px;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center"><i class="ti ti-building-hospital" style="font-size:20px;color:#7fd7cc"></i></div>' +
         '<div><div style="font-weight:600;font-size:15px;letter-spacing:-0.01em">Provider Portal</div>' +
-        '<div style="font-size:11.5px;color:#93a7bf">Records request response · secure document submission</div></div>' +
+        '<div style="font-size:11.5px;color:#c6c6c6">Records request response · secure document submission</div></div>' +
         '<span style="flex:1"></span>' +
-        '<span class="pill" style="background:rgba(255,255,255,0.14);color:#cfe0f0"><i class="ti ti-flask"></i> Simulated portal</span></div>' +
+        '<span class="pill" style="background:rgba(255,255,255,0.14);color:#e0e0e0"><i class="ti ti-flask"></i> Simulated portal</span></div>' +
 
         // who's logged in (the provider)
         '<div class="card" style="display:flex;align-items:center;gap:12px;margin-bottom:12px">' +
-        '<div class="avatar" style="width:34px;height:34px;flex:none;background:#0f6e56">' + (String(p.name || "P").split(" ").map(function (w) { return w[0]; }).join("").slice(0, 2).toUpperCase()) + '</div>' +
+        '<div class="avatar" style="width:34px;height:34px;flex:none;background:#0043ce">' + (String(p.name || "P").split(" ").map(function (w) { return w[0]; }).join("").slice(0, 2).toUpperCase()) + '</div>' +
         '<div style="flex:1;min-width:0"><div style="font-weight:600;font-size:13.5px">' + window.APP.esc(p.name || "Provider") + '</div>' +
         '<div class="mono" style="font-size:11px;color:var(--text2)">NPI ' + (p.npi || "—") + ' · ' + window.APP.esc(p.city || "") + (p.state ? ", " + p.state : "") + '</div></div>' +
         '<span class="btn" id="pt-exit" style="font-size:11.5px"><i class="ti ti-arrow-left"></i> Return to Payment Integrity</span></div>' +
@@ -127,7 +127,7 @@
     return m[a.fwaType] || "medical-records.pdf";
   }
   function receivedCard(r) {
-    return '<div class="card" style="border-color:#bfe0c9">' +
+    return '<div class="card" style="border-color:#a7f0ba">' +
       '<div style="display:flex;align-items:center;gap:10px"><i class="ti ti-circle-check" style="color:var(--low);font-size:26px"></i>' +
       '<div><div style="font-weight:600;font-size:13.5px">Records submitted</div>' +
       '<div style="font-size:11.5px;color:var(--text2)">“' + window.APP.esc(r.receivedFile.name) + '” was transmitted to the requesting analyst on ' + window.APP.fmtDate(r.receivedAt) + '. No further action is required.</div></div></div></div>';

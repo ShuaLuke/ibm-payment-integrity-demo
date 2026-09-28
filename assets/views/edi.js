@@ -61,12 +61,12 @@
   function ago(ms) { var s = Math.max(1, Math.round((Date.now() - ms) / 1000)); return s < 60 ? s + "s ago" : Math.round(s / 60) + "m ago"; }
   function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
-  var liveCss = '<style>@keyframes edi-pulse{0%{box-shadow:0 0 0 0 rgba(23,179,166,.55)}70%{box-shadow:0 0 0 6px rgba(23,179,166,0)}100%{box-shadow:0 0 0 0 rgba(23,179,166,0)}}' +
-    '.edi-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#17b3a6;animation:edi-pulse 1.6s infinite}' +
+  var liveCss = '<style>@keyframes edi-pulse{0%{box-shadow:0 0 0 0 rgba(15,98,254,.55)}70%{box-shadow:0 0 0 6px rgba(15,98,254,0)}100%{box-shadow:0 0 0 0 rgba(15,98,254,0)}}' +
+    '.edi-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#0f62fe;animation:edi-pulse 1.6s infinite}' +
     '@keyframes edi-in{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}.edi-ev{animation:edi-in .35s ease-out}' +
     '@keyframes edi-bump{0%{color:var(--accent-d)}100%{color:inherit}}.edi-bump{animation:edi-bump .9s ease-out}' +
-    '.edi-stage{flex:1;min-width:128px;background:#0f2033;border-radius:9px;padding:10px 12px;color:#fff}' +
-    '.edi-arrow{align-self:center;color:#17b3a6;font-size:16px;padding:0 2px}</style>';
+    '.edi-stage{flex:1;min-width:128px;background:#262626;border-radius:9px;padding:10px 12px;color:#fff}' +
+    '.edi-arrow{align-self:center;color:#0f62fe;font-size:16px;padding:0 2px}</style>';
 
   function sourcesPanel() {
     var rows = "", grp = "";
@@ -94,10 +94,10 @@
   function pipelinePanel() {
     var boxes = STAGES.map(function (st, i) {
       return (i ? '<div class="edi-arrow"><i class="ti ti-arrow-right"></i></div>' : '') +
-        '<div class="edi-stage"><div style="display:flex;justify-content:space-between;align-items:baseline;gap:6px"><span style="font-weight:600;font-size:12.5px">' + st.t + '</span><span style="font-size:10px;color:#8fb7c9;white-space:nowrap"><span data-in="' + st.k + '"></span> in stage</span></div>' +
+        '<div class="edi-stage"><div style="display:flex;justify-content:space-between;align-items:baseline;gap:6px"><span style="font-weight:600;font-size:12.5px">' + st.t + '</span><span style="font-size:10px;color:#a6c8ff;white-space:nowrap"><span data-in="' + st.k + '"></span> in stage</span></div>' +
         '<div class="mono" style="font-size:19px;font-weight:600;margin-top:6px" data-p="' + st.k + '"></div>' +
-        '<div style="font-size:10.5px;color:#8fb7c9">' + st.s + '</div>' +
-        '<div style="font-size:10.5px;color:#cfe0f0;margin-top:6px;min-height:28px;line-height:1.35" data-pd="' + st.k + '"></div></div>';
+        '<div style="font-size:10.5px;color:#a6c8ff">' + st.s + '</div>' +
+        '<div style="font-size:10.5px;color:#e0e0e0;margin-top:6px;min-height:28px;line-height:1.35" data-pd="' + st.k + '"></div></div>';
     }).join("");
     return '<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px">' +
       '<div style="font-weight:500;font-size:12.5px"><i class="ti ti-sitemap" style="color:var(--accent-d)"></i> Pipeline <span class="muted" style="font-weight:400;font-size:10.5px">· last 24 hours · ingest to remediation</span></div>' +
@@ -140,9 +140,9 @@
       n(q('[data-p="enrich"]'), P.enrich); n(q('[data-p="analytics"]'), P.analytics); n(q('[data-p="casemgmt"]'), P.casemgmt); n(q('[data-p="remediate"]'), money(P.prevented));
       var d = function (k, html) { var el = q('[data-pd="' + k + '"]'); if (el) el.innerHTML = html; };
       d("ingest", "837P · 837I · 837D");
-      d("validate", '<span style="color:#ffb4a8">' + P.rejected + ' rejected</span> · returned to submitter');
+      d("validate", '<span style="color:#ffb3b8">' + P.rejected + ' rejected</span> · returned to submitter');
       d("normalize", "X12 → canonical · FHIR-mapped");
-      d("enrich", "code libraries · registries · " + '<span style="color:#ffb4a8">' + P.exclHits + ' exclusion hits</span>');
+      d("enrich", "code libraries · registries · " + '<span style="color:#ffb3b8">' + P.exclHits + ' exclusion hits</span>');
       d("analytics", '<span style="color:#ffd27a;font-weight:600">' + P.flagged + ' flagged</span> · median 1.8s to score');
       d("casemgmt", P.leads + " leads opened · " + P.toCases + " added to cases");
       d("remediate", P.letters + " recovery letters · " + money(P.recovery));

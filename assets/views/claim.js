@@ -322,11 +322,11 @@
     var groups = card.groups;
     var top = groups.slice().sort(function (x, y) { return (y.outlier - x.outlier) || (y.score - x.score); })[0];
     var sel = top ? top.group : null;
-    return '<div class="card" id="c-peer" style="padding:0;overflow:hidden;border:0.5px solid #cfe7e3">' +
+    return '<div class="card" id="c-peer" style="padding:0;overflow:hidden;border:0.5px solid #d0e2ff">' +
       '<div style="background:var(--accent-l);padding:8px 12px;font-weight:500;font-size:12.5px;color:var(--accent-d)"><i class="ti ti-chart-dots-3"></i> Peer statistics <span style="font-weight:400;font-size:11px;color:var(--text2)">· how this provider compares to its specialty peer group · click a spoke for detail</span></div>' +
       '<div style="padding:11px 12px;display:flex;gap:14px;flex-wrap:wrap;align-items:flex-start">' +
       '<div style="flex:none">' + peerRadar(groups, sel) +
-      '<div style="display:flex;gap:12px;justify-content:center;font-size:10px;color:var(--text2);margin-top:2px"><span><span style="display:inline-block;width:9px;height:9px;background:rgba(23,179,166,0.3);border:1px solid #17b3a6;vertical-align:middle"></span> This provider</span><span><span style="display:inline-block;width:9px;height:9px;background:rgba(120,140,165,0.25);border:1px dashed #98a4b3;vertical-align:middle"></span> Peer average</span></div></div>' +
+      '<div style="display:flex;gap:12px;justify-content:center;font-size:10px;color:var(--text2);margin-top:2px"><span><span style="display:inline-block;width:9px;height:9px;background:rgba(15,98,254,0.3);border:1px solid #0f62fe;vertical-align:middle"></span> This provider</span><span><span style="display:inline-block;width:9px;height:9px;background:rgba(120,140,165,0.25);border:1px dashed #a8a8a8;vertical-align:middle"></span> Peer average</span></div></div>' +
       '<div style="flex:1;min-width:230px" id="c-peer-drill">' + peerDrill(a, card, sel) + '</div>' +
       '</div></div>';
   }
@@ -334,18 +334,18 @@
     var n = groups.length; if (!n) return "";
     var cx = 118, cy = 116, R = 82;
     var pt = function (i, v) { var ang = -Math.PI / 2 + i * 2 * Math.PI / n; var r = (Math.max(0, Math.min(100, v)) / 100) * R; return [cx + r * Math.cos(ang), cy + r * Math.sin(ang)]; };
-    var ring = [25, 50, 75, 100].map(function (lvl) { var pts = groups.map(function (_, i) { return pt(i, lvl).join(","); }).join(" "); return '<polygon points="' + pts + '" fill="none" stroke="#e3e8ee" stroke-width="1"></polygon>'; }).join("");
-    var axes = groups.map(function (_, i) { var e = pt(i, 100); return '<line x1="' + cx + '" y1="' + cy + '" x2="' + e[0] + '" y2="' + e[1] + '" stroke="#e3e8ee" stroke-width="1"></line>'; }).join("");
+    var ring = [25, 50, 75, 100].map(function (lvl) { var pts = groups.map(function (_, i) { return pt(i, lvl).join(","); }).join(" "); return '<polygon points="' + pts + '" fill="none" stroke="#e0e0e0" stroke-width="1"></polygon>'; }).join("");
+    var axes = groups.map(function (_, i) { var e = pt(i, 100); return '<line x1="' + cx + '" y1="' + cy + '" x2="' + e[0] + '" y2="' + e[1] + '" stroke="#e0e0e0" stroke-width="1"></line>'; }).join("");
     var peerPts = groups.map(function (g, i) { return pt(i, g.peer).join(","); }).join(" ");
     var provPts = groups.map(function (g, i) { return pt(i, g.score).join(","); }).join(" ");
-    var peerPoly = '<polygon points="' + peerPts + '" fill="rgba(120,140,165,0.18)" stroke="#98a4b3" stroke-width="1.2" stroke-dasharray="4,3"></polygon>';
-    var provPoly = '<polygon points="' + provPts + '" fill="rgba(23,179,166,0.14)" stroke="#17b3a6" stroke-width="2"></polygon>';
-    var dots = groups.map(function (g, i) { var c = pt(i, g.score); return '<circle cx="' + c[0] + '" cy="' + c[1] + '" r="' + (g.outlier ? 4 : 2.6) + '" fill="' + (g.outlier ? "#c6362f" : "#17b3a6") + '"></circle>'; }).join("");
+    var peerPoly = '<polygon points="' + peerPts + '" fill="rgba(120,140,165,0.18)" stroke="#a8a8a8" stroke-width="1.2" stroke-dasharray="4,3"></polygon>';
+    var provPoly = '<polygon points="' + provPts + '" fill="rgba(15,98,254,0.14)" stroke="#0f62fe" stroke-width="2"></polygon>';
+    var dots = groups.map(function (g, i) { var c = pt(i, g.score); return '<circle cx="' + c[0] + '" cy="' + c[1] + '" r="' + (g.outlier ? 4 : 2.6) + '" fill="' + (g.outlier ? "#da1e28" : "#0f62fe") + '"></circle>'; }).join("");
     var labels = groups.map(function (g, i) {
       var l = pt(i, 116); var anchor = Math.abs(l[0] - cx) < 12 ? "middle" : (l[0] < cx ? "end" : "start");
       var nm = g.group === "Charge & Payment" ? "Charge/Pay" : g.group === "Diagnostic Testing" ? "Diagnostic" : g.group === "Distance / Travel" ? "Distance" : g.group;
       var isSel = g.group === sel;
-      return '<g class="c-spoke" data-group="' + window.APP.esc(g.group) + '" style="cursor:pointer"><text x="' + l[0] + '" y="' + (l[1] + 3) + '" text-anchor="' + anchor + '" font-size="9.5" font-family="IBM Plex Sans,sans-serif" font-weight="' + (isSel ? "700" : "500") + '" fill="' + (g.outlier ? "#8b1a13" : "#10243b") + '"' + (isSel ? ' text-decoration="underline"' : '') + '>' + nm + (g.outlier ? " ▲" : "") + '</text></g>';
+      return '<g class="c-spoke" data-group="' + window.APP.esc(g.group) + '" style="cursor:pointer"><text x="' + l[0] + '" y="' + (l[1] + 3) + '" text-anchor="' + anchor + '" font-size="9.5" font-family="IBM Plex Sans,sans-serif" font-weight="' + (isSel ? "700" : "500") + '" fill="' + (g.outlier ? "#a2191f" : "#161616") + '"' + (isSel ? ' text-decoration="underline"' : '') + '>' + nm + (g.outlier ? " ▲" : "") + '</text></g>';
     }).join("");
     return '<svg viewBox="-42 -6 320 244" width="264" height="200" style="display:block">' + ring + axes + peerPoly + provPoly + dots + labels + '</svg>';
   }
@@ -358,7 +358,7 @@
     var attrRows = attrs.length ? attrs.map(function (at) { return '<div style="display:flex;justify-content:space-between;padding:4px 0;border-top:0.5px solid var(--border2);font-size:11px"><span' + (at.outlier ? ' style="color:var(--high-tx);font-weight:500"' : '') + '>' + window.APP.esc(at.label) + (at.outlier ? ' ▲' : '') + '</span><span class="mono">' + window.APP.esc(at.value) + (at.peer ? ' <span style="color:var(--text3)">vs ' + window.APP.esc(at.peer) + '</span>' : '') + '</span></div>'; }).join("") : '';
     return '<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:7px"><div style="font-weight:600;font-size:12.5px">' + window.APP.esc(group) + '</div><span class="chip ' + (gs.outlier ? "rh" : "rl") + '"><span class="s">' + gs.score + '</span> ' + (gs.outlier ? "outlier" : "in range") + '</span></div>' +
       bar("This provider", gs.score || 0, gs.outlier ? "var(--high)" : "var(--accent)") +
-      bar("Peer average", gs.peer || 0, "#98a4b3") +
+      bar("Peer average", gs.peer || 0, "#a8a8a8") +
       (attrRows ? '<div style="margin-top:7px">' + attrRows + '</div>' : '') +
       '<div style="font-size:11px;color:var(--accent-d);cursor:pointer;margin-top:7px" id="c-peer-openrc"><i class="ti ti-external-link"></i> Open full report card</div>';
   }
@@ -586,7 +586,7 @@
       '<div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center;justify-content:center;padding:8px 4px;background:var(--surface);border-radius:8px">' +
       flow("Submitted", t.submitted) + arrow + flow("− Contractual (CO-45)", t.contractual) + arrow + flow("= Allowed", t.allowed) + arrow + flow("− Patient", t.patientResp) + arrow + flow(pharm ? "= Plan paid" : "= Payer paid", t.paid, true) + '</div>' +
       '<div style="font-size:11px;color:var(--text2);margin-top:9px;line-height:1.6"><i class="ti ti-info-circle"></i> ' + window.APP.esc(d.reconciliation) + ' Member cost-share is <b>$0</b> under this plan.</div>' +
-      (d.remittance.recoverable > 0 ? '<div style="background:var(--high-bg);border:0.5px solid #f3c9c9;border-radius:7px;padding:9px 11px;font-size:11.5px;color:var(--high-tx);margin-top:9px"><i class="ti ti-flag"></i> <b>' + m(d.remittance.recoverable) + '</b> exposure on flagged lines — post-payment recovery basis is carried in the line remarks below.</div>' : '') +
+      (d.remittance.recoverable > 0 ? '<div style="background:var(--high-bg);border:0.5px solid #ffd7d9;border-radius:7px;padding:9px 11px;font-size:11.5px;color:var(--high-tx);margin-top:9px"><i class="ti ti-flag"></i> <b>' + m(d.remittance.recoverable) + '</b> exposure on flagged lines — post-payment recovery basis is carried in the line remarks below.</div>' : '') +
       remarksHtml(d) + codeLegendHtml(d) + '</div>';
   }
 
@@ -706,7 +706,7 @@
     return '<div class="card"><div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:8px">' +
       '<div style="font-weight:500;font-size:13px"><i class="ti ti-brand-nodejs" style="color:var(--accent-d)"></i> HL7 FHIR R4 <span class="muted" style="font-weight:400;font-size:11px">· ExplanationOfBenefit — CARIN Blue Button aligned</span></div>' +
       '<span class="tag" style="background:var(--surface)"><i class="ti ti-plug-connected"></i> application/fhir+json</span></div>' +
-      '<pre class="mono" style="margin:0;background:#0f2033;color:#cfe8e2;border-radius:8px;padding:12px 14px;font-size:11px;line-height:1.55;overflow-x:auto;max-height:560px;overflow-y:auto">' + json + '</pre>' +
+      '<pre class="mono" style="margin:0;background:#262626;color:#d0e2ff;border-radius:8px;padding:12px 14px;font-size:11px;line-height:1.55;overflow-x:auto;max-height:560px;overflow-y:auto">' + json + '</pre>' +
       '<div style="font-size:11px;color:var(--text2);margin-top:8px"><i class="ti ti-info-circle"></i> The same claim served as a FHIR resource for interoperability — diagnoses (ICD-10-CM), items (CPT / NDC), and per-line <span class="mono">adjudication</span> slices (submitted / eligible / benefit) with CARC reasons.</div></div>';
   }
 
@@ -767,7 +767,7 @@
     return '<div style="display:flex;flex-direction:column;gap:10px">' +
       '<div class="card" style="padding:0;overflow:hidden"><table><thead><tr><th>CPT</th><th>Description</th><th class="right">Submitted</th><th class="right">CMS allowed</th><th class="right">Exposure</th><th class="right">Variance</th><th>Methodology</th></tr></thead><tbody>' + rows +
       '<tr style="font-weight:600;border-top:1px solid var(--border)"><td colspan="2">Claim total</td><td class="right">' + m(d.totals.submitted) + '</td><td class="right">' + m(d.totals.cmsAllowed) + '</td><td class="right">' + m(d.totals.paid) + '</td><td class="right" style="color:var(--high-tx)">+' + m(d.totals.variance) + '</td><td></td></tr></tbody></table></div>' +
-      (d.totals.overpayment > 0 ? '<div style="background:var(--high-bg);border:0.5px solid #f3c9c9;border-radius:7px;padding:9px 11px;font-size:11.5px;color:var(--high-tx)"><b>' + m(d.totals.overpayment) + '</b> exposure above the CMS-allowed amount — recoverable per CMS reference pricing.</div>' : '') +
+      (d.totals.overpayment > 0 ? '<div style="background:var(--high-bg);border:0.5px solid #ffd7d9;border-radius:7px;padding:9px 11px;font-size:11.5px;color:var(--high-tx)"><b>' + m(d.totals.overpayment) + '</b> exposure above the CMS-allowed amount — recoverable per CMS reference pricing.</div>' : '') +
       (a.mode === "prepay" ? '<div style="background:var(--surface);border:0.5px solid var(--border);border-radius:7px;padding:9px 11px;font-size:11.5px;color:var(--text2)"><i class="ti ti-info-circle"></i> This claim is <b>pre-payment</b> — exposure is $0 per line because nothing has been paid yet. Compare the submitted charge against the CMS-allowed amount to price it before releasing payment.</div>' : '') +
       pricingVersionsHtml(d.ruleVersions) +
       '</div>';
@@ -1010,7 +1010,7 @@
         (l.modifiers.length ? l.modifiers.map(function (m) {
           var chk = l.modChecks.find(function (c) { return c.mod === m; }) || {};
           var bad = chk.valid === false;
-          return ' <span class="mono" style="font-size:11px;padding:1px 5px;border-radius:4px;background:' + (bad ? "var(--high-bg)" : "var(--surface)") + ';color:' + (bad ? "var(--high-tx)" : "var(--text2)") + ';border:0.5px solid ' + (bad ? "#f3c9c9" : "var(--border)") + '">-' + m + '</span>';
+          return ' <span class="mono" style="font-size:11px;padding:1px 5px;border-radius:4px;background:' + (bad ? "var(--high-bg)" : "var(--surface)") + ';color:' + (bad ? "var(--high-tx)" : "var(--text2)") + ';border:0.5px solid ' + (bad ? "#ffd7d9" : "var(--border)") + '">-' + m + '</span>';
         }).join("") : ' <span class="muted" style="font-size:10.5px">no modifier</span>');
 
       var detail = [];
@@ -1053,7 +1053,7 @@
       stat("Lines failing", '<span style="color:' + (d.fails ? "var(--high-tx)" : "var(--text)") + '">' + d.fails + '</span>') +
       stat("Needing review", '<span style="color:' + (d.reviews ? "var(--med-tx)" : "var(--text)") + '">' + d.reviews + '</span>') +
       stat("Clean", d.clean) + '</div>' +
-      '<div style="background:' + tone[2] + ';border:0.5px solid ' + (d.fails ? "#f3c9c9" : d.reviews ? "#e7c99a" : "#bfe0cd") + ';border-radius:7px;padding:9px 11px;font-size:11.5px;color:' + tone[1] + '">' +
+      '<div style="background:' + tone[2] + ';border:0.5px solid ' + (d.fails ? "#ffd7d9" : d.reviews ? "#fddc69" : "#bfe0cd") + ';border-radius:7px;padding:9px 11px;font-size:11.5px;color:' + tone[1] + '">' +
       '<i class="ti ti-' + tone[0] + '"></i> <b>' + window.APP.esc(d.determination) + '</b></div>' +
       '<div class="card" style="padding:2px 12px 10px"><div style="font-weight:500;font-size:13px;padding:9px 0 2px">Line-by-line</div>' + rows + '</div>' +
       '<div class="card"><div style="font-weight:500;font-size:12.5px;margin-bottom:6px">Edits applied</div>' +
@@ -1074,14 +1074,14 @@
       var w = Math.round(val / barMax * 100);
       return '<div style="margin-bottom:7px"><div style="display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:2px"><span>' + label + '</span><span style="font-weight:600">' + val.toLocaleString() + ' <span style="font-weight:400;color:var(--text2);font-size:10.5px">' + sub + '</span></span></div><div style="height:9px;background:var(--border2);border-radius:5px;overflow:hidden"><div style="height:100%;width:' + Math.min(100, w) + '%;background:' + color + '"></div></div></div>';
     };
-    var st = { bg: over ? "var(--high-bg)" : "var(--low-bg)", bd: over ? "#f3c9c9" : "#bfe0c9", tx: over ? "var(--high-tx)" : "var(--low-tx)" };
+    var st = { bg: over ? "var(--high-bg)" : "var(--low-bg)", bd: over ? "#ffd7d9" : "#a7f0ba", tx: over ? "var(--high-tx)" : "var(--low-tx)" };
     return '<div class="card">' +
       '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:8px">' +
       '<div style="font-weight:500;font-size:12.5px"><i class="ti ti-bed" style="color:var(--accent-d)"></i> Facility capacity <span class="muted" style="font-weight:400;font-size:11px">· beds vs patient-days billed · ' + c.periodLabel + '</span></div>' +
       '<span class="tag" style="background:' + st.bg + ';color:' + st.tx + '"><i class="ti ti-' + (over ? "alert-triangle" : "circle-check") + '"></i> ' + c.utilization + '% of capacity</span></div>' +
       '<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:9px;font-size:11.5px">' +
       umKv("Licensed beds", c.licensedBeds) + umKv("Staffed beds", c.staffedBeds) + '</div>' +
-      bar("Physical capacity (staffed beds × " + c.periodDays + " days)", c.capacityDays, "#6b7a8d", "patient-days") +
+      bar("Physical capacity (staffed beds × " + c.periodDays + " days)", c.capacityDays, "#6f6f6f", "patient-days") +
       bar("Patient-days billed", c.patientDaysBilled, over ? "var(--high)" : "var(--accent)", "patient-days") +
       '<div style="background:' + st.bg + ';border:0.5px solid ' + st.bd + ';border-radius:7px;padding:9px 11px;margin-top:4px;font-size:11.5px;color:' + st.tx + '">' +
       (over
@@ -1097,7 +1097,7 @@
     var dl = d.determination.toLowerCase();
     var meets = dl.indexOf("does not") < 0 && dl.indexOf("review") < 0;
     var critRows = d.criteria.map(function (c) { return '<div style="display:flex;gap:9px;align-items:flex-start;padding:6px 0;border-top:0.5px solid var(--border2)"><i class="ti ti-' + (c.met ? "circle-check" : "circle-x") + '" style="color:' + (c.met ? "var(--low)" : "var(--high)") + ';font-size:16px;margin-top:1px"></i><div><div style="font-size:12px' + (c.met ? "" : ";font-weight:500") + '">' + window.APP.esc(c.label) + '</div>' + (c.note ? '<div style="font-size:11px;color:var(--text2)">' + window.APP.esc(c.note) + '</div>' : '') + '</div></div>'; }).join("");
-    var losBar = los ? ('<div class="card"><div style="font-weight:500;font-size:12.5px;margin-bottom:7px">Length of stay</div>' + losRow("Guideline recommended", los.recommendedDays, los.recommendedDays, los.actualDays, "#98a4b3") + losRow("Actual (billed)", los.actualDays, los.recommendedDays, los.actualDays, los.actualDays > los.recommendedDays ? "var(--high)" : "var(--accent)") + '<div style="font-size:11px;color:var(--text2);margin-top:4px">' + (los.actualDays > los.recommendedDays ? ('<b style="color:var(--high-tx)">' + (los.actualDays - los.recommendedDays) + ' days</b> beyond the guideline-recommended ' + los.recommendedDays + '-day stay.') : 'Within the recommended range.') + '</div></div>') : '';
+    var losBar = los ? ('<div class="card"><div style="font-weight:500;font-size:12.5px;margin-bottom:7px">Length of stay</div>' + losRow("Guideline recommended", los.recommendedDays, los.recommendedDays, los.actualDays, "#a8a8a8") + losRow("Actual (billed)", los.actualDays, los.recommendedDays, los.actualDays, los.actualDays > los.recommendedDays ? "var(--high)" : "var(--accent)") + '<div style="font-size:11px;color:var(--text2);margin-top:4px">' + (los.actualDays > los.recommendedDays ? ('<b style="color:var(--high-tx)">' + (los.actualDays - los.recommendedDays) + ' days</b> beyond the guideline-recommended ' + los.recommendedDays + '-day stay.') : 'Within the recommended range.') + '</div></div>') : '';
     return '<div style="display:flex;flex-direction:column;gap:10px">' +
       capacityCard(a) +
       '<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px"><div style="font-weight:500;font-size:13px"><i class="ti ti-clipboard-heart" style="color:var(--accent-d)"></i> Utilization management <span class="muted" style="font-weight:400;font-size:11px">· clinical criteria &amp; medical necessity</span></div>' +
@@ -1105,7 +1105,7 @@
       '<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:8px">' + umKv("Guideline", d.guideline.code + " — " + d.guideline.title) + umKv("Recommended level of care", d.levelOfCare.recommended) + umKv("Billed level of care", d.levelOfCare.billed) + umKv("Prior authorization", d.priorAuth.required ? ((d.priorAuth.number || "—") + " · " + d.priorAuth.status) : d.priorAuth.status) + '</div></div>' +
       losBar +
       '<div class="card"><div style="font-weight:500;font-size:12.5px;margin-bottom:2px">Care criteria</div>' + critRows + '</div>' +
-      '<div style="background:' + (meets ? "var(--low-bg)" : "var(--high-bg)") + ';border:0.5px solid ' + (meets ? "#bfe0c9" : "#f3c9c9") + ';border-radius:7px;padding:10px 12px;font-size:12px;color:' + (meets ? "var(--low-tx)" : "var(--high-tx)") + '"><i class="ti ti-' + (meets ? "circle-check" : "alert-triangle") + '"></i> <b>Determination:</b> ' + window.APP.esc(d.determination) + '</div>' +
+      '<div style="background:' + (meets ? "var(--low-bg)" : "var(--high-bg)") + ';border:0.5px solid ' + (meets ? "#a7f0ba" : "#ffd7d9") + ';border-radius:7px;padding:10px 12px;font-size:12px;color:' + (meets ? "var(--low-tx)" : "var(--high-tx)") + '"><i class="ti ti-' + (meets ? "circle-check" : "alert-triangle") + '"></i> <b>Determination:</b> ' + window.APP.esc(d.determination) + '</div>' +
       '</div>';
   }
   function fmtSize(b) { return b >= 1048576 ? (b / 1048576).toFixed(1) + " MB" : b >= 1024 ? Math.round(b / 1024) + " KB" : b + " B"; }
@@ -1251,7 +1251,7 @@
           ? '<button class="btn primary" id="c-req-portal" style="flex:1;font-size:11px"><i class="ti ti-external-link"></i> Open provider portal</button>'
           : '<button class="btn primary" id="c-req-receive" style="flex:1;font-size:11px"><i class="ti ti-mail-check"></i> Log records received</button>') +
         '<button class="btn" id="c-req-cancel2" style="flex:none;font-size:11px" title="Withdraw request"><i class="ti ti-x"></i></button></div>';
-    return '<div style="background:var(--surface);border:0.5px solid ' + (received ? "#bfe0c9" : overdue ? "#f3c9c9" : "var(--border)") + ';border-radius:7px;padding:9px 10px">' +
+    return '<div style="background:var(--surface);border:0.5px solid ' + (received ? "#a7f0ba" : overdue ? "#ffd7d9" : "var(--border)") + ';border-radius:7px;padding:9px 10px">' +
       '<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><i class="ti ti-' + ch.icon + '" style="color:var(--accent-d)"></i>' +
       '<span style="font-size:11.5px;font-weight:500">Records request</span>' +
       '<span class="tag" style="margin-left:auto;background:' + (received ? "var(--low-bg)" : "var(--med-bg)") + ';color:' + (received ? "var(--low-tx)" : "var(--med-tx)") + '">' + (received ? "Received" : r.status === "sent" ? "Sent" : "Awaiting") + '</span></div>' +
@@ -1314,25 +1314,25 @@
     var billed = cl ? cl.billedAmount : 0, allowed = cl ? cl.allowedAmount : 0, paid = cl ? cl.paidAmount : 0;
     var max = Math.max(billed, allowed, paid, prepay ? allowed : 0, 1);
     var bar = function (label, val, color) { var w = Math.round(val / max * 100); return '<div style="margin-bottom:7px"><div style="display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:2px"><span>' + label + '</span><span style="font-weight:600">' + window.DP.usd(val) + '</span></div><div style="height:9px;background:var(--border2);border-radius:5px;overflow:hidden"><div style="height:100%;width:' + w + '%;background:' + color + '"></div></div></div>'; };
-    var bars = bar("Billed (this claim)", billed, "#98a4b3") + bar("Allowed", allowed, "#6b7a8d") +
+    var bars = bar("Billed (this claim)", billed, "#a8a8a8") + bar("Allowed", allowed, "#6f6f6f") +
       (prepay ? bar("Exposure — at risk (pre-pay)", allowed, "var(--high)") : bar("Exposure — paid (post-pay)", paid, "var(--ink)"));
     var callout = prepay
-      ? '<div style="background:var(--high-bg);border:0.5px solid #f3c9c9;border-radius:7px;padding:8px 10px;margin-top:6px;font-size:11.5px;color:var(--high-tx)"><b>' + window.DP.usd(a.exposurePre || allowed) + '</b> at risk — nothing is paid yet. Denying or holding this claim keeps that money from leaving.</div>'
-      : '<div style="background:var(--high-bg);border:0.5px solid #f3c9c9;border-radius:7px;padding:8px 10px;margin-top:6px;font-size:11.5px;color:var(--high-tx)"><b>' + window.DP.usd(a.exposurePost || 0) + '</b> estimated improper across this provider’s flagged pattern (not just this one claim) — recoverable if confirmed.</div>';
+      ? '<div style="background:var(--high-bg);border:0.5px solid #ffd7d9;border-radius:7px;padding:8px 10px;margin-top:6px;font-size:11.5px;color:var(--high-tx)"><b>' + window.DP.usd(a.exposurePre || allowed) + '</b> at risk — nothing is paid yet. Denying or holding this claim keeps that money from leaving.</div>'
+      : '<div style="background:var(--high-bg);border:0.5px solid #ffd7d9;border-radius:7px;padding:8px 10px;margin-top:6px;font-size:11.5px;color:var(--high-tx)"><b>' + window.DP.usd(a.exposurePost || 0) + '</b> estimated improper across this provider’s flagged pattern (not just this one claim) — recoverable if confirmed.</div>';
     return card("Exposure breakdown <span class=\"muted\" style=\"font-weight:400;font-size:11px\">· exposure type: " + exposureType(a) + "</span>", bars + callout);
   }
   function emMix(p) {
     var share = p.em99215ShareComputed; if (share == null) return "";
     var peer = (window.DP.getPeerBenchmark("internal_medicine_em") || {}).median99215Share || 0.14;
     var bar = function (label, val, color) { var w = Math.round(val * 100); return '<div style="margin-bottom:7px"><div style="display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:2px"><span>' + label + '</span><span style="font-weight:600">' + w + '%</span></div><div style="height:9px;background:var(--border2);border-radius:5px;overflow:hidden"><div style="height:100%;width:' + w + '%;background:' + color + '"></div></div></div>'; };
-    return card("E/M level mix vs peers", bar("This provider · 99215 share", share, "var(--high)") + bar("Specialty peer median", peer, "#6b7a8d") + '<div style="font-size:11px;color:var(--text2)">Share of established-patient visits billed at the highest level (99215). A large gap above the peer median is the upcoding signal.</div>');
+    return card("E/M level mix vs peers", bar("This provider · 99215 share", share, "var(--high)") + bar("Specialty peer median", peer, "#6f6f6f") + '<div style="font-size:11px;color:var(--text2)">Share of established-patient visits billed at the highest level (99215). A large gap above the peer median is the upcoding signal.</div>');
   }
   function volumeChart(p, a) {
     var h = p.history || []; if (!h.length) return "";
     var max = Math.max.apply(null, h.map(function (m) { return m.claims; }).concat([1]));
     var W = 380, H = 92, bw = W / h.length;
-    var bars = h.map(function (m, i) { var bh = Math.round(m.claims / max * (H - 20)); var x = i * bw; var flg = m.flagged > 0; return '<rect x="' + (x + 2) + '" y="' + (H - 16 - bh) + '" width="' + (bw - 4) + '" height="' + Math.max(bh, 1) + '" fill="' + (flg ? "var(--high)" : "#c2cad4") + '" rx="1.5"></rect>'; }).join("");
-    var labels = h.map(function (m, i) { return (i % 3 === 0) ? '<text x="' + (i * bw + bw / 2) + '" y="' + (H - 3) + '" font-size="8" text-anchor="middle" fill="#8a95a3" font-family="IBM Plex Mono,monospace">' + m.month.slice(2) + '</text>' : ""; }).join("");
+    var bars = h.map(function (m, i) { var bh = Math.round(m.claims / max * (H - 20)); var x = i * bw; var flg = m.flagged > 0; return '<rect x="' + (x + 2) + '" y="' + (H - 16 - bh) + '" width="' + (bw - 4) + '" height="' + Math.max(bh, 1) + '" fill="' + (flg ? "var(--high)" : "#c6c6c6") + '" rx="1.5"></rect>'; }).join("");
+    var labels = h.map(function (m, i) { return (i % 3 === 0) ? '<text x="' + (i * bw + bw / 2) + '" y="' + (H - 3) + '" font-size="8" text-anchor="middle" fill="#8d8d8d" font-family="IBM Plex Mono,monospace">' + m.month.slice(2) + '</text>' : ""; }).join("");
     var caption = a.fwaType === "Frequency / over-utilization" ? "Claim volume by month. The frequency flag is a single-patient spike, not a broad volume increase — open the medical record before recovering." : "Claim volume by month; red bars = months with flagged claims.";
     return card("Claim volume over time", '<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%" height="' + H + '" style="max-width:' + W + 'px;display:block">' + bars + labels + '</svg><div style="font-size:11px;color:var(--text2)">' + caption + '</div>');
   }
@@ -1340,7 +1340,7 @@
     var gs = p.groupScores || []; if (!gs.length) return "";
     var rows = gs.map(function (g) {
       var w = Math.round(g.score / 100 * 100), pw = Math.round(g.peer / 100 * 100);
-      return '<div style="margin-bottom:6px"><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:2px"><span' + (g.outlier ? ' style="color:var(--high-tx);font-weight:500"' : '') + '>' + g.group + (g.outlier ? ' ▲' : '') + '</span><span class="mono" style="font-size:10.5px;color:var(--text3)">' + g.score + ' vs ' + g.peer + '</span></div><div style="height:7px;background:var(--border2);border-radius:4px;position:relative;overflow:hidden"><div style="position:absolute;left:' + pw + '%;top:0;bottom:0;width:1px;background:#98a4b3"></div><div style="height:100%;width:' + w + '%;background:' + (g.outlier ? "var(--high)" : "#c2cad4") + '"></div></div></div>';
+      return '<div style="margin-bottom:6px"><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:2px"><span' + (g.outlier ? ' style="color:var(--high-tx);font-weight:500"' : '') + '>' + g.group + (g.outlier ? ' ▲' : '') + '</span><span class="mono" style="font-size:10.5px;color:var(--text3)">' + g.score + ' vs ' + g.peer + '</span></div><div style="height:7px;background:var(--border2);border-radius:4px;position:relative;overflow:hidden"><div style="position:absolute;left:' + pw + '%;top:0;bottom:0;width:1px;background:#a8a8a8"></div><div style="height:100%;width:' + w + '%;background:' + (g.outlier ? "var(--high)" : "#c6c6c6") + '"></div></div></div>';
     }).join("");
     return card("Provider report card", rows + '<div style="font-size:11px;color:var(--accent-d);cursor:pointer;margin-top:2px" id="c-openrc"><i class="ti ti-external-link"></i> Open full report card</div>');
   }
@@ -1368,12 +1368,12 @@
     if (full) full.addEventListener("click", function () { window.APP.auditLog("NETWORK_VIEWED", "Claim #" + id + " · " + p.name); window.APP.state.networkScenario = s && s.kind === "chain" ? "chain" : "ring"; window.APP.nav("network"); });
   }
   function collusionLegend(s) {
-    var out = [lgDot("#10243b", "Business entity"), lgDot("#0f6e56", "Provider in this case"), lgDot(s.kind === "chain" ? "#c6362f" : "#c77d11", "Linked provider"), lgDot("#378add", "Cross-billed member")];
-    if (s.sharedTin) out.push(lgLine("#c6362f", 3, "Shared TIN"));
-    if (s.sharedRegistration) out.push(lgLine("#b5730e", 2, "Same registration"));
-    if (s.sharedOfficer) out.push(lgLine("#7a3aa0", 2, "Same officer"));
-    if (s.referralCount) out.push(lgLine("#0f6e56", 2, "Referral"));
-    out.push(lgLine("#8a95a3", 2, "Shared patients"));
+    var out = [lgDot("#161616", "Business entity"), lgDot("#0043ce", "Provider in this case"), lgDot(s.kind === "chain" ? "#da1e28" : "#eb6200", "Linked provider"), lgDot("#1192e8", "Cross-billed member")];
+    if (s.sharedTin) out.push(lgLine("#da1e28", 3, "Shared TIN"));
+    if (s.sharedRegistration) out.push(lgLine("#b28600", 2, "Same registration"));
+    if (s.sharedOfficer) out.push(lgLine("#8a3ffc", 2, "Same officer"));
+    if (s.referralCount) out.push(lgLine("#0043ce", 2, "Referral"));
+    out.push(lgLine("#8d8d8d", 2, "Shared patients"));
     return out.join("");
   }
   function lgDot(color, label) { return '<span class="lg"><span class="dot" style="border-color:' + color + ';background:' + color + '26"></span>' + label + '</span>'; }
@@ -1457,7 +1457,7 @@
       stat("Exposure reviewed", window.DP.usd(totalExp)) +
       stat("Recovered", window.DP.usd(totalRec)) +
       '</div>' +
-      '<div class="card" style="background:var(--accent-l);border-color:#cfe7e3"><div style="font-size:12px;color:var(--accent-d);line-height:1.6"><i class="ti ti-scale"></i> <b>' + rate + '% of prior “' + window.APP.esc(a.fwaType) + '” cases were confirmed</b>' +
+      '<div class="card" style="background:var(--accent-l);border-color:#d0e2ff"><div style="font-size:12px;color:var(--accent-d);line-height:1.6"><i class="ti ti-scale"></i> <b>' + rate + '% of prior “' + window.APP.esc(a.fwaType) + '” cases were confirmed</b>' +
       (rate >= 60 ? ' — precedent leans toward confirming. Check whether this lead’s documentation differs from the dismissed ones below.' : ' — precedent is mixed. Read the dismissed cases below before recovering.') + '</div></div>' +
       '<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><div style="font-weight:500;font-size:13px"><i class="ti ti-history" style="color:var(--accent-d)"></i> Similar adjudicated cases</div><span class="muted" style="font-size:11px">click a case for the full adjudication</span></div>' +
       sims.map(simRowHtml).join("") + '<div id="c-prec"></div></div>' +
@@ -1559,7 +1559,7 @@
         clearInterval(iv); pre.textContent = memo;
         var name = "AI-justification_Lead-" + id + "_" + c.outcome + ".txt";
         window.APP.addArtifact(id, { name: name, kind: "ai-justification", body: memo });
-        out.innerHTML = '<div style="background:var(--low-bg);border:0.5px solid #bfe0c9;border-radius:7px;padding:8px 10px;margin-top:7px;font-size:11.5px;color:var(--low-tx)">' +
+        out.innerHTML = '<div style="background:var(--low-bg);border:0.5px solid #a7f0ba;border-radius:7px;padding:8px 10px;margin-top:7px;font-size:11.5px;color:var(--low-tx)">' +
           '<i class="ti ti-paperclip"></i> Attached to the lead as <b>' + window.APP.esc(name) + '</b> — it now appears under Evidence › Attached documents and in the History tab.</div>';
       });
     });
@@ -1634,7 +1634,7 @@
     if (dec && dec.reviewState !== "returned") {
       var label = { confirm: "Confirm", dismiss: "Dismiss", escalate: "Escalate" }[dec.outcome];
       var icon, color, msg;
-      if (dec.reviewState === "pending") { icon = "clock-hour-4"; color = "#3a5578"; msg = label + " submitted — pending supervisor review (Karen Boyd)"; }
+      if (dec.reviewState === "pending") { icon = "clock-hour-4"; color = "#393939"; msg = label + " submitted — pending supervisor review (Karen Boyd)"; }
       else if (dec.reviewState === "approved") {
         if (dec.outcome === "confirm") { icon = "circle-check"; color = "var(--low)"; msg = "Confirmed · " + window.DP.usd(a.exposurePost) + " submitted for recovery · approved by Karen Boyd"; }
         else { icon = "arrow-up-right"; color = "var(--med)"; msg = "Escalated · Case opened · approved by Karen Boyd"; }
@@ -1686,7 +1686,7 @@
     var best = sugg[0] || null;
     var others = openCases.filter(function (c) { return !sugg.some(function (s) { return s.c.caseKey === c.caseKey; }); });
     var suggRows = sugg.map(function (s, i) {
-      return '<label class="c-sugg" style="display:flex;gap:8px;align-items:flex-start;padding:7px 8px;border:0.5px solid ' + (i === 0 ? "#cfe7e3" : "var(--border)") + ';border-radius:7px;margin-bottom:5px;cursor:pointer;background:' + (i === 0 ? "var(--accent-l)" : "#fff") + '">' +
+      return '<label class="c-sugg" style="display:flex;gap:8px;align-items:flex-start;padding:7px 8px;border:0.5px solid ' + (i === 0 ? "#d0e2ff" : "var(--border)") + ';border-radius:7px;margin-bottom:5px;cursor:pointer;background:' + (i === 0 ? "var(--accent-l)" : "#fff") + '">' +
         '<input type="radio" name="c-casemode" value="existing" data-key="' + s.c.caseKey + '" data-name="' + window.APP.esc(s.c.name) + '" data-link="' + s.linkType + '" style="margin-top:2px"' + (i === 0 ? " checked" : "") + '>' +
         '<div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:500">' + window.APP.esc(s.c.name) +
         ' <span class="muted" style="font-weight:400">· CASE-' + s.c.providerId + ' · ' + s.c.leadCount + ' lead' + (s.c.leadCount === 1 ? '' : 's') + ' · ' + window.DP.usd(s.c.exposure || 0) + '</span>' +
@@ -1711,7 +1711,7 @@
       '</div>';
     box.innerHTML =
       '<div style="font-weight:500;font-size:13px;margin-bottom:9px">Decision</div>' +
-      (returnedNote !== null ? '<div style="background:var(--med-bg);border:0.5px solid #e7c99a;border-radius:7px;padding:8px 10px;font-size:11.5px;color:var(--med-tx);margin-bottom:10px"><i class="ti ti-corner-up-left"></i> Returned by supervisor (Karen Boyd): ' + window.APP.esc(returnedNote) + ' — please revise and resubmit.</div>' : '') +
+      (returnedNote !== null ? '<div style="background:var(--med-bg);border:0.5px solid #fddc69;border-radius:7px;padding:8px 10px;font-size:11.5px;color:var(--med-tx);margin-bottom:10px"><i class="ti ti-corner-up-left"></i> Returned by supervisor (Karen Boyd): ' + window.APP.esc(returnedNote) + ' — please revise and resubmit.</div>' : '') +
       '<div style="display:flex;gap:8px;margin-bottom:10px">' +
       '<div class="seg" data-d="c"><i class="ti ti-check"></i> Confirm<div class="sub">improper — propose a case</div></div>' +
       '<div class="seg" data-d="d"><i class="ti ti-x"></i> Dismiss<div class="sub">clean — payment stands</div></div>' +
@@ -1805,10 +1805,10 @@
     bar.className = "c-sticky";
     bar.style.cssText = "position:fixed;bottom:14px;left:50%;transform:translateX(-50%);z-index:150;background:var(--ink);border-radius:10px;box-shadow:0 4px 18px rgba(0,0,0,0.22);display:flex;align-items:center;gap:7px;padding:7px 12px;font-family:var(--sans)";
     var btn = function (d, label, icon, bg, col) { return '<button class="sbtn" data-d="' + d + '" style="background:' + bg + ';color:' + col + ';border:none;border-radius:7px;padding:6px 12px;font-size:12px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:5px;font-family:var(--sans)"><i class="ti ti-' + icon + '"></i>' + label + '</button>'; };
-    bar.innerHTML = '<span style="color:#93a7bf;font-size:12px;margin:0 3px">Decide:</span>' +
+    bar.innerHTML = '<span style="color:#c6c6c6;font-size:12px;margin:0 3px">Decide:</span>' +
       (prepay
-        ? btn("pay", "Pay", "check", "#fff", "#1f5a3d") + btn("hold", "Hold", "clock-hour-4", "rgba(255,255,255,0.12)", "#fff") + btn("deny", "Deny", "ban", "rgba(255,255,255,0.12)", "#fff")
-        : btn("c", "Confirm", "check", "#fff", "#8b1a13") + btn("d", "Dismiss", "x", "rgba(255,255,255,0.12)", "#fff") + btn("e", "Escalate", "arrow-up-right", "rgba(255,255,255,0.12)", "#fff"));
+        ? btn("pay", "Pay", "check", "#fff", "#0e6027") + btn("hold", "Hold", "clock-hour-4", "rgba(255,255,255,0.12)", "#fff") + btn("deny", "Deny", "ban", "rgba(255,255,255,0.12)", "#fff")
+        : btn("c", "Confirm", "check", "#fff", "#a2191f") + btn("d", "Dismiss", "x", "rgba(255,255,255,0.12)", "#fff") + btn("e", "Escalate", "arrow-up-right", "rgba(255,255,255,0.12)", "#fff"));
     document.getElementById("view").appendChild(bar);
     bar.querySelectorAll(".sbtn").forEach(function (b) { b.onclick = function () { window.Views.claim.gotoDecision(b.getAttribute("data-d")); }; });
   }
@@ -1883,9 +1883,9 @@
 
   function docBox(title, body, tone) {
     var map = {
-      good: ["var(--low-bg)", "#bfe0c9", "var(--low-tx)", "circle-check"],
+      good: ["var(--low-bg)", "#a7f0ba", "var(--low-tx)", "circle-check"],
       bad: ["var(--high-bg)", "#e3b4b0", "var(--high-tx)", "alert-triangle"],
-      warn: ["var(--med-bg)", "#e7c99a", "var(--med-tx)", "alert-circle"]
+      warn: ["var(--med-bg)", "#fddc69", "var(--med-tx)", "alert-circle"]
     };
     var c = map[tone] || ["var(--surface)", "var(--border)", "var(--text2)", "file-description"];
     return '<div style="background:' + c[0] + ';border:0.5px solid ' + c[1] + ';border-radius:7px;padding:9px 11px"><div style="font-weight:500;font-size:11.5px;color:' + c[2] + ';margin-bottom:4px"><i class="ti ti-' + c[3] + '"></i> ' + title + '</div><div style="font-size:11px;color:var(--text2);line-height:1.55">' + body + '</div></div>';

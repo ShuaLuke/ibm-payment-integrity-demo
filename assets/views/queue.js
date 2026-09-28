@@ -100,7 +100,7 @@
     var o = function (v, l) { return '<option value="' + window.APP.esc(v) + '">' + window.APP.esc(l) + '</option>'; };
     var ov = document.createElement("div");
     ov.id = "cl-ov";
-    ov.style.cssText = "position:fixed;inset:0;background:rgba(16,36,59,0.45);z-index:100;display:flex;align-items:flex-start;justify-content:center;padding-top:56px";
+    ov.style.cssText = "position:fixed;inset:0;background:rgba(22,22,22,0.45);z-index:100;display:flex;align-items:flex-start;justify-content:center;padding-top:56px";
     ov.innerHTML = '<div class="card" style="width:540px;max-width:94vw;padding:0;overflow:hidden">' +
       '<div style="padding:12px 16px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between">' +
       '<div style="font-weight:600;font-size:14px"><i class="ti ti-plus" style="color:var(--accent-d)"></i> Create a lead</div>' +

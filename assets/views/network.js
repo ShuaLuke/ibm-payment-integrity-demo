@@ -23,7 +23,7 @@
         '</div>';
 
       var current = "ring";
-      function setActive(scn) { mount.querySelectorAll(".nscn").forEach(function (b) { var on = b.getAttribute("data-scn") === scn; b.style.background = on ? "var(--card)" : "none"; b.style.color = on ? "var(--ink)" : "var(--text2)"; b.style.boxShadow = on ? "0 1px 2px rgba(16,36,59,.08)" : "none"; }); }
+      function setActive(scn) { mount.querySelectorAll(".nscn").forEach(function (b) { var on = b.getAttribute("data-scn") === scn; b.style.background = on ? "var(--card)" : "none"; b.style.color = on ? "var(--ink)" : "var(--text2)"; b.style.boxShadow = on ? "0 1px 2px rgba(22,22,22,.08)" : "none"; }); }
       // scn: "all" (portfolio overview) · "ring" / "chain" (worked examples) · "N03"… (a synthetic network)
       function paint(scn) {
         current = scn; setActive(scn === "ring" || scn === "chain" ? scn : "all");
@@ -88,8 +88,8 @@
       return '<div style="display:grid;grid-template-columns:minmax(150px,210px) 1fr 104px;gap:10px;align-items:center;padding:6px 0' + (strong ? ';border-bottom:0.5px solid var(--border2);padding-bottom:10px;margin-bottom:4px' : '') + '">' +
         '<div style="font-size:12px;' + (strong ? 'font-weight:600' : '') + '">' + esc(label) + ' <span class="muted" style="font-size:10.5px">· ' + total + '</span></div>' +
         '<div style="display:flex;height:18px;border-radius:5px;overflow:hidden;background:var(--surface)">' +
-        (cross ? '<div title="' + cross + ' cross-state" style="width:' + c + '%;background:#10243b;color:#fff;font-size:10px;display:flex;align-items:center;padding-left:6px;white-space:nowrap">' + (c >= 18 ? c + '%' : '') + '</div>' : '') +
-        (total - cross ? '<div title="' + (total - cross) + ' within one state" style="width:' + i + '%;background:#9fd8d0;color:#0b3d37;font-size:10px;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;white-space:nowrap">' + (i >= 18 ? i + '%' : '') + '</div>' : '') +
+        (cross ? '<div title="' + cross + ' cross-state" style="width:' + c + '%;background:#161616;color:#fff;font-size:10px;display:flex;align-items:center;padding-left:6px;white-space:nowrap">' + (c >= 18 ? c + '%' : '') + '</div>' : '') +
+        (total - cross ? '<div title="' + (total - cross) + ' within one state" style="width:' + i + '%;background:#a6c8ff;color:#001d6c;font-size:10px;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;white-space:nowrap">' + (i >= 18 ? i + '%' : '') + '</div>' : '') +
         '</div>' +
         '<div class="mono" style="font-size:10.5px;color:var(--text2);text-align:right;white-space:nowrap">' + cross + ' cross · ' + (total - cross) + ' in</div></div>';
     };
@@ -111,7 +111,7 @@
       '<div id="nv-map" style="position:relative;height:540px;background:var(--surface)"></div>' +
       '<div class="legend" style="margin:0;padding:8px 12px;border-top:0.5px solid var(--border2)">' + mapLegend() + '</div></div>' +
       '<div class="card"><div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;margin-bottom:6px"><div style="font-weight:500;font-size:12.5px"><i class="ti ti-map-2" style="color:var(--accent-d)"></i> Cross-state vs within one state <span class="muted" style="font-weight:400;font-size:10.5px">· by scheme type</span></div>' +
-      '<div style="display:flex;gap:12px;font-size:11px;color:var(--text2)"><span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#10243b;vertical-align:-1px"></span> Cross-state</span><span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#9fd8d0;vertical-align:-1px"></span> Within one state</span></div></div>' +
+      '<div style="display:flex;gap:12px;font-size:11px;color:var(--text2)"><span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#161616;vertical-align:-1px"></span> Cross-state</span><span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#a6c8ff;vertical-align:-1px"></span> Within one state</span></div></div>' +
       '<div style="overflow-x:auto"><div style="min-width:480px">' + split + '</div></div>' +
       '<div style="font-size:11px;color:var(--text2);margin-top:6px"><i class="ti ti-info-circle"></i> ' + esc(mostCross[0].label) + ' networks cross state lines most often (' + pct(mostCross[0].cross, mostCross[0].total) + '%); ' + esc(mostCross[mostCross.length - 1].label.toLowerCase()) + 's mostly stay in one state (' + pct(mostCross[mostCross.length - 1].inState, mostCross[mostCross.length - 1].total) + '%).</div></div>' +
       '<div class="card" style="padding:0;overflow:hidden">' +
@@ -132,11 +132,11 @@
       var last = i === F.length - 1, mult = i ? Math.round(f.amount / F[i - 1].amount) : 0;
       return (i ? '<div class="fn-arrow" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--text3);min-width:34px"><i class="ti ti-chevron-right" style="font-size:16px"></i><span class="mono" style="font-size:9.5px">×' + mult + '</span></div>' : '') +
         '<div class="fn-stage" data-k="' + f.key + '" style="flex:1;min-width:128px;border-radius:8px;padding:9px 10px;cursor:pointer;' +
-        (i === 0 ? 'background:var(--high-bg);border:0.5px solid #f3c9c9' : last ? 'background:#10243b;color:#fff' : 'background:var(--surface);border:0.5px solid var(--border)') + '">' +
-        '<div style="font-size:10px;text-transform:uppercase;letter-spacing:.04em;' + (last ? 'color:#7fe0d6' : i === 0 ? 'color:var(--high-tx)' : 'color:var(--text3)') + '">' + esc(f.label) + '</div>' +
+        (i === 0 ? 'background:var(--high-bg);border:0.5px solid #ffd7d9' : last ? 'background:#161616;color:#fff' : 'background:var(--surface);border:0.5px solid var(--border)') + '">' +
+        '<div style="font-size:10px;text-transform:uppercase;letter-spacing:.04em;' + (last ? 'color:#78a9ff' : i === 0 ? 'color:var(--high-tx)' : 'color:var(--text3)') + '">' + esc(f.label) + '</div>' +
         '<div style="font-weight:600;font-size:' + (last ? 24 : 19) + 'px;margin-top:2px;font-variant-numeric:tabular-nums">' + (i === 0 ? window.DP.usd(f.amount) : short(f.amount)) + '</div>' +
-        '<div style="font-size:10.5px;line-height:1.35;margin-top:2px;' + (last ? 'color:#cfe0f0' : 'color:var(--text2)') + '">' + esc(f.detail) + '</div>' +
-        '<div class="mono" style="font-size:9.5px;margin-top:3px;' + (last ? 'color:#93a7bf' : 'color:var(--text3)') + '">' + esc(f.count) + '</div></div>';
+        '<div style="font-size:10.5px;line-height:1.35;margin-top:2px;' + (last ? 'color:#e0e0e0' : 'color:var(--text2)') + '">' + esc(f.detail) + '</div>' +
+        '<div class="mono" style="font-size:9.5px;margin-top:3px;' + (last ? 'color:#c6c6c6' : 'color:var(--text3)') + '">' + esc(f.count) + '</div></div>';
     }).join("");
     return '<div class="card" id="nv-funnel" style="margin:0">' +
       '<div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;margin-bottom:8px">' +
@@ -170,12 +170,12 @@
   }
 
   // ---------- the full map: every network on one force graph ----------
-  var HUB_COLOR = { chain: "#b5730e", ring: "#c6362f", agent: "#6b4aa0", recruit: "#0f6e56", shell: "#2d5f9a" };
+  var HUB_COLOR = { chain: "#b28600", ring: "#da1e28", agent: "#8a3ffc", recruit: "#0043ce", shell: "#0072c3" };
   function mapLegend() {
     var dot = function (c, bg, label, r) { return '<span class="lg"><span style="display:inline-block;width:' + r + 'px;height:' + r + 'px;border-radius:50%;background:' + bg + ';border:2px solid ' + c + '"></span>' + label + '</span>'; };
-    return window.NETWORKS.SCHEME_ORDER.map(function (k) { return dot(HUB_COLOR[k], "#10243b", window.NETWORKS.SCHEMES[k].bizKind, 11); }).join("") +
-      dot("#c6362f", "#fbe3e3", "Provider", 9) + dot("#378add", "#cfe3f7", "Affected member", 7) +
-      '<span class="lg"><span style="width:18px;height:0;border-top:2px dashed #d9480f"></span>Cross-network link</span>' +
+    return window.NETWORKS.SCHEME_ORDER.map(function (k) { return dot(HUB_COLOR[k], "#161616", window.NETWORKS.SCHEMES[k].bizKind, 11); }).join("") +
+      dot("#da1e28", "#fff1f1", "Provider", 9) + dot("#1192e8", "#bae6ff", "Affected member", 7) +
+      '<span class="lg"><span style="width:18px;height:0;border-top:2px dashed #ff832b"></span>Cross-network link</span>' +
       '<span class="lg" style="color:var(--text3)">Hub size = dollars at risk</span>';
   }
   function drawMap(el, paint) {
@@ -186,7 +186,7 @@
     d3.select(el).selectAll("*").remove();
     var maxExp = d3.max(G.nodes.filter(function (n) { return n.kind === "hub"; }), function (n) { return n.atRisk; }) || 1;
     var R = function (n) { return n.kind === "hub" ? 10 + 14 * Math.sqrt(n.atRisk / maxExp) : n.kind === "provider" ? 6.5 : 3.2; };
-    var pcol = function (r) { return r >= 80 ? "#c6362f" : r >= 50 ? "#c77d11" : "#10243b"; };
+    var pcol = function (r) { return r >= 80 ? "#da1e28" : r >= 50 ? "#eb6200" : "#161616"; };
     // Pass 1: lay out the 20 hubs (with their cross-network links), then stretch
     // that layout to fill the canvas and pin the hubs in place.
     var hubs = G.nodes.filter(function (n) { return n.kind === "hub"; });
@@ -210,7 +210,7 @@
     var svg = d3.select(el).append("svg").attr("width", "100%").attr("height", H).attr("viewBox", "0 0 " + W + " " + H).style("display", "block").style("font-family", "IBM Plex Sans,sans-serif");
     var gL = svg.append("g"), gN = svg.append("g"), gT = svg.append("g");
     var lk = gL.selectAll("line").data(G.links).join("line")
-      .attr("stroke", function (d) { return d.kind === "bridge" ? "#d9480f" : d.kind === "hub" ? "#9aa8b6" : "#c9d3dc"; })
+      .attr("stroke", function (d) { return d.kind === "bridge" ? "#ff832b" : d.kind === "hub" ? "#9aa8b6" : "#c9d3dc"; })
       .attr("stroke-width", function (d) { return d.kind === "bridge" ? 2.2 : d.kind === "hub" ? 1.1 : 0.7; })
       .attr("stroke-dasharray", function (d) { return d.kind === "bridge" ? "6,4" : null; })
       .attr("opacity", function (d) { return d.kind === "vet" ? 0.8 : 1; });
@@ -218,12 +218,12 @@
     var hit = gL.selectAll("line.hit").data(G.links.filter(function (d) { return d.kind === "bridge"; })).join("line").attr("class", "hit").attr("stroke", "transparent").attr("stroke-width", 12).style("cursor", "help");
     var nd = gN.selectAll("circle").data(G.nodes).join("circle")
       .attr("r", R)
-      .attr("fill", function (d) { return d.kind === "hub" ? "#10243b" : d.kind === "provider" ? pcol(d.risk) + "33" : "#cfe3f7"; })
-      .attr("stroke", function (d) { return d.kind === "hub" ? HUB_COLOR[d.scheme] : d.kind === "provider" ? (d.excluded ? "#8b1a13" : pcol(d.risk)) : "#378add"; })
+      .attr("fill", function (d) { return d.kind === "hub" ? "#161616" : d.kind === "provider" ? pcol(d.risk) + "33" : "#bae6ff"; })
+      .attr("stroke", function (d) { return d.kind === "hub" ? HUB_COLOR[d.scheme] : d.kind === "provider" ? (d.excluded ? "#a2191f" : pcol(d.risk)) : "#1192e8"; })
       .attr("stroke-width", function (d) { return d.kind === "hub" ? 3 : d.kind === "provider" ? (d.excluded ? 2.4 : 1.3) : 0.8; })
       .style("cursor", function (d) { return d.kind === "hub" ? "pointer" : "default"; });
     var lab = gT.selectAll("text").data(hubs).join("text")
-      .text(function (d) { return shortHub(d.name); }).attr("text-anchor", "middle").attr("font-size", 10).attr("font-weight", 600).attr("fill", "var(--ink, #10243b)")
+      .text(function (d) { return shortHub(d.name); }).attr("text-anchor", "middle").attr("font-size", 10).attr("font-weight", 600).attr("fill", "var(--ink, #161616)")
       .attr("paint-order", "stroke").attr("stroke", "var(--surface, #f4f6f8)").attr("stroke-width", 3).style("pointer-events", "none");
 
     var sim = d3.forceSimulation(G.nodes)
@@ -241,7 +241,7 @@
     if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) { sim.stop(); for (var i = 0; i < 300; i++) sim.tick(); ticked(); }
 
     // hover: light up one network (and any network linked to it)
-    var tip = d3.select(el).append("div").style("position", "absolute").style("background", "#10243b").style("color", "#e6eef7").style("border-radius", "7px").style("padding", "8px 11px").style("font-size", "11px").style("line-height", "1.45").style("max-width", "260px").style("pointer-events", "none").style("opacity", 0).style("box-shadow", "0 6px 18px rgba(0,0,0,.2)");
+    var tip = d3.select(el).append("div").style("position", "absolute").style("background", "#161616").style("color", "#f4f4f4").style("border-radius", "7px").style("padding", "8px 11px").style("font-size", "11px").style("line-height", "1.45").style("max-width", "260px").style("pointer-events", "none").style("opacity", 0).style("box-shadow", "0 6px 18px rgba(0,0,0,.2)");
     function showTip(e, html) { var r = el.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top; tip.html(html).style("opacity", 1).style("left", Math.max(4, Math.min(x + 14, W - 270)) + "px"); var th = tip.node().offsetHeight; tip.style("top", (y + th + 16 > H ? Math.max(4, y - th - 12) : y + 12) + "px"); }
     function focusNets(nets) {
       nd.attr("opacity", function (d) { return nets[d.net] ? 1 : 0.12; });
@@ -255,22 +255,22 @@
         var nets = {}; nets[d.net] = 1; var br = bridgesOf(d.net); br.forEach(function (b) { nets[b.a] = 1; nets[b.b] = 1; });
         focusNets(nets);
         var row = window.NETWORKS.list().filter(function (r) { return r.id === d.net; })[0];
-        showTip(e, "<div style='color:#7fe0d6;margin-bottom:2px'>" + esc(window.NETWORKS.SCHEMES[d.scheme].label) + "</div><b>" + esc(d.name) + "</b><div style='color:#93a7bf'>" +
+        showTip(e, "<div style='color:#78a9ff;margin-bottom:2px'>" + esc(window.NETWORKS.SCHEMES[d.scheme].label) + "</div><b>" + esc(d.name) + "</b><div style='color:#c6c6c6'>" +
           row.facilities + " providers · " + row.members.toLocaleString() + " members · " + row.states.join(", ") + "<br>" + bigUsd(row.atRisk) + " at risk · " + row.claims.toLocaleString() + " claims" +
-          (br.length ? "<br><span style='color:#ffb89a'>Linked to " + br.length + " other network" + (br.length > 1 ? "s" : "") + "</span>" : "") + "<br>Click to open its network</div>");
+          (br.length ? "<br><span style='color:#ffb784'>Linked to " + br.length + " other network" + (br.length > 1 ? "s" : "") + "</span>" : "") + "<br>Click to open its network</div>");
       })
       .on("mouseout", reset)
       .on("click", function (e, d) { paint(d.core ? d.scenario : d.net); window.scrollTo(0, 0); });
     nd.filter(function (d) { return d.kind !== "hub"; })
       .on("mouseover", function (e, d) {
         var nets = {}; nets[d.net] = 1; focusNets(nets);
-        showTip(e, d.kind === "provider" ? "<div style='color:#ffb4a8;margin-bottom:2px'>Provider</div><b>" + esc(d.name) + "</b><div style='color:#93a7bf'>" + esc(d.state || "") + " · risk " + d.risk + (d.excluded ? "<br><span style='color:#ffb4a8'>On the OIG exclusion list</span>" : "") + "</div>"
-          : "<div style='color:#8fc4f2;margin-bottom:2px'>Affected member</div><b>" + esc(d.name) + "</b><div style='color:#93a7bf'>Billed by more than one provider in this network</div>");
+        showTip(e, d.kind === "provider" ? "<div style='color:#ffb3b8;margin-bottom:2px'>Provider</div><b>" + esc(d.name) + "</b><div style='color:#c6c6c6'>" + esc(d.state || "") + " · risk " + d.risk + (d.excluded ? "<br><span style='color:#ffb3b8'>On the OIG exclusion list</span>" : "") + "</div>"
+          : "<div style='color:#82cfff;margin-bottom:2px'>Affected member</div><b>" + esc(d.name) + "</b><div style='color:#c6c6c6'>Billed by more than one provider in this network</div>");
       })
       .on("mouseout", reset);
     hit.on("mouseover", function (e, d) {
       var nets = {}; nets[d.source.net] = 1; nets[d.target.net] = 1; focusNets(nets);
-      showTip(e, "<div style='color:#ffb89a;margin-bottom:2px'>Cross-network link · " + esc(d.type) + "</div><b>" + esc(shortHub(d.source.name)) + " ↔ " + esc(shortHub(d.target.name)) + "</b><div style='color:#93a7bf'>" + esc(d.detail) + "</div>");
+      showTip(e, "<div style='color:#ffb784;margin-bottom:2px'>Cross-network link · " + esc(d.type) + "</div><b>" + esc(shortHub(d.source.name)) + " ↔ " + esc(shortHub(d.target.name)) + "</b><div style='color:#c6c6c6'>" + esc(d.detail) + "</div>");
     }).on("mouseout", reset);
   }
   function shortHub(n) { n = String(n || "").replace(/ · shared mailing address/, "").replace(/\s+(LLC|Inc\.|Group|Partners|Holdings|Services|Solutions|Network)$/i, ""); return n.length > 26 ? n.slice(0, 25) + "…" : n; }
@@ -347,7 +347,7 @@
   function boxesRing() {
     var s = window.Collusion.analyze("PR001");
     return '<div style="flex:1">' + window.Collusion.narrativeHtml(s) + '</div>' +
-      '<div style="flex:1;background:var(--low-bg);border:0.5px solid #bfe0c9;border-radius:8px;padding:10px 12px"><div style="display:flex;align-items:center;gap:6px;font-weight:500;font-size:12.5px;color:var(--low-tx)"><i class="ti ti-circle-check"></i>Benign by contrast</div><div style="font-size:11.5px;color:#2f5a44;margin-top:3px;line-height:1.5">Coastal Kidney Care also bills one member heavily (<span style="font-weight:500">36 dialysis claims</span>), but it shares no TIN, owner, referrals or patients with another provider, so it has no network to draw. High volume alone isn\'t a ring.</div></div>';
+      '<div style="flex:1;background:var(--low-bg);border:0.5px solid #a7f0ba;border-radius:8px;padding:10px 12px"><div style="display:flex;align-items:center;gap:6px;font-weight:500;font-size:12.5px;color:var(--low-tx)"><i class="ti ti-circle-check"></i>Benign by contrast</div><div style="font-size:11.5px;color:#0e6027;margin-top:3px;line-height:1.5">Coastal Kidney Care also bills one member heavily (<span style="font-weight:500">36 dialysis claims</span>), but it shares no TIN, owner, referrals or patients with another provider, so it has no network to draw. High volume alone isn\'t a ring.</div></div>';
   }
   function boxesChain() {
     var s = window.Collusion.analyze("PR300");

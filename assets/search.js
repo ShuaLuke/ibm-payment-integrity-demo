@@ -50,7 +50,7 @@
   function build() {
     var ov = document.createElement("div");
     ov.id = "gs-overlay";
-    ov.style.cssText = "position:fixed;inset:0;z-index:300;background:rgba(16,36,59,0.35);display:none;align-items:flex-start;justify-content:center;padding-top:12vh;font-family:'IBM Plex Sans',sans-serif";
+    ov.style.cssText = "position:fixed;inset:0;z-index:300;background:rgba(22,22,22,0.35);display:none;align-items:flex-start;justify-content:center;padding-top:12vh;font-family:'IBM Plex Sans',sans-serif";
     ov.innerHTML =
       '<div id="gs-box" style="width:560px;max-width:92vw;background:var(--card);border:0.5px solid var(--border);border-radius:12px;box-shadow:0 12px 40px rgba(0,0,0,0.25);overflow:hidden">' +
       '<div style="display:flex;align-items:center;gap:8px;padding:11px 14px;border-bottom:0.5px solid var(--border2)"><i class="ti ti-search" style="color:var(--text2)"></i><input id="gs-input" placeholder="Search leads, providers, businesses, rules, standards…" style="flex:1;border:none;outline:none;font-size:14px;background:transparent;color:var(--ink);font-family:inherit"><span style="font-size:10px;color:var(--text3);border:0.5px solid var(--border);border-radius:4px;padding:1px 5px">esc</span></div>' +

@@ -67,7 +67,7 @@
         '<div class="card" style="padding:0;overflow:hidden">' +
         '<div style="padding:11px 13px;display:flex;justify-content:space-between;align-items:center;border-bottom:0.5px solid var(--border2)"><div style="font-weight:500;font-size:13px">' + window.APP.esc(selName) + ' <span class="muted" style="font-weight:400;font-size:11px">· ' + selList.length + ' open</span></div>' +
         (isPool && selList.length ? '<span style="display:flex;gap:6px"><button class="btn" id="tm-strength" style="font-size:11.5px"><i class="ti ti-target-arrow"></i> Assign by strength</button><button class="btn" id="tm-balance" style="font-size:11.5px"><i class="ti ti-scale"></i> Balance workload</button></span>' : '') + '</div>' +
-        '<div id="tm-bulk" style="display:none;padding:8px 13px;background:var(--accent-l);border-bottom:0.5px solid #cdeee8;align-items:center;gap:10px"><span id="tm-bulk-n" style="font-weight:500;font-size:12.5px;color:var(--accent-d)"></span><span style="flex:1"></span><span style="font-size:12px;color:var(--text2)">Assign to</span><select id="tm-bulk-who" class="input" style="width:auto;font-size:12px">' + team.map(function (n) { return '<option value="' + n + '">' + n + '</option>'; }).join("") + '<option value="__unassigned__">Unassign</option></select><button class="btn primary" id="tm-bulk-apply" style="font-size:12px"><i class="ti ti-user-check"></i> Assign</button><button class="btn" id="tm-bulk-clear" style="font-size:12px">Clear</button></div>' +
+        '<div id="tm-bulk" style="display:none;padding:8px 13px;background:var(--accent-l);border-bottom:0.5px solid #d0e2ff;align-items:center;gap:10px"><span id="tm-bulk-n" style="font-weight:500;font-size:12.5px;color:var(--accent-d)"></span><span style="flex:1"></span><span style="font-size:12px;color:var(--text2)">Assign to</span><select id="tm-bulk-who" class="input" style="width:auto;font-size:12px">' + team.map(function (n) { return '<option value="' + n + '">' + n + '</option>'; }).join("") + '<option value="__unassigned__">Unassign</option></select><button class="btn primary" id="tm-bulk-apply" style="font-size:12px"><i class="ti ti-user-check"></i> Assign</button><button class="btn" id="tm-bulk-clear" style="font-size:12px">Clear</button></div>' +
         '<table><thead><tr><th style="width:30px"><input type="checkbox" class="tm-all"></th><th>Risk</th><th>Lead</th><th>Provider</th><th class="right">Exposure</th><th>Status</th><th>Assign to</th></tr></thead><tbody>' +
         (selList.length ? selList.map(function (a) {
           var p = window.DP.getProvider(a.providerId);
@@ -120,7 +120,7 @@
       return { id: c.id, risk: c.riskScore, provider: window.DP.getProvider(c.providerId).name, fwa: c.fwaType, who: pick, byStrength: !!best };
     });
     document.getElementById("tm-plan").innerHTML =
-      '<div class="card" style="margin-top:10px;border:0.5px solid #9fe1d8">' +
+      '<div class="card" style="margin-top:10px;border:0.5px solid #a6c8ff">' +
       '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div style="font-weight:500;font-size:13px"><i class="ti ti-target-arrow" style="color:var(--accent-d)"></i> Suggested assignment by specialty</div>' +
       '<div><button class="btn" id="tm-plan-cancel" style="font-size:12px;margin-right:6px">Cancel</button><button class="btn primary" id="tm-plan-apply" style="font-size:12px"><i class="ti ti-check"></i> Apply all (' + plan.length + ')</button></div></div>' +
       '<div style="font-size:11.5px;color:var(--text2);margin-bottom:8px">Routes each unassigned lead to the analyst who specializes in that FWA type, falling back to the least-loaded analyst when no specialist matches.</div>' +
@@ -145,7 +145,7 @@
     });
     var summary = team.map(function (n) { return '<span class="tag" style="margin-right:6px">' + initials(n) + ' ' + before[n] + '→<span style="color:var(--accent-d);font-weight:500">' + loads[n] + '</span></span>'; }).join("");
     document.getElementById("tm-plan").innerHTML =
-      '<div class="card" style="margin-top:10px;border:0.5px solid #9fe1d8">' +
+      '<div class="card" style="margin-top:10px;border:0.5px solid #a6c8ff">' +
       '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div style="font-weight:500;font-size:13px"><i class="ti ti-scale" style="color:var(--accent-d)"></i> Suggested balanced assignment</div>' +
       '<div><button class="btn" id="tm-plan-cancel" style="font-size:12px;margin-right:6px">Cancel</button><button class="btn primary" id="tm-plan-apply" style="font-size:12px"><i class="ti ti-check"></i> Apply all (' + plan.length + ')</button></div></div>' +
       '<div style="font-size:11.5px;color:var(--text2);margin-bottom:8px">Distributes ' + plan.length + ' unassigned claims to the least-loaded analysts, highest-risk first. Open cases after: ' + summary + '</div>' +

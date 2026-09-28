@@ -16,7 +16,7 @@
   function build() {
     var fab = document.createElement("button");
     fab.id = "cp-fab";
-    fab.style.cssText = "position:fixed;bottom:18px;right:18px;z-index:210;background:#0f6e56;color:#fff;border:none;border-radius:26px;padding:10px 16px;font-size:13px;font-weight:500;font-family:'IBM Plex Sans',sans-serif;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:0 3px 14px rgba(0,0,0,0.22)";
+    fab.style.cssText = "position:fixed;bottom:18px;right:18px;z-index:210;background:#0043ce;color:#fff;border:none;border-radius:26px;padding:10px 16px;font-size:13px;font-weight:500;font-family:'IBM Plex Sans',sans-serif;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:0 3px 14px rgba(0,0,0,0.22)";
     fab.innerHTML = '<i class="ti ti-sparkles"></i> Investigative Assistant';
     fab.onclick = toggle;
     document.body.appendChild(fab);
@@ -25,7 +25,7 @@
     panel.id = "cp-panel";
     panel.style.cssText = "position:fixed;top:0;right:0;width:370px;max-width:92vw;height:100vh;z-index:220;background:var(--card);border-left:0.5px solid var(--border);box-shadow:-4px 0 24px rgba(0,0,0,0.12);transform:translateX(100%);transition:transform .22s ease;display:flex;flex-direction:column;font-family:'IBM Plex Sans',sans-serif";
     panel.innerHTML =
-      '<div style="background:#10243b;color:#fff;padding:12px 14px;display:flex;align-items:center;justify-content:space-between"><div style="display:flex;align-items:center;gap:8px"><i class="ti ti-sparkles" style="color:#7fe0d6"></i><span style="font-weight:500">Investigative Assistant</span></div><button id="cp-x" style="background:none;border:none;color:#93a7bf;cursor:pointer;font-size:16px"><i class="ti ti-x"></i></button></div>' +
+      '<div style="background:#161616;color:#fff;padding:12px 14px;display:flex;align-items:center;justify-content:space-between"><div style="display:flex;align-items:center;gap:8px"><i class="ti ti-sparkles" style="color:#78a9ff"></i><span style="font-weight:500">Investigative Assistant</span></div><button id="cp-x" style="background:none;border:none;color:#c6c6c6;cursor:pointer;font-size:16px"><i class="ti ti-x"></i></button></div>' +
       '<div id="cp-ctx" style="padding:7px 14px;font-size:11px;color:var(--text2);border-bottom:0.5px solid var(--border2);background:var(--surface)"></div>' +
       '<div id="cp-tabs" style="display:flex;gap:2px;padding:6px 10px 0;border-bottom:0.5px solid var(--border2);background:var(--surface)"></div>' +
       '<div id="cp-chat" class="chat" style="flex:1;overflow-y:auto;padding:12px 14px;min-height:0"></div>' +
@@ -133,7 +133,7 @@
       return '<span class="pill ' + (conf ? "p-conf" : "p-dis") + '" style="font-size:10px">#' + c.id + ' · ' + c.outcome + '</span>';
     }).join(" ");
     return '<div style="background:var(--card);border:0.5px solid var(--border);border-radius:12px;overflow:hidden">' +
-      '<div style="background:#10243b;color:#fff;padding:8px 11px;font-size:11.5px;display:flex;align-items:center;gap:6px"><i class="ti ti-file-analytics" style="color:#7fe0d6"></i> Adjudication brief · #' + s.headline.split("#")[1] + '</div>' +
+      '<div style="background:#161616;color:#fff;padding:8px 11px;font-size:11.5px;display:flex;align-items:center;gap:6px"><i class="ti ti-file-analytics" style="color:#78a9ff"></i> Adjudication brief · #' + s.headline.split("#")[1] + '</div>' +
       '<div style="padding:11px;display:flex;flex-direction:column;gap:10px">' +
       '<div style="display:flex;align-items:center;gap:9px;background:' + st.bg + ';border-radius:8px;padding:8px 10px"><i class="ti ti-' + st.icon + '" style="color:' + st.tx + ';font-size:18px"></i><div style="font-weight:600;color:' + st.tx + ';font-size:12.5px">Recommended: ' + window.APP.esc(rec.label) + '</div></div>' +
       sect("The anomaly", window.APP.esc(s.anomaly)) +

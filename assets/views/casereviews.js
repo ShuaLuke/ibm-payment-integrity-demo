@@ -66,7 +66,7 @@
     var narr = window.APP.getCaseNarrative(x.pid);
     var leads = (c.caseLeads || []).slice(0, 6);
     var fwa = (c.fwaTypes || []).slice(0, 3).map(function (t) { return '<span class="tag fwa">' + window.APP.esc(t) + '</span>'; }).join(" ");
-    return '<div class="card" style="margin-bottom:10px;border-color:#cfe7e3">' +
+    return '<div class="card" style="margin-bottom:10px;border-color:#d0e2ff">' +
       '<div style="display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap;margin-bottom:8px">' +
       '<div style="flex:1;min-width:0"><div style="font-weight:600;font-size:14px">' + window.APP.esc(c.name) +
       (c.multiProvider ? ' <span class="tag" style="background:var(--med-bg);color:var(--med-tx)"><i class="ti ti-affiliate"></i> ' + c.providerCount + ' providers</span>' : '') + '</div>' +

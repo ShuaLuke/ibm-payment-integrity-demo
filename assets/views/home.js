@@ -50,7 +50,7 @@
       ["Awaiting my approval", pending.length], ["Team open cases", team.length],
       ["Submitted for recovery", window.DP.usdShort(submitted)], ["Open cases", window.DP.listCases().length]
     ]) +
-      (pending.length ? '<div class="card" style="margin-bottom:10px;border:0.5px solid #e7c99a"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div style="font-weight:500;font-size:13px"><i class="ti ti-inbox" style="color:var(--med)"></i> ' + pending.length + ' decision' + (pending.length > 1 ? "s" : "") + ' awaiting your approval</div><button class="btn primary" id="h-appr" style="background:var(--med);border-color:var(--med)">Review approvals <i class="ti ti-arrow-right"></i></button></div>' +
+      (pending.length ? '<div class="card" style="margin-bottom:10px;border:0.5px solid #fddc69"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div style="font-weight:500;font-size:13px"><i class="ti ti-inbox" style="color:var(--med)"></i> ' + pending.length + ' decision' + (pending.length > 1 ? "s" : "") + ' awaiting your approval</div><button class="btn primary" id="h-appr" style="background:var(--med);border-color:var(--med)">Review approvals <i class="ti ti-arrow-right"></i></button></div>' +
         pending.slice(0, 3).map(function (p) { return '<div class="row" data-id="' + p.id + '" style="display:flex;gap:10px;align-items:center;padding:6px 0;border-top:0.5px solid var(--border2);cursor:pointer">' + window.UI.riskChip(p.a.riskScore) + '<div style="flex:1;font-size:12.5px;font-weight:500">' + window.APP.esc(p.a.provider.name) + ' <span class="tag fwa">' + p.a.fwaType + '</span></div><span class="muted" style="font-size:11px">' + (p.dec.outcome === "confirm" ? "Confirm" : "Escalate") + ' · ' + window.DP.usd(p.a.exposurePost) + '</span></div>'; }).join("") + '</div>' : '') +
       '<div class="card" style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><div style="font-weight:500;font-size:13px">Team workload</div><button class="btn" id="h-team" style="font-size:11px;padding:4px 9px">Manage &amp; assign <i class="ti ti-arrow-right"></i></button></div>' + (teamHtml || '<div class="muted" style="font-size:12px">No assigned work.</div>') + '</div>';
   }
@@ -66,7 +66,7 @@
       ["Amount at risk", window.DP.usdShort(stats.atRisk)],
       ["Recommended: Deny", denies], ["Recommended: Hold", holds]
     ]) +
-      '<div class="card" style="margin-bottom:10px;display:flex;align-items:center;gap:12px;border:0.5px solid #9fe1d8"><i class="ti ti-shield-check" style="color:var(--accent-d);font-size:24px"></i>' +
+      '<div class="card" style="margin-bottom:10px;display:flex;align-items:center;gap:12px;border:0.5px solid #a6c8ff"><i class="ti ti-shield-check" style="color:var(--accent-d);font-size:24px"></i>' +
       '<div style="flex:1"><div style="font-weight:500;font-size:13px">Pre-payment triage queue</div><div style="font-size:11.5px;color:var(--text2)">' + stats.pending + ' claims scored before payment — ' + window.DP.usd(stats.atRisk) + ' at risk. Deny or hold the improper ones before the money leaves the payer.</div></div>' +
       '<button class="btn primary" id="h-triage"><i class="ti ti-player-play"></i> Start triage</button></div>' +
       prepayList("Highest-risk pending claims", top.slice(0, 6));
@@ -84,7 +84,7 @@
   }
 
   function nextCard(a, sub) {
-    return '<div class="card" style="margin-bottom:10px;display:flex;align-items:center;gap:12px;border:0.5px solid #9fe1d8">' +
+    return '<div class="card" style="margin-bottom:10px;display:flex;align-items:center;gap:12px;border:0.5px solid #a6c8ff">' +
       window.UI.riskChip(a.riskScore) +
       '<div style="flex:1"><div style="font-size:10.5px;color:var(--text2);text-transform:none">Next up</div><div style="font-weight:500;font-size:13px">' + window.APP.esc(window.DP.getProvider(a.providerId).name) + ' <span class="tag fwa">' + a.fwaType + '</span></div><div style="font-size:11.5px;color:var(--text2)">' + sub + '</div></div>' +
       '<button class="btn primary" data-id="' + a.id + '" id="h-next"><i class="ti ti-player-play"></i> Review</button></div>';
