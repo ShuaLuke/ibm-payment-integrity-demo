@@ -71,7 +71,7 @@
   };
 
   // the prepay claim the guided story starts from (Sonoran Recovery Center, lead 20721)
-  var SEED_CLAIM = "C00585";
+  var SEED_CLAIM = "C00585", SEED_LEAD = "20721", SEED_AMOUNT = 17280;
 
   // ---------- All networks (portfolio overview) ----------
   function usd(n) { return window.DP.usd(n); }
@@ -80,7 +80,7 @@
   var ovFilter = { geo: "", scheme: "" };
 
   function overviewHtml() {
-    var S = window.NETWORKS.stats(), esc = window.APP.esc;
+    var S = window.NETWORKS.stats(), P = window.NETWORKS.PLAN, esc = window.APP.esc;
     var tile = function (label, val, sub) { return '<div class="card" style="flex:1;min-width:140px;margin:0"><div style="font-size:10.5px;color:var(--text3);text-transform:uppercase;letter-spacing:.04em">' + label + '</div><div style="font-weight:600;font-size:22px;margin-top:2px;font-variant-numeric:tabular-nums">' + val + '</div>' + (sub ? '<div style="font-size:11px;color:var(--text2);margin-top:1px">' + sub + '</div>' : '') + '</div>'; };
     // one 100% bar: cross-state (dark) vs within one state (light), with counts
     var bar = function (label, cross, total, strong) {
@@ -96,17 +96,17 @@
     var split = bar("All networks", S.cross, S.networks, true) + S.byScheme.map(function (b) { return bar(b.label, b.cross, b.total); }).join("");
     var mostCross = S.byScheme.slice().sort(function (a, b) { return pct(b.cross, b.total) - pct(a.cross, a.total); });
     var chip = function (k, v, label) { var on = ovFilter[k] === v; return '<button class="qscope nv-f' + (on ? " active" : "") + '" data-k="' + k + '" data-v="' + v + '">' + label + '</button>'; };
-    return '<div style="display:flex;flex-direction:column;gap:10px">' +
+    return '<div style="display:flex;flex-direction:column;gap:10px">' + funnelHtml() +
       '<div style="display:flex;gap:10px;flex-wrap:wrap">' +
       tile("Networks detected", S.networks, "linked by ownership, TIN, agent, recruiter or address") +
       tile("Cross state lines", S.cross + ' <span style="font-size:14px;color:var(--text2);font-weight:500">· ' + S.crossPct + '%</span>', "providers in 2+ states") +
       tile("Within one state", S.inState + ' <span style="font-size:14px;color:var(--text2);font-weight:500">· ' + (100 - S.crossPct) + '%</span>', "all providers in one state") +
-      tile("Providers involved", S.facilities, S.veterans + " members affected") +
-      tile("Flagged exposure", usd(S.exposure), "flagged paid + pending claims") +
+      tile("Providers involved", S.facilities, S.members.toLocaleString() + " members affected") +
+      tile("Identified at risk", bigUsd(S.atRisk), P.lookbackMonths + "-month lookback · " + S.claims.toLocaleString() + " claims") +
       '</div>' +
       '<div class="card" style="padding:0;overflow:hidden">' +
       '<div style="padding:9px 12px;border-bottom:0.5px solid var(--border2);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">' +
-      '<div style="font-weight:500;font-size:12.5px"><i class="ti ti-chart-dots-3" style="color:var(--accent-d)"></i> Everything connected <span class="muted" style="font-weight:400;font-size:10.5px">· ' + S.networks + ' networks · ' + S.facilities + ' providers · ' + S.veterans + ' members · ' + window.NETWORKS.BRIDGES.length + ' cross-network links</span></div>' +
+      '<div style="font-weight:500;font-size:12.5px"><i class="ti ti-chart-dots-3" style="color:var(--accent-d)"></i> Everything connected <span class="muted" style="font-weight:400;font-size:10.5px">· ' + S.networks + ' networks · ' + S.facilities + ' providers · ' + S.members.toLocaleString() + ' members · ' + window.NETWORKS.BRIDGES.length + ' cross-network links</span></div>' +
       '<div style="font-size:10.5px;color:var(--text3)"><i class="ti ti-pointer"></i> Hover a hub or a red link · click a hub to open its network</div></div>' +
       '<div id="nv-map" style="position:relative;height:540px;background:var(--surface)"></div>' +
       '<div class="legend" style="margin:0;padding:8px 12px;border-top:0.5px solid var(--border2)">' + mapLegend() + '</div></div>' +
@@ -118,10 +118,57 @@
       '<div style="padding:9px 12px;border-bottom:0.5px solid var(--border2);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px"><div style="font-weight:500;font-size:12.5px"><i class="ti ti-affiliate" style="color:var(--accent-d)"></i> Networks <span class="muted" style="font-weight:400;font-size:10.5px">· click a row to open its graph</span></div>' +
       '<div style="display:flex;gap:2px;flex-wrap:wrap;background:var(--surface);border:0.5px solid var(--border);border-radius:8px;padding:2px">' + chip("geo", "", "All") + chip("geo", "cross", "Cross-state") + chip("geo", "in", "One state") + '</div>' +
       '<select class="input" id="nv-scheme" style="width:auto;font-size:12px;padding:4px 8px"><option value="">All scheme types</option>' + window.NETWORKS.SCHEME_ORDER.map(function (k) { return '<option value="' + k + '"' + (ovFilter.scheme === k ? " selected" : "") + '>' + window.NETWORKS.SCHEMES[k].label + '</option>'; }).join("") + '</select></div>' +
-      '<div style="overflow-x:auto"><table style="width:100%"><thead><tr><th>Network</th><th>Scheme</th><th>States</th><th class="right">Providers</th><th class="right">Members</th><th class="right">Exposure</th><th>Status</th><th class="right">Risk</th></tr></thead><tbody id="nv-body">' + rowsHtml() + '</tbody></table></div>' +
-      '<div style="padding:8px 12px;font-size:10.5px;color:var(--text3);border-top:0.5px solid var(--border2)">Exposure = flagged paid + pending claims at the network\'s providers.</div></div>' +
+      '<div style="overflow-x:auto"><table style="width:100%"><thead><tr><th>Network</th><th>Scheme</th><th>States</th><th class="right">Providers</th><th class="right">Members</th><th class="right">At risk · ' + P.lookbackMonths + ' mo</th><th class="right">Flagged now</th><th>Status</th><th class="right">Risk</th></tr></thead><tbody id="nv-body">' + rowsHtml() + '</tbody></table></div>' +
+      '<div style="padding:8px 12px;font-size:10.5px;color:var(--text3);border-top:0.5px solid var(--border2)">At risk = paid claims matching the network\'s pattern over a ' + P.lookbackMonths + '-month lookback. Flagged now = paid + pending claims already flagged at its providers.</div></div>' +
       '</div>';
   }
+  // ---------- one flagged claim → $100M: the funnel + line-by-line contrast ----------
+  function funnelHtml() {
+    var F = window.NETWORKS.funnel(SEED_AMOUNT), S = window.NETWORKS.stats(), P = window.NETWORKS.PLAN, esc = window.APP.esc;
+    var short = bigUsd, total = S.atRisk;
+    var lines = Math.round(total / P.lineAvg), hours = Math.round(lines * P.minutesPerLine / 60);
+    var spend = P.annualClaims * P.lookbackMonths / 12;
+    var stages = F.map(function (f, i) {
+      var last = i === F.length - 1, mult = i ? Math.round(f.amount / F[i - 1].amount) : 0;
+      return (i ? '<div class="fn-arrow" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--text3);min-width:34px"><i class="ti ti-chevron-right" style="font-size:16px"></i><span class="mono" style="font-size:9.5px">×' + mult + '</span></div>' : '') +
+        '<div class="fn-stage" data-k="' + f.key + '" style="flex:1;min-width:128px;border-radius:8px;padding:9px 10px;cursor:pointer;' +
+        (i === 0 ? 'background:var(--high-bg);border:0.5px solid #f3c9c9' : last ? 'background:#10243b;color:#fff' : 'background:var(--surface);border:0.5px solid var(--border)') + '">' +
+        '<div style="font-size:10px;text-transform:uppercase;letter-spacing:.04em;' + (last ? 'color:#7fe0d6' : i === 0 ? 'color:var(--high-tx)' : 'color:var(--text3)') + '">' + esc(f.label) + '</div>' +
+        '<div style="font-weight:600;font-size:' + (last ? 24 : 19) + 'px;margin-top:2px;font-variant-numeric:tabular-nums">' + (i === 0 ? window.DP.usd(f.amount) : short(f.amount)) + '</div>' +
+        '<div style="font-size:10.5px;line-height:1.35;margin-top:2px;' + (last ? 'color:#cfe0f0' : 'color:var(--text2)') + '">' + esc(f.detail) + '</div>' +
+        '<div class="mono" style="font-size:9.5px;margin-top:3px;' + (last ? 'color:#93a7bf' : 'color:var(--text3)') + '">' + esc(f.count) + '</div></div>';
+    }).join("");
+    return '<div class="card" id="nv-funnel" style="margin:0">' +
+      '<div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;margin-bottom:8px">' +
+      '<div style="font-weight:600;font-size:13.5px"><i class="ti ti-zoom-money" style="color:var(--accent-d)"></i> From one flagged claim to ' + short(total) + '</div>' +
+      '<div style="font-size:10.5px;color:var(--text3)">Payer with ' + short(P.annualClaims) + ' in annual claims · ' + P.lookbackMonths + '-month lookback</div></div>' +
+      '<div style="display:flex;align-items:stretch;overflow-x:auto;padding-bottom:2px">' + stages + '</div>' +
+      '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">' +
+      '<div style="flex:1;min-width:240px;border:0.5px dashed var(--border);border-radius:8px;padding:9px 11px;color:var(--text2)">' +
+      '<div style="font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--text3)"><i class="ti ti-list-details"></i> Line by line</div>' +
+      '<div style="font-size:12px;line-height:1.5;margin-top:3px">Finding ' + short(total) + ' one ~$' + (P.lineAvg / 1000) + 'K line at a time means reviewing <b>' + lines.toLocaleString() + ' claim lines</b>, about <b>' + hours.toLocaleString() + ' analyst hours</b> at ' + P.minutesPerLine + ' minutes a line, and still missing the ownership, address and billing-agent links that tie them together.</div></div>' +
+      '<div style="flex:1;min-width:240px;background:var(--accent-l);border:0.5px solid var(--accent);border-radius:8px;padding:9px 11px">' +
+      '<div style="font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--accent-d)"><i class="ti ti-affiliate"></i> Network first</div>' +
+      '<div style="font-size:12px;line-height:1.5;margin-top:3px;color:var(--ink)">One flag opens the network. Analysts work <b>' + S.networks + ' networks</b> of <b>' + S.facilities + ' providers</b> as ' + S.networks + ' cases, each with its evidence already assembled, instead of ' + lines.toLocaleString() + ' separate lines.</div></div></div>' +
+      '<div style="font-size:10.5px;color:var(--text3);margin-top:8px"><i class="ti ti-info-circle"></i> ' + short(total) + ' is ' + (total / spend * 100).toFixed(2) + '% of the ' + short(spend) + ' paid over the lookback. Synthetic figures for demonstration.</div></div>';
+  }
+  // $17,280 · $2.7M · $102.7M · $10B
+  function bigUsd(n) {
+    var t = function (x) { return String(Math.round(x * 10) / 10); };
+    return n >= 1e9 ? "$" + t(n / 1e9) + "B" : n >= 1e6 ? "$" + t(n / 1e6) + "M" : window.DP.usd(n);
+  }
+  function wireFunnel(ov, paint) {
+    ov.querySelectorAll(".fn-stage").forEach(function (el) {
+      el.onclick = function () {
+        var k = el.getAttribute("data-k");
+        if (k === "claim") window.APP.openAllegation(SEED_LEAD);
+        else if (k === "provider") window.APP.openProvider("PR300");
+        else if (k === "network") { paint("chain"); window.scrollTo(0, 0); }
+        else { var m = ov.querySelector(k === "linked" ? "#nv-map" : "#nv-body"); if (m) m.scrollIntoView({ behavior: "smooth", block: "center" }); }
+      };
+    });
+  }
+
   // ---------- the full map: every network on one force graph ----------
   var HUB_COLOR = { chain: "#b5730e", ring: "#c6362f", agent: "#6b4aa0", recruit: "#0f6e56", shell: "#2d5f9a" };
   function mapLegend() {
@@ -129,7 +176,7 @@
     return window.NETWORKS.SCHEME_ORDER.map(function (k) { return dot(HUB_COLOR[k], "#10243b", window.NETWORKS.SCHEMES[k].bizKind, 11); }).join("") +
       dot("#c6362f", "#fbe3e3", "Provider", 9) + dot("#378add", "#cfe3f7", "Affected member", 7) +
       '<span class="lg"><span style="width:18px;height:0;border-top:2px dashed #d9480f"></span>Cross-network link</span>' +
-      '<span class="lg" style="color:var(--text3)">Hub size = exposure</span>';
+      '<span class="lg" style="color:var(--text3)">Hub size = dollars at risk</span>';
   }
   function drawMap(el, paint) {
     if (!el) return;
@@ -137,8 +184,8 @@
     var G = window.NETWORKS.fullGraph(), esc = window.APP.esc;
     var W = el.clientWidth || 1000, H = el.clientHeight || 540;
     d3.select(el).selectAll("*").remove();
-    var maxExp = d3.max(G.nodes.filter(function (n) { return n.kind === "hub"; }), function (n) { return n.exposure; }) || 1;
-    var R = function (n) { return n.kind === "hub" ? 10 + 14 * Math.sqrt(n.exposure / maxExp) : n.kind === "provider" ? 6.5 : 3.2; };
+    var maxExp = d3.max(G.nodes.filter(function (n) { return n.kind === "hub"; }), function (n) { return n.atRisk; }) || 1;
+    var R = function (n) { return n.kind === "hub" ? 10 + 14 * Math.sqrt(n.atRisk / maxExp) : n.kind === "provider" ? 6.5 : 3.2; };
     var pcol = function (r) { return r >= 80 ? "#c6362f" : r >= 50 ? "#c77d11" : "#10243b"; };
     // Pass 1: lay out the 20 hubs (with their cross-network links), then stretch
     // that layout to fill the canvas and pin the hubs in place.
@@ -209,7 +256,7 @@
         focusNets(nets);
         var row = window.NETWORKS.list().filter(function (r) { return r.id === d.net; })[0];
         showTip(e, "<div style='color:#7fe0d6;margin-bottom:2px'>" + esc(window.NETWORKS.SCHEMES[d.scheme].label) + "</div><b>" + esc(d.name) + "</b><div style='color:#93a7bf'>" +
-          row.facilities + " providers · " + row.veterans + " members · " + row.states.join(", ") + "<br>" + window.DP.usd(row.exposure) + " exposure" +
+          row.facilities + " providers · " + row.members.toLocaleString() + " members · " + row.states.join(", ") + "<br>" + bigUsd(row.atRisk) + " at risk · " + row.claims.toLocaleString() + " claims" +
           (br.length ? "<br><span style='color:#ffb89a'>Linked to " + br.length + " other network" + (br.length > 1 ? "s" : "") + "</span>" : "") + "<br>Click to open its network</div>");
       })
       .on("mouseout", reset)
@@ -232,8 +279,8 @@
     var esc = window.APP.esc;
     var rows = window.NETWORKS.list().filter(function (r) {
       return (!ovFilter.geo || (ovFilter.geo === "cross") === r.crossState) && (!ovFilter.scheme || r.scheme === ovFilter.scheme);
-    }).slice().sort(function (a, b) { return b.exposure - a.exposure; });
-    if (!rows.length) return '<tr><td colspan="8" class="muted" style="padding:14px;text-align:center">No networks match these filters.</td></tr>';
+    }).slice().sort(function (a, b) { return b.atRisk - a.atRisk; });
+    if (!rows.length) return '<tr><td colspan="9" class="muted" style="padding:14px;text-align:center">No networks match these filters.</td></tr>';
     return rows.map(function (r) {
       var tone = STATUS_TONE[r.status] || STATUS_TONE.New;
       var states = r.states.map(function (s) { return '<span class="tag" style="font-size:10px">' + s + '</span>'; }).join(" ");
@@ -241,8 +288,9 @@
         '<td><div style="font-weight:500">' + esc(r.name) + '' + '</div><div style="font-size:10.5px;color:var(--text3)">' + esc(r.type) + (r.excluded ? ' · <span style="color:var(--high-tx)">' + r.excluded + ' OIG-excluded</span>' : '') + '</div></td>' +
         '<td style="font-size:11.5px">' + esc(window.NETWORKS.SCHEMES[r.scheme].short) + '</td>' +
         '<td><div style="display:flex;gap:3px;flex-wrap:wrap;align-items:center">' + states + (r.crossState ? ' <i class="ti ti-arrows-exchange" title="Cross-state" style="color:var(--text3);font-size:12px"></i>' : '') + '</div></td>' +
-        '<td class="right mono">' + r.facilities + '</td><td class="right mono">' + r.veterans + '</td>' +
-        '<td class="right mono" style="font-weight:600">' + usd(r.exposure) + '</td>' +
+        '<td class="right mono">' + r.facilities + '</td><td class="right mono">' + r.members.toLocaleString() + '</td>' +
+        '<td class="right mono" style="font-weight:600">' + bigUsd(r.atRisk) + '</td>' +
+        '<td class="right mono" style="color:var(--text2)">' + usd(r.exposure) + '</td>' +
         '<td><span class="pill" style="background:' + tone[0] + ';color:' + tone[1] + ';font-size:10.5px">' + esc(r.status) + '</span></td>' +
         '<td class="right">' + window.UI.riskChip(r.risk) + '</td></tr>';
     }).join("");
@@ -261,6 +309,7 @@
     ov.querySelectorAll(".nv-f").forEach(function (b) { b.onclick = function () { ovFilter[b.getAttribute("data-k")] = b.getAttribute("data-v"); refresh(); }; });
     var sel = ov.querySelector("#nv-scheme"); if (sel) sel.onchange = function () { ovFilter.scheme = sel.value; refresh(); };
     wireRows();
+    wireFunnel(ov, paint);
     drawMap(ov.querySelector("#nv-map"), paint);
   }
   function boxesSynthetic(r, m) {
@@ -272,15 +321,15 @@
     if (r.excluded) chips.push('<span class="tag" style="background:var(--high-bg);color:var(--high-tx)">' + r.excluded + ' OIG-excluded</span>');
     return '<div style="flex:1;background:var(--surface);border:0.5px solid var(--border);border-radius:8px;padding:10px 12px"><div style="font-weight:600;font-size:12.5px;color:var(--ink);margin-bottom:6px"><i class="ti ti-affiliate"></i> ' + esc(r.name) + '</div>' +
       '<div style="display:flex;gap:5px;flex-wrap:wrap">' + chips.join("") + '</div>' +
-      '<div style="font-size:11.5px;color:var(--text2);margin-top:8px;line-height:1.5">' + usd(r.paid) + ' flagged paid + ' + usd(r.pending) + ' pending = <b>' + usd(r.exposure) + '</b> exposure · status <b>' + esc(r.status) + '</b> · risk ' + r.risk + '.</div></div>';
+      '<div style="font-size:11.5px;color:var(--text2);margin-top:8px;line-height:1.5"><b>' + bigUsd(r.atRisk) + '</b> at risk over ' + window.NETWORKS.PLAN.lookbackMonths + ' months (' + r.claims.toLocaleString() + ' claims, ' + r.members.toLocaleString() + ' members) · ' + usd(r.exposure) + ' flagged so far · status <b>' + esc(r.status) + '</b> · risk ' + r.risk + '.</div></div>';
   }
   function exportAll(kind) {
-    var head = ["Network", "Scheme", "Type", "States", "Cross-state", "Providers", "Members affected", "Flagged paid", "Pending", "Exposure", "Status", "Risk"];
-    var rows = window.NETWORKS.list().map(function (r) { return [r.name, window.NETWORKS.SCHEMES[r.scheme].label, r.type, r.states.join("/"), r.crossState ? "Yes" : "No", r.facilities, r.veterans, r.paid, r.pending, r.exposure, r.status, r.risk]; });
-    if (kind === "csv") return window.EXPORT.csv("pivot-networks", head, rows);
-    if (kind === "xls") return window.EXPORT.xls("pivot-networks", "Networks", head, rows);
+    var head = ["Network", "Scheme", "Type", "States", "Cross-state", "Providers", "Members affected", "Claims (36 mo)", "At risk (36 mo)", "Flagged paid", "Pending", "Flagged now", "Status", "Risk"];
+    var rows = window.NETWORKS.list().map(function (r) { return [r.name, window.NETWORKS.SCHEMES[r.scheme].label, r.type, r.states.join("/"), r.crossState ? "Yes" : "No", r.facilities, r.members, r.claims, r.atRisk, r.paid, r.pending, r.exposure, r.status, r.risk]; });
+    if (kind === "csv") return window.EXPORT.csv("networks", head, rows);
+    if (kind === "xls") return window.EXPORT.xls("networks", "Networks", head, rows);
     var S = window.NETWORKS.stats();
-    window.EXPORT.pdf("Detected provider networks", "<div class='sub'>" + S.networks + " networks · " + S.cross + " cross-state (" + S.crossPct + "%) · " + S.facilities + " providers · " + S.veterans + " members affected · " + usd(S.exposure) + " flagged exposure</div>" + window.EXPORT.tableHtml(head, rows));
+    window.EXPORT.pdf("Detected provider networks", "<div class='sub'>" + S.networks + " networks · " + S.cross + " cross-state (" + S.crossPct + "%) · " + S.facilities + " providers · " + S.members.toLocaleString() + " members affected · " + bigUsd(S.atRisk) + " at risk over " + window.NETWORKS.PLAN.lookbackMonths + " months</div>" + window.EXPORT.tableHtml(head, rows));
   }
 
   // export data for the current scenario's collusion subgraph

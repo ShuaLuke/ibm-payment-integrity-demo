@@ -4,7 +4,9 @@
    every other screen. The other 18 are synthetic seed networks, fictional like all
    demo data (TINs use the 00- prefix, NPIs are not issued). Members are generated
    deterministically. Exposure = flagged paid + pending claims at the network's
-   providers. Attaches to window.NETWORKS. */
+   providers. At risk = paid claims matching the network's pattern over a 36-month
+   lookback, sized for a payer with $10B in annual claims (see LOOKBACK).
+   Attaches to window.NETWORKS. */
 (function () {
   var SCHEMES = {
     chain: { label: "Common-ownership chain", short: "Ownership chain", top: "OWNER", mid: "FACILITIES", bizKind: "Holding company", link: "Common ownership" },
@@ -67,6 +69,27 @@
     { a: "N19", b: "N07", type: "Shared members", detail: "Four members billed by the PO Box 9120 labs were also billed by the TIN 00-7314402 clinics." },
     { a: "N11", b: "N18", type: "Same billing agent", detail: "Red Mesa Revenue Partners also submits claims for Mojave Medical Supply." }
   ];
+
+  // Scale of the story: a payer paying $10B a year, reviewed over a 36-month
+  // lookback. atRisk per network is fixed (sums to ~$102.7M); claims and members
+  // follow from the network's provider type (typical claim size, claims per member).
+  var PLAN = { annualClaims: 10e9, lookbackMonths: 36, lineAvg: 3000, minutesPerLine: 15 };
+  var LOOKBACK = {
+    N01: 9840000, N02: 3120000, N03: 12600000, N04: 5350000, N05: 3480000, N06: 6920000, N07: 2870000,
+    N08: 2140000, N09: 4660000, N10: 11260000, N11: 4730000, N12: 3050000, N13: 940000, N14: 9180000,
+    N15: 4520000, N16: 2410000, N17: 3960000, N18: 6370000, N19: 3580000, N20: 1710000
+  };
+  var TYPE_SCALE = { // typical paid claim, claims per affected member
+    "Residential rehab": [16100, 2.8], "Home health": [3100, 9], "Physical therapy": [420, 24], "Skilled nursing": [9800, 3],
+    "Clinics": [380, 11], "Clinical labs": [950, 6], "DME suppliers": [1450, 5], "Pharmacies": [2600, 14]
+  };
+  // the flagged claim's own provider (Sonoran Recovery Center), same pattern, same lookback
+  var SEED_PROVIDER = { id: "PR300", name: "Sonoran Recovery Center", claims: 168, atRisk: 2709840 };
+  function lookback(r) {
+    var t = TYPE_SCALE[r.type] || [1000, 5], atRisk = LOOKBACK[r.id] || 0, claims = Math.round(atRisk / t[0]);
+    r.atRisk = atRisk; r.claims = claims; r.members = Math.max(r.veterans, Math.round(claims / t[1]));
+    return r;
+  }
 
   var FIRST = ["James", "Maria", "Robert", "Linda", "Michael", "Patricia", "David", "Barbara", "William", "Elizabeth", "Richard", "Susan", "Joseph", "Jessica", "Thomas", "Sarah", "Charles", "Karen", "Daniel", "Nancy", "Anthony", "Lisa", "Mark", "Betty", "Steven", "Sandra", "Kevin", "Donna", "Brian", "Carol", "George", "Ruth", "Edward", "Sharon", "Ronald", "Michelle", "Kenneth", "Laura", "Gary", "Angela"];
   var LAST = ["Alvarez", "Brennan", "Castillo", "Dawson", "Ellison", "Fairbanks", "Gallagher", "Hollis", "Ingram", "Jarvis", "Kowalczyk", "Lindqvist", "Mercado", "Nakamura", "Oyelaran", "Pritchard", "Quintero", "Rasmussen", "Sokolov", "Thibodeaux", "Underwood", "Valdez", "Whitfield", "Yancey", "Zimmerman", "Abernathy", "Bustamante", "Cordova", "Delacroix", "Espinoza"];
@@ -148,7 +171,7 @@
     list: function () {
       if (!cache) {
         cache = [coreRow("N01", "chain", "PR300", "Under review"), coreRow("N02", "ring", "PR001", "Case open")].concat(SEED.map(seedRow));
-        cache.forEach(function (r) { r.crossState = r.states.length > 1; });
+        cache.forEach(function (r) { r.crossState = r.states.length > 1; lookback(r); });
       }
       return cache;
     },
@@ -161,7 +184,7 @@
       NETWORKS.list().forEach(function (r) {
         var m = r.core ? coreModel(r) : NETWORKS.model(r.id);
         var hub = "H-" + r.id;
-        add({ id: hub, kind: "hub", net: r.id, name: r.name, scheme: r.scheme, exposure: r.exposure, states: r.states, core: r.core, scenario: r.scenario });
+        add({ id: hub, kind: "hub", net: r.id, name: r.name, scheme: r.scheme, exposure: r.exposure, atRisk: r.atRisk, states: r.states, core: r.core, scenario: r.scenario });
         m.providers.forEach(function (p) {
           add({ id: p.id, kind: "provider", net: r.id, name: p.name, state: p.state, risk: p.riskScore || 0, excluded: !!(p.excluded || (window.DP.LEIE_EXCLUSIONS && window.DP.LEIE_EXCLUSIONS[p.id])) });
           links.push({ source: hub, target: p.id, kind: "hub" });
@@ -182,7 +205,26 @@
         return { scheme: k, label: SCHEMES[k].label, total: rs.length, cross: c, inState: rs.length - c, exposure: rs.reduce(function (t, r) { return t + r.exposure; }, 0) };
       });
       return { networks: rows.length, cross: cross, inState: rows.length - cross, crossPct: Math.round(cross / rows.length * 100),
-        facilities: sum("facilities"), veterans: sum("veterans"), exposure: sum("exposure"), byScheme: byScheme };
+        facilities: sum("facilities"), veterans: sum("veterans"), exposure: sum("exposure"), byScheme: byScheme,
+        atRisk: sum("atRisk"), claims: sum("claims"), members: sum("members") };
+    },
+    PLAN: PLAN,
+    // One flagged claim → its provider → its network → networks linked to it → the
+    // whole portfolio. Each stage is a superset of the one before.
+    funnel: function (seedAmount) {
+      var rows = NETWORKS.list(), byId = {}; rows.forEach(function (r) { byId[r.id] = r; });
+      var home = byId.N01, seen = { N01: 1 }, q = ["N01"];
+      while (q.length) { var c = q.shift(); BRIDGES.forEach(function (b) { var o = b.a === c ? b.b : b.b === c ? b.a : null; if (o && !seen[o]) { seen[o] = 1; q.push(o); } }); }
+      var linked = Object.keys(seen).map(function (id) { return byId[id]; });
+      var lsum = function (k) { return linked.reduce(function (t, r) { return t + r[k]; }, 0); };
+      var S = NETWORKS.stats();
+      return [
+        { key: "claim", label: "One flagged claim", amount: seedAmount, detail: "Sonoran Recovery Center · stopped before payment", count: "1 claim" },
+        { key: "provider", label: "Same provider, same pattern", amount: SEED_PROVIDER.atRisk, detail: SEED_PROVIDER.name + " · 36-month lookback", count: SEED_PROVIDER.claims + " claims" },
+        { key: "network", label: "Its network", amount: home.atRisk, detail: home.name + " · " + home.facilities + " facilities · " + home.states.join(", "), count: home.claims.toLocaleString() + " claims · " + home.members + " members" },
+        { key: "linked", label: "Networks linked to it", amount: lsum("atRisk"), detail: linked.length + " networks sharing an address or billing agent", count: lsum("claims").toLocaleString() + " claims" },
+        { key: "portfolio", label: "Same patterns, every network", amount: S.atRisk, detail: S.networks + " networks · " + S.facilities + " providers · 5 scheme types", count: S.claims.toLocaleString() + " claims · " + S.members.toLocaleString() + " members" }
+      ];
     }
   };
   window.NETWORKS = NETWORKS;
