@@ -98,7 +98,7 @@
     var rs = document.getElementById("role-switch"); if (!rs) return;
     var b = document.createElement("button");
     b.id = "signout-btn"; b.title = "Sign out";
-    b.style.cssText = "background:rgba(255,255,255,0.08);border:0.5px solid rgba(255,255,255,0.2);border-radius:7px;color:#e0e0e0;cursor:pointer;padding:5px 9px;font-family:inherit;font-size:12px";
+    b.style.cssText = "background:rgba(255,255,255,0.08);border:0.5px solid rgba(255,255,255,0.2);border-radius:7px;color:#dde1e6;cursor:pointer;padding:5px 9px;font-family:inherit;font-size:12px";
     b.innerHTML = '<i class="ti ti-logout"></i>';
     b.onclick = function () { window.APP.signOut(); };
     rs.parentNode.appendChild(b);
@@ -112,15 +112,15 @@
     o.style.cssText = "position:fixed;inset:0;z-index:400;background:radial-gradient(1100px 700px at 85% 100%,rgba(15,98,254,.22),rgba(15,98,254,0) 70%),#fff;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Sans',sans-serif";
     o.innerHTML =
       '<div style="width:380px;max-width:92vw;background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 12px 48px rgba(0,0,0,0.4)">' +
-      '<div style="background:#161616;padding:20px;text-align:center"><div style="color:#fff;font-weight:400;font-size:18px;letter-spacing:.1px;margin-top:2px">IBM <b style="font-weight:600">Payment Integrity</b></div><div style="color:#c6c6c6;font-size:11px">Detect · Investigate · Recover</div></div>' +
+      '<div style="background:#001141;padding:20px;text-align:center"><div style="color:#fff;font-weight:400;font-size:18px;letter-spacing:.1px;margin-top:2px">IBM <b style="font-weight:600">Payment Integrity</b></div><div style="color:#c1c7cd;font-size:11px">Detect · Investigate · Recover</div></div>' +
       '<div style="padding:20px">' +
-      '<div style="font-size:12px;color:#525252;margin-bottom:10px">Sign in to continue</div>' +
-      '<input id="lg-email" placeholder="Email" value="analyst@example.com" style="width:100%;padding:9px 11px;border:0.5px solid #c6c6c6;border-radius:8px;font-size:13px;margin-bottom:8px;font-family:inherit">' +
-      '<input id="lg-pass" type="password" placeholder="Password" style="width:100%;padding:9px 11px;border:0.5px solid #c6c6c6;border-radius:8px;font-size:13px;font-family:inherit">' +
+      '<div style="font-size:12px;color:#4d5358;margin-bottom:10px">Sign in to continue</div>' +
+      '<input id="lg-email" placeholder="Email" value="analyst@example.com" style="width:100%;padding:9px 11px;border:0.5px solid #c1c7cd;border-radius:8px;font-size:13px;margin-bottom:8px;font-family:inherit">' +
+      '<input id="lg-pass" type="password" placeholder="Password" style="width:100%;padding:9px 11px;border:0.5px solid #c1c7cd;border-radius:8px;font-size:13px;font-family:inherit">' +
       '<div id="lg-err" style="color:#b91c1c;font-size:11.5px;min-height:16px;margin:6px 0"></div>' +
       '<button id="lg-go" style="width:100%;background:#0f62fe;color:#fff;border:none;border-radius:8px;padding:10px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit">Sign in</button>' +
-      '<div style="display:flex;gap:8px;margin-top:12px"><button class="lg-quick" data-e="analyst@example.com" style="flex:1;background:#f4f4f4;border:0.5px solid #e0e0e0;border-radius:8px;padding:8px;font-size:11.5px;cursor:pointer;font-family:inherit">Use Analyst email</button><button class="lg-quick" data-e="supervisor@example.com" style="flex:1;background:#f4f4f4;border:0.5px solid #e0e0e0;border-radius:8px;padding:8px;font-size:11.5px;cursor:pointer;font-family:inherit">Use Supervisor email</button></div>' +
-      '<div style="font-size:10px;color:#8d8d8d;text-align:center;margin-top:12px"><i class="ti ti-shield-lock"></i> Synthetic data · demonstration only</div>' +
+      '<div style="display:flex;gap:8px;margin-top:12px"><button class="lg-quick" data-e="analyst@example.com" style="flex:1;background:#f2f4f8;border:0.5px solid #dde1e6;border-radius:8px;padding:8px;font-size:11.5px;cursor:pointer;font-family:inherit">Use Analyst email</button><button class="lg-quick" data-e="supervisor@example.com" style="flex:1;background:#f2f4f8;border:0.5px solid #dde1e6;border-radius:8px;padding:8px;font-size:11.5px;cursor:pointer;font-family:inherit">Use Supervisor email</button></div>' +
+      '<div style="font-size:10px;color:#878d96;text-align:center;margin-top:12px"><i class="ti ti-shield-lock"></i> Synthetic data · demonstration only</div>' +
       '</div></div>';
     document.body.appendChild(o);
     function go() {

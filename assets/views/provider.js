@@ -93,7 +93,7 @@
         '<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px"><div style="font-weight:500;font-size:13px">Provider report card</div>' +
         '<span class="muted" style="font-size:11px">' + outlierCount + ' of ' + groups.length + ' groups are outliers · click a spoke to drill in</span></div>' +
         '<div style="display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap">' +
-        '<div style="flex:none">' + radarSvg(groups, selGroup) + '<div style="display:flex;gap:14px;justify-content:center;font-size:10.5px;color:var(--text2);margin-top:2px"><span><span style="display:inline-block;width:9px;height:9px;background:var(--accent);border-radius:2px;vertical-align:middle"></span> This provider</span><span><span style="display:inline-block;width:10px;height:0;border-top:2px dashed #a8a8a8;vertical-align:middle"></span> Peer norm</span></div></div>' +
+        '<div style="flex:none">' + radarSvg(groups, selGroup) + '<div style="display:flex;gap:14px;justify-content:center;font-size:10.5px;color:var(--text2);margin-top:2px"><span><span style="display:inline-block;width:9px;height:9px;background:var(--accent);border-radius:2px;vertical-align:middle"></span> This provider</span><span><span style="display:inline-block;width:10px;height:0;border-top:2px dashed #a2a9b0;vertical-align:middle"></span> Peer norm</span></div></div>' +
         '<div style="flex:1;min-width:220px" id="pv-drill">' + drillHtml(p, card, selGroup) + '</div>' +
         '</div></div>' +
 
@@ -222,22 +222,22 @@
     var pt = function (i, v) { var ang = -Math.PI / 2 + i * 2 * Math.PI / n; var r = (v / 100) * R; return [cx + r * Math.cos(ang), cy + r * Math.sin(ang)]; };
     var grid = [25, 50, 75, 100].map(function (lvl) {
       var pts = groups.map(function (_, i) { return pt(i, lvl).join(","); }).join(" ");
-      return '<polygon points="' + pts + '" fill="none" stroke="#e0e0e0" stroke-width="1"></polygon>';
+      return '<polygon points="' + pts + '" fill="none" stroke="#dde1e6" stroke-width="1"></polygon>';
     }).join("");
-    var axes = groups.map(function (_, i) { var e = pt(i, 100); return '<line x1="' + cx + '" y1="' + cy + '" x2="' + e[0] + '" y2="' + e[1] + '" stroke="#e0e0e0" stroke-width="1"></line>'; }).join("");
+    var axes = groups.map(function (_, i) { var e = pt(i, 100); return '<line x1="' + cx + '" y1="' + cy + '" x2="' + e[0] + '" y2="' + e[1] + '" stroke="#dde1e6" stroke-width="1"></line>'; }).join("");
     var peerPts = groups.map(function (g, i) { return pt(i, g.peer).join(","); }).join(" ");
     var provPts = groups.map(function (g, i) { return pt(i, g.score).join(","); }).join(" ");
-    var peerPoly = '<polygon points="' + peerPts + '" fill="none" stroke="#a8a8a8" stroke-width="1.5" stroke-dasharray="4,3"></polygon>';
+    var peerPoly = '<polygon points="' + peerPts + '" fill="none" stroke="#a2a9b0" stroke-width="1.5" stroke-dasharray="4,3"></polygon>';
     var provPoly = '<polygon points="' + provPts + '" fill="rgba(15,98,254,0.18)" stroke="#0f62fe" stroke-width="2"></polygon>';
-    var dots = groups.map(function (g, i) { var c = pt(i, g.score); return '<circle cx="' + c[0] + '" cy="' + c[1] + '" r="' + (g.outlier ? 4.5 : 3) + '" fill="' + (g.outlier ? "#da1e28" : "#0f62fe") + '"></circle>'; }).join("");
+    var dots = groups.map(function (g, i) { var c = pt(i, g.score); return '<circle cx="' + c[0] + '" cy="' + c[1] + '" r="' + (g.outlier ? 4.5 : 3) + '" fill="' + (g.outlier ? "#c6362f" : "#0f62fe") + '"></circle>'; }).join("");
     var labels = groups.map(function (g, i) {
       var l = pt(i, 128); var anchor = Math.abs(l[0] - cx) < 12 ? "middle" : (l[0] < cx ? "end" : "start");
       var isSel = g.group === sel;
       var short = g.group.replace(" & ", " &\n").split("\n");
       var nm = g.group === "Charge & Payment" ? "Charge/Pay" : g.group === "Diagnostic Testing" ? "Diagnostic" : g.group === "Distance / Travel" ? "Distance" : g.group;
       return '<g data-group="' + window.APP.esc(g.group) + '"><rect x="' + (anchor === "end" ? l[0] - 64 : anchor === "middle" ? l[0] - 32 : l[0]) + '" y="' + (l[1] - 15) + '" width="64" height="28" fill="' + (isSel ? "rgba(15,98,254,0.12)" : "transparent") + '" rx="4"></rect>' +
-        '<text x="' + l[0] + '" y="' + (l[1] - 2) + '" text-anchor="' + anchor + '" font-size="10" font-family="IBM Plex Sans,sans-serif" font-weight="' + (isSel ? "600" : "500") + '" fill="' + (g.outlier ? "#a2191f" : "#161616") + '">' + nm + (g.outlier ? " ▲" : "") + '</text>' +
-        '<text x="' + l[0] + '" y="' + (l[1] + 10) + '" text-anchor="' + anchor + '" font-size="9.5" font-family="IBM Plex Mono,monospace" fill="#525252">' + g.score + ' vs ' + g.peer + '</text></g>';
+        '<text x="' + l[0] + '" y="' + (l[1] - 2) + '" text-anchor="' + anchor + '" font-size="10" font-family="IBM Plex Sans,sans-serif" font-weight="' + (isSel ? "600" : "500") + '" fill="' + (g.outlier ? "#8b1a13" : "#001141") + '">' + nm + (g.outlier ? " ▲" : "") + '</text>' +
+        '<text x="' + l[0] + '" y="' + (l[1] + 10) + '" text-anchor="' + anchor + '" font-size="9.5" font-family="IBM Plex Mono,monospace" fill="#4d5358">' + g.score + ' vs ' + g.peer + '</text></g>';
     }).join("");
     return '<div class="pv-radar-holder"><svg viewBox="-56 0 412 300" width="330" height="240" style="display:block">' + grid + axes + peerPoly + provPoly + dots + labels + '</svg></div>';
   }
@@ -272,7 +272,7 @@
         var self = r.id === id;
         var w = Math.round(r.score / Math.max(max, 1) * 100);
         return '<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:3px"><span' + (self ? ' style="font-weight:600;color:var(--accent-d)"' : '') + '>' + window.APP.esc(r.name) + (self ? ' ◀ this provider' : '') + ' <span class="muted" style="font-weight:400">· ' + window.APP.esc(r.specialty || "") + '</span></span><span style="font-weight:500' + (r.outlier ? ';color:var(--high-tx)' : '') + '">' + r.score + '</span></div>' +
-          '<div style="height:10px;background:var(--border2);border-radius:4px;position:relative"><div style="height:100%;width:' + w + '%;background:' + (self ? "var(--accent)" : r.outlier ? "var(--high)" : "#c6c6c6") + ';border-radius:4px 0 0 4px"></div><div style="position:absolute;left:' + peerPct + '%;top:-2px;bottom:-2px;width:2px;background:var(--ink);border-radius:1px"></div></div></div>';
+          '<div style="height:10px;background:var(--border2);border-radius:4px;position:relative"><div style="height:100%;width:' + w + '%;background:' + (self ? "var(--accent)" : r.outlier ? "var(--high)" : "#c1c7cd") + ';border-radius:4px 0 0 4px"></div><div style="position:absolute;left:' + peerPct + '%;top:-2px;bottom:-2px;width:2px;background:var(--ink);border-radius:1px"></div></div></div>';
       }).join("") +
       '<div style="font-size:10.5px;color:var(--text3);margin-top:4px"><i class="ti ti-caret-down-filled" style="color:var(--ink)"></i> Dark line = peer norm (' + peer + '). Red bars = outlier providers; teal = the provider in view.</div>';
   }
@@ -458,7 +458,7 @@
 
     // approved
     if (r && r.status === "approved") {
-      return '<div class="card" id="pv-review" style="border-color:#a7f0ba">' +
+      return '<div class="card" id="pv-review" style="border-color:#bfe0c9">' +
         '<div style="display:flex;align-items:center;gap:8px"><i class="ti ti-checks" style="color:var(--low);font-size:20px"></i>' +
         '<div><div style="font-weight:500;font-size:13px">Case approved</div>' +
         '<div class="muted" style="font-size:11px">Approved by ' + window.APP.esc(r.reviewedBy) + ' · ' + window.APP.fmtTs(r.reviewedAt) + ' — ready for disposition below.</div></div></div></div>';
@@ -481,9 +481,9 @@
     }
     // returned — analyst revises & resubmits
     if (r && r.status === "returned") {
-      return '<div class="card" id="pv-review" style="border-color:#fddc69">' +
+      return '<div class="card" id="pv-review" style="border-color:#e7c99a">' +
         '<div style="font-weight:500;font-size:13px;margin-bottom:6px"><i class="ti ti-corner-up-left" style="color:var(--med-tx)"></i> Returned by the supervisor</div>' +
-        '<div style="background:var(--med-bg);border:0.5px solid #fddc69;border-radius:7px;padding:8px 10px;font-size:11.5px;color:var(--med-tx)">' + window.APP.esc(r.reviewedBy) + ': ' + window.APP.esc(r.note || "(no note)") + '</div>' +
+        '<div style="background:var(--med-bg);border:0.5px solid #e7c99a;border-radius:7px;padding:8px 10px;font-size:11.5px;color:var(--med-tx)">' + window.APP.esc(r.reviewedBy) + ': ' + window.APP.esc(r.note || "(no note)") + '</div>' +
         (sup ? '' : '<div style="margin-top:8px"><button class="btn primary" id="pv-review-submit" style="font-size:11px"' + (hasNarr ? "" : " disabled") + '><i class="ti ti-send"></i> Revise &amp; resubmit for review</button></div>') +
         '</div>';
     }
@@ -521,7 +521,7 @@
     var c = closed ? window.APP.state.closedCases[pid] : null;
     var sup = window.APP.isSupervisor();
     var refBox = ref
-      ? '<div style="background:var(--med-bg);border:0.5px solid #fddc69;border-radius:7px;padding:8px 10px;font-size:11.5px;color:var(--med-tx)"><i class="ti ti-send"></i> <b>Referred to ' + window.APP.esc(ref.label) + '</b> by ' + window.APP.esc(ref.by) + ' · ' + window.APP.fmtTs(ref.ts) + (ref.note ? '<div style="margin-top:3px">' + window.APP.esc(ref.note) + '</div>' : '') + '</div>'
+      ? '<div style="background:var(--med-bg);border:0.5px solid #e7c99a;border-radius:7px;padding:8px 10px;font-size:11.5px;color:var(--med-tx)"><i class="ti ti-send"></i> <b>Referred to ' + window.APP.esc(ref.label) + '</b> by ' + window.APP.esc(ref.by) + ' · ' + window.APP.fmtTs(ref.ts) + (ref.note ? '<div style="margin-top:3px">' + window.APP.esc(ref.note) + '</div>' : '') + '</div>'
       : '';
     if (closed) {
       return '<div class="card" id="pv-auth">' +
@@ -619,7 +619,7 @@
     var r = window.DP.getRiskIntel(id); if (!r) return "";
     var esc = window.APP.esc;
     var SEV = {
-      critical: ["var(--high-bg)", "var(--high-tx)", "alert-octagon"], high: ["#fff2e8", "#8e6a00", "alert-triangle"],
+      critical: ["var(--high-bg)", "var(--high-tx)", "alert-octagon"], high: ["#fbe6cf", "#9a5b12", "alert-triangle"],
       medium: ["var(--med-bg)", "var(--med-tx)", "alert-circle"], low: ["var(--surface)", "var(--text2)", "info-circle"],
       info: ["var(--low-bg)", "var(--low-tx)", "circle-check"]
     };
@@ -774,7 +774,7 @@
   // ---------- licensure & credentials (incl. OIG LEIE exclusion) ----------
   function licensureCard(id) {
     var L = window.DP.getLicensure(id); if (!L) return "";
-    var st = { "Excluded": ["circle-x", "var(--high-tx)", "var(--high-bg)", "#ffd7d9"], "Action needed": ["alert-triangle", "var(--med-tx)", "var(--med-bg)", "#fddc69"], "Clear": ["circle-check", "var(--low-tx)", "var(--low-bg)", "#a7f0ba"] }[L.status];
+    var st = { "Excluded": ["circle-x", "var(--high-tx)", "var(--high-bg)", "#f3c9c9"], "Action needed": ["alert-triangle", "var(--med-tx)", "var(--med-bg)", "#e7c99a"], "Clear": ["circle-check", "var(--low-tx)", "var(--low-bg)", "#bfe0c9"] }[L.status];
     var credBad = function (s) { return /Suspended|Lapsed|Expired|Deactivated|Retired|Not certified|Under review|Revalidation/.test(s); };
     var credChip = function (s) {
       var warn = credBad(s), red = /Suspended|Deactivated|Not certified|Retired/.test(s);
@@ -787,7 +787,7 @@
         credChip(c.status) + '</div>';
     }).join("");
     var exclBanner = L.exclusion
-      ? '<div style="background:var(--high-bg);border:0.5px solid #ffd7d9;border-radius:7px;padding:10px 12px;margin-bottom:9px">' +
+      ? '<div style="background:var(--high-bg);border:0.5px solid #f3c9c9;border-radius:7px;padding:10px 12px;margin-bottom:9px">' +
         '<div style="font-weight:600;font-size:12.5px;color:var(--high-tx)"><i class="ti ti-ban"></i> OIG LEIE exclusion — provider is excluded from federal health-care programs</div>' +
         '<div style="font-size:11.5px;color:var(--high-tx);margin-top:4px;line-height:1.55">Basis <b>' + window.APP.esc(L.exclusion.basis) + '</b> · ' + window.APP.esc(L.exclusion.reason) + '. Excluded since ' + window.APP.esc(L.exclusion.since) + (L.exclusion.reinstatement ? '; earliest reinstatement ' + window.APP.esc(L.exclusion.reinstatement) : '; no reinstatement date') + '.</div>' +
         '<div style="font-size:11.5px;color:var(--high-tx);margin-top:5px"><i class="ti ti-alert-triangle"></i> <b>Any claim paid during the exclusion period is an improper payment recoverable in full</b> — this is an automatic finding independent of coding review.</div></div>'

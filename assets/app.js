@@ -115,9 +115,9 @@
       var b = document.getElementById("sup-badge");
       if (b) { b.textContent = n + cr; b.style.display = ((n + cr) && APP.isSupervisor()) ? "inline-block" : "none"; }
       var sb = document.getElementById("sub-appr-badge");
-      if (sb) sb.innerHTML = n ? '<span class="tag" style="background:#eb6200;color:#fff">' + n + '</span>' : "";
+      if (sb) sb.innerHTML = n ? '<span class="tag" style="background:#c77d11;color:#fff">' + n + '</span>' : "";
       var cb = document.getElementById("sub-casereview-badge");
-      if (cb) cb.innerHTML = cr ? '<span class="tag" style="background:#eb6200;color:#fff">' + cr + '</span>' : "";
+      if (cb) cb.innerHTML = cr ? '<span class="tag" style="background:#c77d11;color:#fff">' + cr + '</span>' : "";
     },
 
     decisionFor: function (id) { return APP.state.decisions[id] || null; },

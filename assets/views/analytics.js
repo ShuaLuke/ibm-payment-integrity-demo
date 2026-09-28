@@ -38,7 +38,7 @@
         kpi("Open / closed", base.openAllegations + " / " + base.closedAllegations.toLocaleString()) +
         kpi("Avg days to close", base.avgTimeToCompletionDays) +
         '</div>' +
-        '<div class="card" style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div style="font-weight:500;font-size:13px">Trends — flagged exposure &amp; recovery (last 8 months)</div><div style="font-size:11px"><span style="color:#0f62fe">■</span> exposure <span style="color:#24a148;margin-left:8px">■</span> recovered <span style="color:#c8cdd5;margin-left:8px">▮</span> flagged count</div></div>' + trendChart(window.DP.getTrends()) + '</div>' +
+        '<div class="card" style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div style="font-weight:500;font-size:13px">Trends — flagged exposure &amp; recovery (last 8 months)</div><div style="font-size:11px"><span style="color:#0f62fe">■</span> exposure <span style="color:#1f8a5b;margin-left:8px">■</span> recovered <span style="color:#c8cdd5;margin-left:8px">▮</span> flagged count</div></div>' + trendChart(window.DP.getTrends()) + '</div>' +
         '<div style="display:grid;grid-template-columns:1.3fr 1fr;gap:10px;margin-bottom:10px">' +
         '<div class="card"><div style="font-weight:500;font-size:13px;margin-bottom:10px">Exposure by anomaly type</div>' +
         anoRows.map(function (r) {
@@ -48,7 +48,7 @@
         '<div class="card"><div style="font-weight:500;font-size:13px;margin-bottom:10px">Detection source</div>' +
         srcBar("ML / AI models", src["Pattern Recognition"], allegs.length, "#0f62fe") +
         srcBar("Rules engine", src["Rules Engine"], allegs.length, "#1192e8") +
-        srcBar("Both", src["Both"], allegs.length, "#eb6200") +
+        srcBar("Both", src["Both"], allegs.length, "#c77d11") +
         '<div style="font-size:11px;color:var(--text2);margin-top:8px;line-height:1.5">ML/AI composite anomaly models drive volume; rules provide defensible, citation-backed edits. Cases flagged by <span style="font-weight:500">both</span> carry the highest confidence.</div></div>' +
         '</div>' +
         '<div class="card" style="margin-bottom:10px"><div style="font-weight:500;font-size:13px;margin-bottom:9px">Human-in-the-loop feedback <span class="muted" style="font-weight:400;font-size:11px">· confirmed &amp; dismissed outcomes feed model retraining</span></div>' + hitlHtml() + '</div>' +
@@ -90,13 +90,13 @@
     var x = function (i) { return pl + (n === 1 ? iw / 2 : i * iw / (n - 1)); };
     var y = function (v) { return pt + ih - (v / maxExp) * ih; };
     var bw = iw / n * 0.4;
-    var bars = tr.map(function (t, i) { var bh = (t.flagged / maxCnt) * ih * 0.5; return '<rect x="' + (x(i) - bw / 2) + '" y="' + (pt + ih - bh) + '" width="' + bw + '" height="' + bh + '" fill="#e0e0e0" rx="2"></rect>'; }).join("");
+    var bars = tr.map(function (t, i) { var bh = (t.flagged / maxCnt) * ih * 0.5; return '<rect x="' + (x(i) - bw / 2) + '" y="' + (pt + ih - bh) + '" width="' + bw + '" height="' + bh + '" fill="#dde1e6" rx="2"></rect>'; }).join("");
     var expLine = tr.map(function (t, i) { return x(i) + "," + y(t.exposure); }).join(" ");
     var recLine = tr.map(function (t, i) { return x(i) + "," + y(t.recovered); }).join(" ");
     var area = "M" + x(0) + "," + (pt + ih) + " L" + tr.map(function (t, i) { return x(i) + "," + y(t.exposure); }).join(" L") + " L" + x(n - 1) + "," + (pt + ih) + " Z";
-    var dots = tr.map(function (t, i) { return '<circle cx="' + x(i) + '" cy="' + y(t.exposure) + '" r="3" fill="#0f62fe"></circle><circle cx="' + x(i) + '" cy="' + y(t.recovered) + '" r="2.5" fill="#24a148"></circle>'; }).join("");
-    var labels = tr.map(function (t, i) { return '<text x="' + x(i) + '" y="' + (H - 7) + '" font-size="9" fill="#8d8d8d" text-anchor="middle" font-family="IBM Plex Mono,monospace">' + t.month.slice(2) + '</text>'; }).join("");
-    return '<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%" preserveAspectRatio="none" style="display:block;height:180px">' + bars + '<path d="' + area + '" fill="rgba(15,98,254,0.10)"></path><polyline points="' + expLine + '" fill="none" stroke="#0f62fe" stroke-width="2"></polyline><polyline points="' + recLine + '" fill="none" stroke="#24a148" stroke-width="2" stroke-dasharray="4,3"></polyline>' + dots + labels + '</svg>';
+    var dots = tr.map(function (t, i) { return '<circle cx="' + x(i) + '" cy="' + y(t.exposure) + '" r="3" fill="#0f62fe"></circle><circle cx="' + x(i) + '" cy="' + y(t.recovered) + '" r="2.5" fill="#1f8a5b"></circle>'; }).join("");
+    var labels = tr.map(function (t, i) { return '<text x="' + x(i) + '" y="' + (H - 7) + '" font-size="9" fill="#878d96" text-anchor="middle" font-family="IBM Plex Mono,monospace">' + t.month.slice(2) + '</text>'; }).join("");
+    return '<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%" preserveAspectRatio="none" style="display:block;height:180px">' + bars + '<path d="' + area + '" fill="rgba(15,98,254,0.10)"></path><polyline points="' + expLine + '" fill="none" stroke="#0f62fe" stroke-width="2"></polyline><polyline points="' + recLine + '" fill="none" stroke="#1f8a5b" stroke-width="2" stroke-dasharray="4,3"></polyline>' + dots + labels + '</svg>';
   }
 
   function hitlHtml() {

@@ -4,8 +4,8 @@
 (function () {
   var LINK_RANK = { SHARES_TIN: 5, SHARES_REGISTRATION: 4, SHARES_OFFICER: 3, REFERRED_TO: 2, SHARES_PATIENT_WITH: 1 };
   var LINK_COLOR = {
-    SHARES_TIN: "#da1e28", SHARES_REGISTRATION: "#b28600", SHARES_OFFICER: "#8a3ffc",
-    REFERRED_TO: "#0043ce", SHARES_PATIENT_WITH: "#8d8d8d"
+    SHARES_TIN: "#c6362f", SHARES_REGISTRATION: "#b5730e", SHARES_OFFICER: "#8a3ffc",
+    REFERRED_TO: "#0043ce", SHARES_PATIENT_WITH: "#878d96"
   };
 
   // Fold the many provider↔provider edges into one summary per pair.
@@ -82,13 +82,13 @@
   // Plain-language explainability block (why this is likely collusion).
   function narrativeHtml(s) {
     if (!s || !s.isRing) {
-      return '<div style="display:flex;align-items:flex-start;gap:9px;background:var(--low-bg);border:0.5px solid #a7f0ba;border-radius:8px;padding:10px 12px">' +
+      return '<div style="display:flex;align-items:flex-start;gap:9px;background:var(--low-bg);border:0.5px solid #bfe0c9;border-radius:8px;padding:10px 12px">' +
         '<i class="ti ti-circle-check" style="color:var(--low-tx);margin-top:1px"></i>' +
         '<div style="font-size:11.5px;color:var(--low-tx);line-height:1.5"><span style="font-weight:600">No collusion network detected.</span> This provider bills in isolation — no shared TIN, ownership, referrals or cross-billed patients link it to another flagged provider. The flag stands on the claim\'s own merits.</div></div>';
     }
     // signal chips
     var chips = [];
-    var chip = function (icon, txt, strong) { return '<span style="display:inline-flex;align-items:center;gap:4px;background:' + (strong ? "var(--high-bg)" : "var(--surface)") + ';border:0.5px solid ' + (strong ? "#ffd7d9" : "var(--border)") + ';color:' + (strong ? "var(--high-tx)" : "var(--text2)") + ';border-radius:999px;padding:2px 9px;font-size:11px;font-weight:500"><i class="ti ti-' + icon + '"></i>' + txt + '</span>'; };
+    var chip = function (icon, txt, strong) { return '<span style="display:inline-flex;align-items:center;gap:4px;background:' + (strong ? "var(--high-bg)" : "var(--surface)") + ';border:0.5px solid ' + (strong ? "#f3c9c9" : "var(--border)") + ';color:' + (strong ? "var(--high-tx)" : "var(--text2)") + ';border-radius:999px;padding:2px 9px;font-size:11px;font-weight:500"><i class="ti ti-' + icon + '"></i>' + txt + '</span>'; };
     if (s.kind === "chain") {
       chips.push(chip("building-community", "1 holding company", true));
       if (s.sharedOfficer) chips.push(chip("user-shield", "same officer", true));
@@ -112,7 +112,7 @@
         ' and bill the <b>same ' + s.sharedVetCount + ' members (' + s.sharedPct + '%)</b> — coordinated anomalies, not independent activity.';
     }
 
-    return '<div style="background:var(--high-bg);border:0.5px solid #ffd7d9;border-radius:8px;padding:11px 12px">' +
+    return '<div style="background:var(--high-bg);border:0.5px solid #f3c9c9;border-radius:8px;padding:11px 12px">' +
       '<div style="display:flex;align-items:center;gap:6px;font-weight:600;font-size:12.5px;color:var(--high-tx);margin-bottom:6px"><i class="ti ti-affiliate"></i>' +
       (s.kind === "chain" ? "Residential-chain collusion" : "Provider ring") + ' · likely coordinated fraud</div>' +
       '<div style="font-size:11.5px;color:#5a2b27;line-height:1.55;margin-bottom:8px">' + lead + '</div>' +
@@ -185,7 +185,7 @@
     defs.append("marker").attr("id", "cn-ar").attr("viewBox", "0 -4 8 8").attr("refX", 7).attr("refY", 0).attr("markerWidth", 6).attr("markerHeight", 6).attr("orient", "auto").append("path").attr("d", "M0,-4L8,0L0,4").attr("fill", "#0043ce");
 
     // row captions
-    var cap = svg.append("g").attr("font-size", 8.5).attr("font-family", "IBM Plex Mono,monospace").attr("letter-spacing", "0.06em").attr("fill", "#8d8d8d");
+    var cap = svg.append("g").attr("font-size", 8.5).attr("font-family", "IBM Plex Mono,monospace").attr("letter-spacing", "0.06em").attr("fill", "#878d96");
     cap.append("text").attr("x", 12).attr("y", yBiz - 22).text(L.top);
     cap.append("text").attr("x", 12).attr("y", yProv - ch / 2 - 8).text(L.mid + (s.states.length > 1 ? " · " + s.states.join(" · ") : ""));
     cap.append("text").attr("x", 12).attr("y", yVet - 16).text("SHARED MEMBERS · " + m);
@@ -200,7 +200,7 @@
     var bizEdges = provs.map(function (p) {
       var t = P[p.id];
       return gEdge.append("path").attr("d", "M" + (W / 2) + "," + (yBiz + 20) + " C" + (W / 2) + "," + (yBiz + 20 + (t.y - ch / 2 - yBiz - 20) * 0.6) + " " + t.x + "," + (yBiz + 30) + " " + t.x + "," + (t.y - ch / 2))
-        .attr("fill", "none").attr("stroke", s.sharedTin ? "#da1e28" : "#b28600").attr("stroke-width", s.sharedTin ? 2.4 : 1.6).attr("stroke-dasharray", s.sharedTin ? null : "4,3").attr("opacity", 0.75)
+        .attr("fill", "none").attr("stroke", s.sharedTin ? "#c6362f" : "#b5730e").attr("stroke-width", s.sharedTin ? 2.4 : 1.6).attr("stroke-dasharray", s.sharedTin ? null : "4,3").attr("opacity", 0.75)
         .datum({ prov: p.id });
     });
     // referral arcs between providers (ring)
@@ -216,18 +216,18 @@
     var vetEdges = [], claimEdges = [];
     claims.forEach(function (c) {
       var a = C[c.id], t = P[c.providerId], v = V[c.memberId];
-      var st = c.seed ? "#da1e28" : "#a8a8a8";
+      var st = c.seed ? "#c6362f" : "#a2a9b0";
       claimEdges.push(gEdge.append("path").attr("d", "M" + t.x + "," + (t.y + ch / 2) + " C" + t.x + "," + (t.y + ch / 2 + 30) + " " + a.x + "," + (a.y - 40) + " " + a.x + "," + (a.y - 11))
         .attr("fill", "none").attr("stroke", st).attr("stroke-width", c.seed ? 2 : 1).attr("opacity", 0.7).datum({ claim: c.id, prov: c.providerId, vet: c.memberId }));
       if (v) claimEdges.push(gEdge.append("path").attr("d", "M" + a.x + "," + (a.y + 11) + " C" + a.x + "," + (a.y + 40) + " " + v.x + "," + (v.y - 40) + " " + v.x + "," + (v.y - 7))
-        .attr("fill", "none").attr("stroke", c.seed ? "#da1e28" : "#a8a8a8").attr("stroke-width", c.seed ? 2 : 1).attr("opacity", 0.7).datum({ claim: c.id, prov: c.providerId, vet: c.memberId }));
+        .attr("fill", "none").attr("stroke", c.seed ? "#c6362f" : "#a2a9b0").attr("stroke-width", c.seed ? 2 : 1).attr("opacity", 0.7).datum({ claim: c.id, prov: c.providerId, vet: c.memberId }));
     });
     if (!hasClaims) vets.forEach(function (v) {
       var a = V[v.id];
       visits[v.id].forEach(function (pid) {
         var t = P[pid]; if (!t) return;
         vetEdges.push(gEdge.append("path").attr("d", "M" + a.x + "," + (a.y - 7) + " C" + a.x + "," + (a.y - 40) + " " + t.x + "," + (t.y + ch / 2 + 30) + " " + t.x + "," + (t.y + ch / 2))
-          .attr("fill", "none").attr("stroke", "#a8a8a8").attr("stroke-width", 1.1).attr("opacity", 0.7).datum({ vet: v.id, prov: pid }));
+          .attr("fill", "none").attr("stroke", "#a2a9b0").attr("stroke-width", 1.1).attr("opacity", 0.7).datum({ vet: v.id, prov: pid }));
       });
     });
 
@@ -235,7 +235,7 @@
     var bizName = s.business ? s.business.name : "";
     var bw = Math.min(330, W - 40), bh = 40;
     var biz = gNode.append("g").attr("transform", "translate(" + (W / 2 - bw / 2) + "," + (yBiz - bh / 2) + ")").attr("cursor", "pointer");
-    biz.append("rect").attr("width", bw).attr("height", bh).attr("rx", 9).attr("fill", "#161616");
+    biz.append("rect").attr("width", bw).attr("height", bh).attr("rx", 9).attr("fill", "#001141");
     biz.append("text").attr("x", 14).attr("y", 17).attr("fill", "#fff").attr("font-size", 12).attr("font-weight", 600).text("⌂  " + trunc(bizName, 38));
     biz.append("text").attr("x", 14).attr("y", 31).attr("fill", "#a6c8ff").attr("font-size", 9.5)
       .text(L.bizSub(n));
@@ -246,15 +246,15 @@
       var g = gNode.append("g").attr("transform", "translate(" + (t.x - cw / 2) + "," + (t.y - ch / 2) + ")").attr("cursor", "pointer").datum({ prov: p.id });
       g.append("rect").attr("width", cw).attr("height", ch).attr("rx", 8).attr("fill", "var(--card, #fff)").attr("stroke", t.focus ? "#0043ce" : c).attr("stroke-width", t.focus ? 2.6 : 1.4);
       g.append("rect").attr("width", 4).attr("height", ch - 12).attr("x", 0).attr("y", 6).attr("rx", 2).attr("fill", t.focus ? "#0043ce" : c);
-      g.append("text").attr("x", 11).attr("y", 16).attr("font-size", 11).attr("font-weight", 600).attr("fill", "#161616").text(trunc(shortName(p.name), Math.floor(cw / 6.6)));
-      g.append("text").attr("x", 11).attr("y", 30).attr("font-size", 9.5).attr("fill", "#525252").attr("font-family", "IBM Plex Mono,monospace").text((p.state || "") + " · TIN " + (p.tin || "—"));
-      if (ch >= 54) g.append("text").attr("x", 11).attr("y", ch - 9).attr("font-size", 9).attr("font-weight", 600).attr("fill", s.sharedTin ? "#da1e28" : "#b28600")
+      g.append("text").attr("x", 11).attr("y", 16).attr("font-size", 11).attr("font-weight", 600).attr("fill", "#001141").text(trunc(shortName(p.name), Math.floor(cw / 6.6)));
+      g.append("text").attr("x", 11).attr("y", 30).attr("font-size", 9.5).attr("fill", "#4d5358").attr("font-family", "IBM Plex Mono,monospace").text((p.state || "") + " · TIN " + (p.tin || "—"));
+      if (ch >= 54) g.append("text").attr("x", 11).attr("y", ch - 9).attr("font-size", 9).attr("font-weight", 600).attr("fill", s.sharedTin ? "#c6362f" : "#b5730e")
         .text(s.sharedTin ? "shared TIN" : "separate TIN");
       g.append("text").attr("x", cw - 9).attr("y", ch - 9).attr("text-anchor", "end").attr("font-size", 9).attr("font-weight", 600).attr("fill", c).text("risk " + p.riskScore);
       if (t.focus) g.append("text").attr("x", cw - 9).attr("y", 16).attr("text-anchor", "end").attr("font-size", 8).attr("font-family", "IBM Plex Mono,monospace").attr("fill", "#0043ce").text("THIS CASE");
       if (excluded(p)) {
         var bx = g.append("g").attr("transform", "translate(" + (cw - 84) + "," + (-9) + ")");
-        bx.append("rect").attr("width", 80).attr("height", 16).attr("rx", 8).attr("fill", "#da1e28");
+        bx.append("rect").attr("width", 80).attr("height", 16).attr("rx", 8).attr("fill", "#c6362f");
         bx.append("text").attr("x", 40).attr("y", 11).attr("text-anchor", "middle").attr("font-size", 8.5).attr("font-weight", 700).attr("fill", "#fff").attr("letter-spacing", "0.04em").text("OIG EXCLUDED");
       }
       return g;
@@ -266,11 +266,11 @@
       var a = C[c.id], w = a.w;
       var g = gNode.append("g").attr("transform", "translate(" + a.x + "," + a.y + ")").attr("cursor", "pointer").datum({ claim: c.id, prov: c.providerId, vet: c.memberId });
       g.append("rect").attr("x", -w / 2).attr("y", -11).attr("width", w).attr("height", 22).attr("rx", 11)
-        .attr("fill", c.seed ? "#da1e28" : "var(--card, #fff)").attr("stroke", c.seed ? "#da1e28" : "#8d8d8d").attr("stroke-width", c.seed ? 2 : 1);
+        .attr("fill", c.seed ? "#c6362f" : "var(--card, #fff)").attr("stroke", c.seed ? "#c6362f" : "#878d96").attr("stroke-width", c.seed ? 2 : 1);
       g.append("text").attr("y", 3.5).attr("text-anchor", "middle").attr("font-size", w < 40 ? 8 : 9).attr("font-weight", 600).attr("font-family", "IBM Plex Mono,monospace")
-        .attr("fill", c.seed ? "#fff" : "#393939").text(kfmt(c.seed ? (c.flagged || c.billed) : c.amount));
+        .attr("fill", c.seed ? "#fff" : "#343a3f").text(kfmt(c.seed ? (c.flagged || c.billed) : c.amount));
       if (c.seed) {
-        g.append("text").attr("y", -17).attr("text-anchor", "middle").attr("font-size", 8.5).attr("font-weight", 700).attr("letter-spacing", "0.04em").attr("fill", "#da1e28").text("FLAGGED · START");
+        g.append("text").attr("y", -17).attr("text-anchor", "middle").attr("font-size", 8.5).attr("font-weight", 700).attr("letter-spacing", "0.04em").attr("fill", "#c6362f").text("FLAGGED · START");
       }
       return g;
     });
@@ -281,19 +281,19 @@
       var g = gNode.append("g").attr("transform", "translate(" + a.x + "," + a.y + ")").attr("cursor", "help").datum({ vet: v.id });
       g.append("rect").attr("x", -34).attr("y", -16).attr("width", 68).attr("height", 52).attr("fill", "transparent"); // generous hover target
       g.append("circle").attr("r", 7).attr("fill", "#e5f6ff").attr("stroke", "#1192e8").attr("stroke-width", 1.4);
-      g.append("text").attr("y", 19).attr("text-anchor", "middle").attr("font-size", 9).attr("fill", "#393939").text(vetShort(v.name));
+      g.append("text").attr("y", 19).attr("text-anchor", "middle").attr("font-size", 9).attr("fill", "#343a3f").text(vetShort(v.name));
       g.append("text").attr("y", 30).attr("text-anchor", "middle").attr("font-size", 8.5).attr("font-family", "IBM Plex Mono,monospace").attr("fill", "#1192e8")
         .text(visits[v.id].length + " " + (L.mid === "FACILITIES" ? "facilities" : "providers"));
       return g;
     });
 
     // ---- hover: highlight one thread, dim the rest ----
-    var tip = d3.select(el).append("div").attr("class", "cn-tip").style("position", "absolute").style("background", "#161616").style("border-radius", "7px").style("padding", "8px 11px").style("font-size", "11px").style("color", "#f4f4f4").style("pointer-events", "none").style("opacity", 0).style("z-index", 10).style("max-width", "250px").style("line-height", "1.45").style("box-shadow", "0 6px 18px rgba(0,0,0,.2)");
+    var tip = d3.select(el).append("div").attr("class", "cn-tip").style("position", "absolute").style("background", "#001141").style("border-radius", "7px").style("padding", "8px 11px").style("font-size", "11px").style("color", "#f2f4f8").style("pointer-events", "none").style("opacity", 0).style("z-index", 10).style("max-width", "250px").style("line-height", "1.45").style("box-shadow", "0 6px 18px rgba(0,0,0,.2)");
     function focusOn(provSet, vetSet, bizOn) {
       var dim = 0.12;
       bizEdges.forEach(function (e) { e.attr("opacity", provSet[e.datum().prov] ? 1 : dim); });
       refEdges.forEach(function (e) { var d = e.datum(); e.attr("opacity", provSet[d.a] && provSet[d.b] ? 1 : dim); });
-      vetEdges.forEach(function (e) { var d = e.datum(); var on = vetSet[d.vet] && provSet[d.prov]; e.attr("opacity", on ? 1 : 0.06).attr("stroke", on ? "#1192e8" : "#a8a8a8").attr("stroke-width", on ? 2 : 1.1); });
+      vetEdges.forEach(function (e) { var d = e.datum(); var on = vetSet[d.vet] && provSet[d.prov]; e.attr("opacity", on ? 1 : 0.06).attr("stroke", on ? "#1192e8" : "#a2a9b0").attr("stroke-width", on ? 2 : 1.1); });
       provNodes.forEach(function (g) { g.attr("opacity", provSet[g.datum().prov] ? 1 : 0.3); });
       vetNodes.forEach(function (g) { g.attr("opacity", vetSet[g.datum().vet] ? 1 : 0.25); });
       var cOn = function (d) { return provSet[d.prov] && vetSet[d.vet] && (!claimSet || claimSet[d.claim]); };
@@ -306,7 +306,7 @@
     function reset() {
       bizEdges.forEach(function (e) { e.attr("opacity", 0.75); });
       refEdges.forEach(function (e) { e.attr("opacity", 1); });
-      vetEdges.forEach(function (e) { e.attr("opacity", 0.7).attr("stroke", "#a8a8a8").attr("stroke-width", 1.1); });
+      vetEdges.forEach(function (e) { e.attr("opacity", 0.7).attr("stroke", "#a2a9b0").attr("stroke-width", 1.1); });
       provNodes.concat(vetNodes, claimNodes).forEach(function (g) { g.attr("opacity", 1); });
       claimEdges.forEach(function (e) { e.attr("opacity", 0.7).attr("stroke-width", e.datum().claim && C[e.datum().claim].c.seed ? 2 : 1); });
       biz.attr("opacity", 1); tip.style("opacity", 0);
@@ -320,7 +320,7 @@
     var all = function (list, key) { var o = {}; list.forEach(function (x) { o[x[key || "id"]] = 1; }); return o; };
     biz.on("mouseover", function (e) {
       focusOn(all(provs), all(vets), true);
-      showTip(e, "<div style='color:#78a9ff;margin-bottom:2px'>" + esc(L.bizKind) + "</div><b>" + esc(bizName) + "</b><div style='color:#c6c6c6'>" +
+      showTip(e, "<div style='color:#78a9ff;margin-bottom:2px'>" + esc(L.bizKind) + "</div><b>" + esc(bizName) + "</b><div style='color:#c1c7cd'>" +
         esc(L.bizTip(n)) + (s.synthetic ? "" : "<br>Click to open the business profile") + "</div>");
     }).on("mouseout", reset).on("click", function () { if (window.APP && s.business && !s.synthetic) window.APP.openBusiness(s.business.id); });
     provNodes.forEach(function (g) {
@@ -330,8 +330,8 @@
       var nCl = claims.filter(function (c) { return c.providerId === pid; }).length;
       g.on("mouseover", function (e) {
         focusOn(pset, vs, true);
-        showTip(e, "<div style='color:#ffb3b8;margin-bottom:2px'>" + (P[pid].focus ? "Provider · this case" : "Provider") + "</div><b>" + esc(p.name) + "</b><div style='color:#c6c6c6'>" + esc(p.state || "") + " · NPI " + esc(p.npi || "") + " · TIN " + esc(p.tin || "") +
-          "<br>risk " + p.riskScore + " · " + Object.keys(vs).length + " shared members" + (hasClaims ? " · " + nCl + " claims" : "") + (excluded(p) ? "<br><span style='color:#ffb3b8'>On the OIG LEIE exclusion list</span>" : "") + (s.synthetic ? "" : "<br>Click to open the report card") + "</div>");
+        showTip(e, "<div style='color:#ffb4a8;margin-bottom:2px'>" + (P[pid].focus ? "Provider · this case" : "Provider") + "</div><b>" + esc(p.name) + "</b><div style='color:#c1c7cd'>" + esc(p.state || "") + " · NPI " + esc(p.npi || "") + " · TIN " + esc(p.tin || "") +
+          "<br>risk " + p.riskScore + " · " + Object.keys(vs).length + " shared members" + (hasClaims ? " · " + nCl + " claims" : "") + (excluded(p) ? "<br><span style='color:#ffb4a8'>On the OIG LEIE exclusion list</span>" : "") + (s.synthetic ? "" : "<br>Click to open the report card") + "</div>");
       }).on("mouseout", reset).on("click", function () { if (window.APP && !s.synthetic) window.APP.openProvider(pid); });
     });
     vetNodes.forEach(function (g) {
@@ -340,7 +340,7 @@
       var vs = {}; vs[vid] = 1;
       g.on("mouseover", function (e) {
         focusOn(all(route.map(function (id) { return { id: id }; })), vs, false);
-        showTip(e, "<div style='color:#82cfff;margin-bottom:2px'>Affected member</div><b>" + esc(v.name) + "</b><div style='color:#c6c6c6'>" + [v.city, v.state].filter(Boolean).map(esc).join(", ") +
+        showTip(e, "<div style='color:#82cfff;margin-bottom:2px'>Affected member</div><b>" + esc(v.name) + "</b><div style='color:#c1c7cd'>" + [v.city, v.state].filter(Boolean).map(esc).join(", ") +
           "<br>Billed by " + route.length + ": " + route.map(function (id) { return esc(shortName(P[id].p.name)) + " (" + esc(P[id].p.state || "") + ")"; }).join(" → ") + "</div>");
       }).on("mouseout", reset);
     });
@@ -350,10 +350,10 @@
       var fmt = window.DP && window.DP.usd ? window.DP.usd : function (n) { return "$" + n; };
       g.on("mouseover", function (e) {
         claimSet = cs; focusOn(ps, vs, false);
-        showTip(e, "<div style='color:" + (c.seed ? "#ffb3b8" : "#cfd8e3") + ";margin-bottom:2px'>" + (c.seed ? "Flagged claim · where the analysis started" : "Similar claim · same pattern") + "</div>" +
-          "<b>" + esc(c.id) + " · " + fmt(c.seed ? (c.flagged || c.billed) : c.amount) + "</b><div style='color:#c6c6c6'>" + esc(shortName(pr.name)) + " (" + esc(pr.state || "") + ")" + (v ? " · member " + esc(v.name) : "") +
+        showTip(e, "<div style='color:" + (c.seed ? "#ffb4a8" : "#cfd8e3") + ";margin-bottom:2px'>" + (c.seed ? "Flagged claim · where the analysis started" : "Similar claim · same pattern") + "</div>" +
+          "<b>" + esc(c.id) + " · " + fmt(c.seed ? (c.flagged || c.billed) : c.amount) + "</b><div style='color:#c1c7cd'>" + esc(shortName(pr.name)) + " (" + esc(pr.state || "") + ")" + (v ? " · member " + esc(v.name) : "") +
           "<br>" + esc(c.dos) + (c.days ? " · " + c.days + "-day residential stay" : "") + " · " + (c.seed ? "held before payment" : esc(c.status.toLowerCase())) +
-          (c.prev ? "<br><span style='color:#ffb3b8'>" + readmit(c) + "</span>" : "") +
+          (c.prev ? "<br><span style='color:#ffb4a8'>" + readmit(c) + "</span>" : "") +
           (!s.synthetic && window.DP.raw.allegations.some(function (x) { return x.claimId === c.id; }) ? "<br>Click to open the lead" : "") + "</div>");
       }).on("mouseout", reset).on("click", function () {
         var lead = !s.synthetic && window.DP.raw.allegations.filter(function (x) { return x.claimId === c.id; })[0];
@@ -370,16 +370,16 @@
     var box = function (stroke, label) { return '<span class="lg"><span style="width:14px;height:10px;border:1.5px solid ' + stroke + ';border-radius:3px;background:#fff"></span>' + label + '</span>'; };
     var line = function (color, w, dash, label) { return '<span class="lg"><span style="width:16px;height:0;border-top:' + w + 'px ' + (dash ? "dashed" : "solid") + ' ' + color + '"></span>' + label + '</span>'; };
     var L = labelsFor(s);
-    var out = [dot("#161616", "#161616", L.bizKind)];
+    var out = [dot("#001141", "#001141", L.bizKind)];
     if (opts.showFocus !== false) out.push(box("#0043ce", "Provider in this case"));
-    out.push(box("#da1e28", opts.showFocus !== false ? "Linked provider · high risk" : "Provider · high risk"), dot("#1192e8", "#e5f6ff", "Shared member"));
-    out.push(s.sharedTin ? line("#da1e28", 2.4, false, L.link) : line("#b28600", 1.6, true, L.link));
+    out.push(box("#c6362f", opts.showFocus !== false ? "Linked provider · high risk" : "Provider · high risk"), dot("#1192e8", "#e5f6ff", "Shared member"));
+    out.push(s.sharedTin ? line("#c6362f", 2.4, false, L.link) : line("#b5730e", 1.6, true, L.link));
     if (s.referralCount) out.push(line("#0043ce", 1.8, true, "Referrals"));
     if (opts.claims) {
       var pill = function (bg, stroke, label) { return '<span class="lg"><span style="width:16px;height:9px;border:1.2px solid ' + stroke + ';border-radius:5px;background:' + bg + '"></span>' + label + '</span>'; };
-      out.push(pill("#da1e28", "#da1e28", "Flagged claim"), pill("#fff", "#8d8d8d", "Similar claim"));
+      out.push(pill("#c6362f", "#c6362f", "Flagged claim"), pill("#fff", "#878d96", "Similar claim"));
     }
-    out.push(line("#a8a8a8", 1.1, false, opts.claims ? "Billed → claim → member" : "Billed for member"));
+    out.push(line("#a2a9b0", 1.1, false, opts.claims ? "Billed → claim → member" : "Billed for member"));
     return out.join("");
   }
 
@@ -407,8 +407,8 @@
   function vetShort(name) { var p = String(name || "").split(" "); return p.length > 1 ? p[0].charAt(0) + ". " + p[p.length - 1] : name; }
 
   function col(d) {
-    if (d.type === "Business") return "#161616";
-    if (d.type === "Provider") return d.risk >= 80 ? "#da1e28" : d.risk >= 50 ? "#eb6200" : "#161616";
+    if (d.type === "Business") return "#001141";
+    if (d.type === "Provider") return d.risk >= 80 ? "#c6362f" : d.risk >= 50 ? "#c77d11" : "#001141";
     return "#1192e8";
   }
   function rad(d) { return d.type === "Business" ? 26 : d.type === "Provider" ? (d.focus ? 22 : 19) : 7; }

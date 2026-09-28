@@ -116,7 +116,7 @@
       var trail = s.trail == null ? "" : TRAIL.map(function (t, k) {
         var on = k <= s.trail, cur = k === s.trail;
         return (k ? '<i class="ti ti-chevron-right" style="font-size:11px;color:' + (on ? "#78a9ff" : "rgba(255,255,255,0.25)") + '"></i>' : '') +
-          '<span style="font-size:11px;padding:1px 7px;border-radius:10px;white-space:nowrap;' + (cur ? "background:#da1e28;color:#fff;font-weight:600" : on ? "color:#fff" : "color:rgba(255,255,255,0.35)") + '">' + t + '</span>';
+          '<span style="font-size:11px;padding:1px 7px;border-radius:10px;white-space:nowrap;' + (cur ? "background:#c6362f;color:#fff;font-weight:600" : on ? "color:#fff" : "color:rgba(255,255,255,0.35)") + '">' + t + '</span>';
       }).join("");
       var dots = trail || STEPS.map(function (_, k) { return '<span data-go="' + k + '" style="width:7px;height:7px;border-radius:50%;cursor:pointer;background:' + (k === DEMO.i ? "#0f62fe" : "rgba(255,255,255,0.25)") + '"></span>'; }).join("");
       var code = s.chip;
@@ -126,14 +126,14 @@
       q("#demo-ribbon").innerHTML =
         '<div style="max-width:var(--page-max);margin:0 auto;padding:7px 24px">' +
         '<div style="display:flex;align-items:center;gap:10px">' +
-        '<div style="display:flex;align-items:center;gap:7px;white-space:nowrap"><i class="ti ti-player-play" style="color:#78a9ff"></i><span style="font-size:12px;font-weight:500;color:#fff">Guided demo</span>' + '<span id="demo-tour" title="Full tour or short executive tour" style="display:inline-flex;border:0.5px solid rgba(255,255,255,0.25);border-radius:4px;overflow:hidden;font-size:10.5px">' + ["full", "short"].map(function (t) { var on = TOUR === t; return '<span data-tour="' + t + '" style="padding:1px 7px;cursor:pointer;' + (on ? "background:rgba(255,255,255,0.18);color:#fff" : "color:#c6c6c6") + '">' + (t === "full" ? "Full" : "Short") + '</span>'; }).join("") + '</span>' + '<span style="font-size:11px;color:#c6c6c6">' + n + '/' + N + '</span>' + pwsChip + '</div>' +
+        '<div style="display:flex;align-items:center;gap:7px;white-space:nowrap"><i class="ti ti-player-play" style="color:#78a9ff"></i><span style="font-size:12px;font-weight:500;color:#fff">Guided demo</span>' + '<span id="demo-tour" title="Full tour or short executive tour" style="display:inline-flex;border:0.5px solid rgba(255,255,255,0.25);border-radius:4px;overflow:hidden;font-size:10.5px">' + ["full", "short"].map(function (t) { var on = TOUR === t; return '<span data-tour="' + t + '" style="padding:1px 7px;cursor:pointer;' + (on ? "background:rgba(255,255,255,0.18);color:#fff" : "color:#c1c7cd") + '">' + (t === "full" ? "Full" : "Short") + '</span>'; }).join("") + '</span>' + '<span style="font-size:11px;color:#c1c7cd">' + n + '/' + N + '</span>' + pwsChip + '</div>' +
         '<div style="flex:1;display:flex;justify-content:center;align-items:center;gap:5px">' + dots + '</div>' +
         '<div style="display:flex;align-items:center;gap:6px;white-space:nowrap">' +
         '<button id="demo-prev" class="btn" style="padding:4px 9px;font-size:12px;background:rgba(255,255,255,0.1);color:#fff;border-color:rgba(255,255,255,0.25)"' + (DEMO.i === 0 ? " disabled" : "") + '><i class="ti ti-chevron-left"></i></button>' +
         '<button id="demo-next" class="btn" style="padding:4px 11px;font-size:12px;background:#0f62fe;color:#ffffff;border-color:#0f62fe"' + (DEMO.i === N - 1 ? " disabled" : "") + '>Next <i class="ti ti-chevron-right"></i></button>' +
-        '<button id="demo-close" title="Hide demo" class="btn" style="padding:4px 7px;font-size:12px;background:transparent;color:#c6c6c6;border-color:rgba(255,255,255,0.2)"><i class="ti ti-x"></i></button>' +
+        '<button id="demo-close" title="Hide demo" class="btn" style="padding:4px 7px;font-size:12px;background:transparent;color:#c1c7cd;border-color:rgba(255,255,255,0.2)"><i class="ti ti-x"></i></button>' +
         '</div></div>' +
-        '<div style="font-size:12.5px;color:#e0e0e0;margin-top:5px;line-height:1.45;height:56px;overflow-y:auto"><span style="font-weight:500;color:#fff">' + titlePrefix + s.t + '.</span> ' + s.n + '</div>' +
+        '<div style="font-size:12.5px;color:#dde1e6;margin-top:5px;line-height:1.45;height:56px;overflow-y:auto"><span style="font-weight:500;color:#fff">' + titlePrefix + s.t + '.</span> ' + s.n + '</div>' +
         '</div>';
       q("#demo-prev").onclick = DEMO.prev;
       q("#demo-next").onclick = DEMO.next;
@@ -147,7 +147,7 @@
       if (!p) {
         p = document.createElement("button");
         p.id = "demo-pill";
-        p.style.cssText = "position:fixed;bottom:18px;left:18px;z-index:200;background:#161616;color:#fff;border:0.5px solid rgba(255,255,255,0.2);border-radius:22px;padding:8px 14px;font-size:12.5px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:7px;box-shadow:0 2px 12px rgba(0,0,0,0.2)";
+        p.style.cssText = "position:fixed;bottom:18px;left:18px;z-index:200;background:#001141;color:#fff;border:0.5px solid rgba(255,255,255,0.2);border-radius:22px;padding:8px 14px;font-size:12.5px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:7px;box-shadow:0 2px 12px rgba(0,0,0,0.2)";
         p.innerHTML = '<i class="ti ti-player-play" style="color:#78a9ff"></i> Guided demo';
         p.onclick = DEMO.start;
         document.body.appendChild(p);

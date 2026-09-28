@@ -39,9 +39,9 @@
         '<div style="display:flex;align-items:center;gap:12px;color:#fff;padding:6px 0 20px">' +
         '<div style="width:38px;height:38px;border-radius:9px;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center"><i class="ti ti-building-hospital" style="font-size:20px;color:#7fd7cc"></i></div>' +
         '<div><div style="font-weight:600;font-size:15px;letter-spacing:-0.01em">Provider Portal</div>' +
-        '<div style="font-size:11.5px;color:#c6c6c6">Records request response · secure document submission</div></div>' +
+        '<div style="font-size:11.5px;color:#c1c7cd">Records request response · secure document submission</div></div>' +
         '<span style="flex:1"></span>' +
-        '<span class="pill" style="background:rgba(255,255,255,0.14);color:#e0e0e0"><i class="ti ti-flask"></i> Simulated portal</span></div>' +
+        '<span class="pill" style="background:rgba(255,255,255,0.14);color:#dde1e6"><i class="ti ti-flask"></i> Simulated portal</span></div>' +
 
         // who's logged in (the provider)
         '<div class="card" style="display:flex;align-items:center;gap:12px;margin-bottom:12px">' +
@@ -127,7 +127,7 @@
     return m[a.fwaType] || "medical-records.pdf";
   }
   function receivedCard(r) {
-    return '<div class="card" style="border-color:#a7f0ba">' +
+    return '<div class="card" style="border-color:#bfe0c9">' +
       '<div style="display:flex;align-items:center;gap:10px"><i class="ti ti-circle-check" style="color:var(--low);font-size:26px"></i>' +
       '<div><div style="font-weight:600;font-size:13.5px">Records submitted</div>' +
       '<div style="font-size:11.5px;color:var(--text2)">“' + window.APP.esc(r.receivedFile.name) + '” was transmitted to the requesting analyst on ' + window.APP.fmtDate(r.receivedAt) + '. No further action is required.</div></div></div></div>';

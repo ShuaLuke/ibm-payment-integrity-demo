@@ -6,7 +6,7 @@
   var groupBy = "fraudType"; // default grouping
 
   var SEV = {
-    Critical: ["var(--high-bg)", "var(--high-tx)"], High: ["#fff2e8", "#8e6a00"],
+    Critical: ["var(--high-bg)", "var(--high-tx)"], High: ["#fbe6cf", "#9a5b12"],
     Medium: ["var(--med-bg)", "var(--med-tx)"], Low: ["var(--low-bg)", "var(--low-tx)"]
   };
   function sevPill(s) { var c = SEV[s] || ["var(--surface)", "var(--text2)"]; return '<span class="tag" style="background:' + c[0] + ';color:' + c[1] + '">' + window.APP.esc(s) + '</span>'; }
@@ -26,7 +26,7 @@
         '<span style="flex:none;color:var(--high-tx);font-weight:600;min-width:38px">THEN</span><span style="flex:1;color:var(--text2)">' + esc(c.then) + '</span></div>';
     }).join("");
     var logicInner = '<div style="font-size:11.5px;color:var(--text);line-height:1.6;margin-bottom:4px">' + esc(d.logic.summary) + '</div>' + crit +
-      (d.logic.pseudocode ? '<pre class="mono" style="margin:8px 0 0;background:#262626;color:#d0e2ff;border-radius:6px;padding:9px 11px;font-size:10.5px;line-height:1.5;overflow-x:auto;white-space:pre">' + esc(d.logic.pseudocode) + '</pre>' : '');
+      (d.logic.pseudocode ? '<pre class="mono" style="margin:8px 0 0;background:#0a1640;color:#d0e2ff;border-radius:6px;padding:9px 11px;font-size:10.5px;line-height:1.5;overflow-x:auto;white-space:pre">' + esc(d.logic.pseudocode) + '</pre>' : '');
     // 2) inputs
     var inRows = (d.inputs || []).map(function (i) {
       return '<tr><td style="font-weight:500">' + esc(i.field) + '</td><td class="mono" style="font-size:10.5px;color:var(--accent-d)">' + esc(i.source) + '</td><td class="mono" style="font-size:10.5px;color:var(--text3)">' + esc(i.example) + '</td></tr>';

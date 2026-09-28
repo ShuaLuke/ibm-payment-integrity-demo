@@ -1,18 +1,18 @@
 /* ============================================================
-   PIVOT — VA × IBM demo design system (locked, PIVOT_DEMO_DESIGN.md §7b)
-   Ink #161616 · Accent teal #0f62fe · Surface #f4f4f4
+   IBM Payment Integrity — IBM palette (matches the IBM deck)
+   Ink Blue 100 #001141 · Accent Blue 60 #0F62FE · Surface Cool Gray 10 #F2F4F8
    Type: IBM Plex Sans (UI) + IBM Plex Mono (identifiers)
    ============================================================ */
 :root{
-  --ink:#161616; --ink2:#262626;
+  --ink:#001141; --ink2:#0a1640;
   --accent:#0f62fe; --accent-d:#0043ce; --accent-l:#edf5ff;
-  --surface:#f4f4f4; --card:#ffffff;
-  --border:#e0e0e0; --border2:#e8e8e8;
-  --text:#161616; --text2:#525252; --text3:#8d8d8d;
-  --high:#da1e28; --high-bg:#fff1f1; --high-tx:#a2191f;
-  --med:#eb6200;  --med-bg:#fff2e8;  --med-tx:#8a3800;
-  --low:#24a148;  --low-bg:#defbe6;  --low-tx:#0e6027;
-  --tag-bg:#e8e8e8; --tag-tx:#393939;
+  --surface:#f2f4f8; --card:#ffffff;
+  --border:#dde1e6; --border2:#e9ecf0;
+  --text:#001141; --text2:#4d5358; --text3:#878d96;
+  --high:#c6362f; --high-bg:#fbe3e3; --high-tx:#8b1a13;
+  --med:#c77d11;  --med-bg:#fbe6cf;  --med-tx:#7a4a06;
+  --low:#1f8a5b;  --low-bg:#e6f4ea;  --low-tx:#1f5a3d;
+  --tag-bg:#e9ecf0; --tag-tx:#343a3f;
   --sans:'IBM Plex Sans',system-ui,sans-serif;
   --mono:'IBM Plex Mono',ui-monospace,monospace;
   --r:8px;
@@ -26,23 +26,23 @@ a{color:var(--accent-d);text-decoration:none}
 button{font-family:var(--sans)}
 
 /* ---- chrome ---- */
-.banner{background:var(--ink2);color:#e0e0e0;font-size:11px;padding:5px 16px;display:flex;align-items:center;gap:7px}
-.topnav{background:var(--ink);display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:48px;border-bottom:1px solid #393939;position:sticky;top:var(--ribbon-h,0px);z-index:50}
+.banner{background:var(--ink2);color:#dde1e6;font-size:11px;padding:5px 16px;display:flex;align-items:center;gap:7px}
+.topnav{background:var(--ink);display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:48px;border-bottom:1px solid rgba(255,255,255,.08);position:sticky;top:var(--ribbon-h,0px);z-index:50}
 .brand{display:flex;align-items:center;gap:8px}
-.brand-name{color:#f4f4f4;font-weight:400;font-size:14px;letter-spacing:.1px;white-space:nowrap}.brand-name b{font-weight:600}
+.brand-name{color:#f2f4f8;font-weight:400;font-size:14px;letter-spacing:.1px;white-space:nowrap}.brand-name b{font-weight:600}
 .navitems{display:flex;gap:4px;margin-left:14px}
-.navitem{color:#c6c6c6;font-size:13px;padding:13px 12px;cursor:pointer;border-bottom:2px solid transparent;background:none;border-top:none;border-left:none;border-right:none}
-.navitem:hover{color:#f4f4f4;background:#353535}
+.navitem{color:#c1c7cd;font-size:13px;padding:13px 12px;cursor:pointer;border-bottom:2px solid transparent;background:none;border-top:none;border-left:none;border-right:none}
+.navitem:hover{color:#fff;background:rgba(255,255,255,.07)}
 .navitem.active{color:#fff;border-bottom-color:var(--accent)}
 .subtab{background:none;border:none;border-bottom:2px solid transparent;color:var(--text2);font-size:13px;padding:10px 14px;cursor:pointer;font-family:var(--sans)}
 .subtab:hover{color:var(--ink)}
 .subtab.active{color:var(--ink);font-weight:500;border-bottom-color:var(--accent)}
 .qscope{background:none;border:none;border-radius:6px;font-size:12px;padding:5px 12px;cursor:pointer;color:var(--text2);font-family:var(--sans)}
-.qscope.active{background:var(--card);color:var(--ink);font-weight:500;box-shadow:0 1px 2px rgba(22,22,22,.08)}
+.qscope.active{background:var(--card);color:var(--ink);font-weight:500;box-shadow:0 1px 2px rgba(0,17,65,.08)}
 .avatar{width:28px;height:28px;border-radius:50%;background:var(--accent);color:#ffffff;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center}
-.modebtn{background:none;border:none;color:#c6c6c6;font-size:11.5px;font-weight:500;padding:4px 11px;border-radius:16px;cursor:pointer;font-family:var(--sans);display:inline-flex;align-items:center;gap:5px}
+.modebtn{background:none;border:none;color:#c1c7cd;font-size:11.5px;font-weight:500;padding:4px 11px;border-radius:16px;cursor:pointer;font-family:var(--sans);display:inline-flex;align-items:center;gap:5px}
 .modebtn.active{background:var(--accent);color:#ffffff}
-.modebtn:not(.active):hover{color:#e0e0e0}
+.modebtn:not(.active):hover{color:#dde1e6}
 .ctab{background:none;border:none;border-bottom:2px solid transparent;color:var(--text2);font-size:12.5px;padding:8px 13px;cursor:pointer;font-family:var(--sans)}
 .ctab:hover{color:var(--ink)}
 .ctab.active{color:var(--ink);font-weight:500;border-bottom-color:var(--accent)}
@@ -78,7 +78,7 @@ button{font-family:var(--sans)}
 .p-conf{background:var(--high-bg);color:var(--high-tx)}
 .p-dis{background:var(--low-bg);color:var(--low-tx)}
 .p-esc{background:var(--med-bg);color:var(--med-tx)}
-.p-pend{background:#eef2f7;color:#393939}
+.p-pend{background:#eef2f7;color:#343a3f}
 .p-ret{background:var(--med-bg);color:var(--med-tx)}
 .tag{display:inline-block;padding:1px 7px;border-radius:5px;font-size:10.5px;font-weight:500;background:var(--tag-bg);color:var(--tag-tx)}
 .tag.fwa{background:var(--accent-l);color:var(--accent-d)}
@@ -92,10 +92,10 @@ tr.row:hover{background:var(--surface)}
 tr[data-hero="1"] td:first-child{box-shadow:inset 3px 0 0 var(--accent)}
 
 /* ---- forms/buttons ---- */
-.input{width:100%;padding:6px 10px;border:0.5px solid #c6c6c6;border-radius:7px;font-size:12.5px;font-family:var(--sans)}
+.input{width:100%;padding:6px 10px;border:0.5px solid #c1c7cd;border-radius:7px;font-size:12.5px;font-family:var(--sans)}
 select.input{padding:6px 8px}
 textarea.input{resize:vertical;min-height:64px}
-.btn{border:0.5px solid #c6c6c6;background:#fff;border-radius:7px;padding:7px 11px;font-size:12px;cursor:pointer;color:var(--ink);display:inline-flex;align-items:center;gap:6px}
+.btn{border:0.5px solid #c1c7cd;background:#fff;border-radius:7px;padding:7px 11px;font-size:12px;cursor:pointer;color:var(--ink);display:inline-flex;align-items:center;gap:6px}
 .btn:hover{background:var(--surface)}
 .btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
 .btn.primary:hover{background:#0353e9}
@@ -115,7 +115,7 @@ textarea.input{resize:vertical;min-height:64px}
 .fact .v{font-size:12.5px;font-weight:500}
 
 /* ---- decision segmented ---- */
-.seg{flex:1;border:0.5px solid #c6c6c6;background:#fff;border-radius:var(--r);padding:9px 6px;font-size:12px;cursor:pointer;text-align:center;color:var(--ink)}
+.seg{flex:1;border:0.5px solid #c1c7cd;background:#fff;border-radius:var(--r);padding:9px 6px;font-size:12px;cursor:pointer;text-align:center;color:var(--ink)}
 .seg .sub{font-size:10px;color:var(--text2)}
 .seg.on-c{border-color:var(--high);background:var(--high-bg);color:var(--high-tx);font-weight:500}
 .seg.on-d{border-color:var(--low);background:var(--low-bg);color:var(--low-tx);font-weight:500}

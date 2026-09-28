@@ -48,7 +48,7 @@
           '<div class="mono" style="font-size:10.5px;color:var(--text3);margin:3px 0 6px"><i class="ti ti-git-branch"></i> ' + window.APP.esc(b.branch) + ' @ ' + window.APP.esc(b.commit) + ' · ' + window.APP.esc(b.startedAt) + ' · ' + window.APP.esc(b.duration) + '</div>' +
           '<div style="display:flex;flex-wrap:wrap;gap:4px">' + stages + '</div></div></div>' +
           '<div class="bld-log" data-b="' + b.id + '" style="display:none;padding:0 0 10px 25px">' +
-          '<pre class="mono" style="margin:0;background:#262626;color:#d0e2ff;border-radius:6px;padding:10px 12px;font-size:10.5px;line-height:1.6;overflow-x:auto;white-space:pre-wrap">' + logLines + '</pre></div>' +
+          '<pre class="mono" style="margin:0;background:#0a1640;color:#d0e2ff;border-radius:6px;padding:10px 12px;font-size:10.5px;line-height:1.6;overflow-x:auto;white-space:pre-wrap">' + logLines + '</pre></div>' +
           '</div>';
       }).join("");
 
